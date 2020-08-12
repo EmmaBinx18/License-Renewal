@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.SQLException;
+
 @RestController
 public class Index {
 
@@ -16,7 +18,14 @@ public class Index {
     @GetMapping("/test")
     String test()
     {
-        return DBS.getConnection().toString();
+
+        try {
+            return DBS.getConnection().toString();
+        } catch (SQLException e) {
+            e.printStackTrace(); //if you get here then there are no more connections available
+        }finally {
+            return "we got fucked";
+        }
     }
 
 
