@@ -8,14 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Index {
     @Autowired
-     DatabaseService DBS; //makes instance of DB stuff for us
+    DatabaseService DBS;
 
     @GetMapping("/test")
     String test()
     {
         return "test";
     }
-
-
 
 }
