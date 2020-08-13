@@ -1,24 +1,33 @@
 package com.bbd.licenscerenewal.controller;
 
+import com.bbd.licenscerenewal.models.Renewal;
 import com.bbd.licenscerenewal.service.DatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class Index {
+public class LicenseRenewalController {
     @Autowired
-    DatabaseService DBS;
+    DatabaseService databaseService;
 
-    @GetMapping("/test")
-    String test()
+    @GetMapping("/license")
+    List<License> getAllLicenses()
     {
-        return "test";
+        return null;
+    }
+
+    @PostMapping("/license")
+    License postNewLicense(@RequestBody License newLicense){
+        return null;
+    }
+
+    @PatchMapping("/license")
+    License patchLicense(@RequestBody License license){
+        return null;
     }
 
     //API ENPOINTS TO CREATE
-
-    //Get all Licenses
     //Get license ready for renewal based on dates passed
     //Get license based on license number
     //Get license by expiry date
@@ -28,7 +37,6 @@ public class Index {
     //Get license based on vehicle parameters
     //Get licenses based on status
     //Get licenses based on type
-    //Post new license
     //Update license and everything that comes with that
 
     //Get all vehicles
