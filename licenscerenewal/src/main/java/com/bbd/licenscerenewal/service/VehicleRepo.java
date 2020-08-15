@@ -67,7 +67,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
             insert.setString(3, toAdd.getMake());
             insert.setString(4, toAdd.getModel());
             insert.setInt(5, toAdd.getOdometer());
-            insert.setInt(5, toAdd.getVehicleTypeId());
+            insert.setInt(6, toAdd.getVehicleTypeId());
 
             insert.executeUpdate();
             toAdd.setVehicleId(insert.getGeneratedKeys().getInt(0));
@@ -85,13 +85,13 @@ public class VehicleRepo implements IRepository<Vehicle>{
 
         while(toConvert.next()){
             Vehicle vehicle = new Vehicle();
-            vehicle.setVehicleId(toConvert.getInt(0));
-            vehicle.setRegistrationNumber(toConvert.getString(1));
-            vehicle.setVin(toConvert.getString(2));
-            vehicle.setMake(toConvert.getString(3));
-            vehicle.setModel(toConvert.getString(4));
-            vehicle.setOdometer(toConvert.getInt(5));
-            vehicle.setVehicleTypeId(toConvert.getInt(6));
+            vehicle.setVehicleId(toConvert.getInt(1));
+            vehicle.setRegistrationNumber(toConvert.getString(2));
+            vehicle.setVin(toConvert.getString(3));
+            vehicle.setMake(toConvert.getString(4));
+            vehicle.setModel(toConvert.getString(5));
+            vehicle.setOdometer(toConvert.getInt(6));
+            vehicle.setVehicleTypeId(toConvert.getInt(7));
             vehicles.add(vehicle);
         }
 
@@ -116,7 +116,6 @@ public class VehicleRepo implements IRepository<Vehicle>{
         return null;
     }
 
-
     public Vehicle getByRegistrationNumber(String registrationNumber) {
         try {
             Connection conn  = databaseService.getConnection();
@@ -133,7 +132,6 @@ public class VehicleRepo implements IRepository<Vehicle>{
         }
         return null;
     }
-
 
     public List<Vehicle> getByMake(String make) {
         try {

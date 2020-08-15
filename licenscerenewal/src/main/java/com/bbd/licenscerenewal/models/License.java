@@ -5,12 +5,12 @@ import java.sql.Date;
 public class License{
     private int LicenseId;
     private String licenseNumber;
-    private Owner owner;
+    private int ownerId;
     private Date firstIssueDate;
     private Date expiryDate;
-    private Vehicle vehicle;
-    private String licenseStatus;
-    private String licenseType;
+    private int vehicleId;
+    private int licenseStatusId;
+    private int licenseTypeId;
 
     public int getLicenseId() { return LicenseId; }
 
@@ -24,12 +24,12 @@ public class License{
         this.licenseNumber = licenseNumber;
     }
 
-    public Owner getOwner(){
-        return owner;
+    public int getOwnerId(){
+        return ownerId;
     }
 
-    public void setOwner(Owner owner){
-        this.owner = owner;
+    public void setOwnerId(int ownerId){
+        this.ownerId = ownerId;
     }
 
     public Date getFirstIssueDate(){
@@ -48,27 +48,27 @@ public class License{
         this.expiryDate = expiryDate;
     }
 
-    public Vehicle getVehicle(){
-        return vehicle;
+    public int getVehicleId(){
+        return vehicleId;
     }
 
-    public void setVehicle(Vehicle vehicle){
-        this.vehicle = vehicle;
+    public void setVehicleId(int vehicleId){
+        this.vehicleId = vehicleId;
     }
 
-    public String getLicenseStatus(){
-        return licenseStatus;
+    public int getLicenseStatusId(){
+        return licenseStatusId;
     }
 
-    public void setLicenseStatus(String licenseStatus){
-        this.licenseStatus = licenseStatus;
+    public void setLicenseStatusId(int licenseStatusId){
+        this.licenseStatusId = licenseStatusId;
     }
 
-    public String getLicenseType(){
-        return licenseType;
+    public int getLicenseTypeId(){
+        return licenseTypeId;
     }
 
-    public void setLicenseType(String licenseType){
-        this.licenseType = licenseType;
+    public void setLicenseTypeId(int licenseTypeId){
+        this.licenseTypeId = licenseTypeId;
     }
 }

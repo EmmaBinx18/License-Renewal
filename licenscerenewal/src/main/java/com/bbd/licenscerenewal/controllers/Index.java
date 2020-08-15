@@ -2,12 +2,11 @@ package com.bbd.licenscerenewal.controllers;
 
 import com.bbd.licenscerenewal.models.Address;
 import com.bbd.licenscerenewal.models.License;
-import com.bbd.licenscerenewal.models.Renewal;
+
 import com.bbd.licenscerenewal.service.AddressRepo;
-import com.bbd.licenscerenewal.service.DatabaseService;
-import com.bbd.licenscerenewal.service.IDataBasePool;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;

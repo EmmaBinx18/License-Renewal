@@ -76,18 +76,18 @@ public class AddressRepo implements IRepository<Address>{
         return null;
     }
 
+    @Override
     public List<Address> convertResultSet(ResultSet toConvert) throws SQLException {
         List<Address> addresses = new ArrayList<Address>();
 
         while(toConvert.next()){
-        Address temp = new Address();
-        temp.setAddressId(toConvert.getInt(1));
-        temp.setAddressLine1(toConvert.getString(2));
-        temp.setAddressLine2(toConvert.getString(3));
-        temp.setAddressLine3(toConvert.getString(4));
-        temp.setPostalCode(toConvert.getString(5));
-
-        addresses.add(temp);
+            Address address = new Address();
+            address.setAddressId(toConvert.getInt(1));
+            address.setAddressLine1(toConvert.getString(2));
+            address.setAddressLine2(toConvert.getString(3));
+            address.setAddressLine3(toConvert.getString(4));
+            address.setPostalCode(toConvert.getString(5));
+            addresses.add(address);
         }
 
         return addresses;
