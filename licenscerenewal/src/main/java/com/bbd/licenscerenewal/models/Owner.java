@@ -1,6 +1,7 @@
 package com.bbd.licenscerenewal.models;
 
 public class Owner{
+    private int OwnerId;
     private String idNumber;
     private String idType;
     private String countryOfIssue;

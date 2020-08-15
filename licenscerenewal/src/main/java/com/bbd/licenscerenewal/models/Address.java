@@ -1,6 +1,7 @@
 package com.bbd.licenscerenewal.models;
 
 public class Address{
+    private int AddressId;
     private String addressLine1;
     private String addressLine2;
     private String addressLine3;
@@ -22,6 +23,10 @@ public class Address{
         this.addressLine2 = addressLine2;
     }
 
+    public int getAddressId() { return AddressId; }
+
+    public void setAddressId(int addressId) { AddressId = addressId; }
+
     public String getAddressLine3() {
         return addressLine3;
     }
@@ -37,4 +42,6 @@ public class Address{
     public void setPostalCode(String postalCode){
         this.postalCode = postalCode;
     }
+
+
 }

@@ -1,15 +1,21 @@
-package com.bbd.licenscerenewal.controller;
+package com.bbd.licenscerenewal.controllers;
 
+import com.bbd.licenscerenewal.models.License;
 import com.bbd.licenscerenewal.models.Renewal;
 import com.bbd.licenscerenewal.service.DatabaseService;
+import com.bbd.licenscerenewal.service.IDataBasePool;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.SQLException;
+import java.util.List;
 
 @RestController
-public class LicenseRenewalController {
+class LicenseRenewalController {
     @Autowired
-    DatabaseService databaseService;
+    @Qualifier("DatabasePool")
+    IDataBasePool databaseService;
 
     @GetMapping("/license")
     List<License> getAllLicenses()
@@ -26,6 +32,9 @@ public class LicenseRenewalController {
     License patchLicense(@RequestBody License license){
         return null;
     }
+
+
+
 
     //API ENPOINTS TO CREATE
     //Get license ready for renewal based on dates passed

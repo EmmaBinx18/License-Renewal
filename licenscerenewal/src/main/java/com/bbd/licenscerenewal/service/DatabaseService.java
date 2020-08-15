@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 @Qualifier("DatabasePool")
 public class DatabaseService implements IDataBasePool {
-    private String connectionString = "Put connection string here";
+    private String connectionString = "";
     private List<Connection> connectionPool;
     private List<Connection> usedConnections =new ArrayList<Connection>();
     private static int MAX_POOL_SIZE = 100;
