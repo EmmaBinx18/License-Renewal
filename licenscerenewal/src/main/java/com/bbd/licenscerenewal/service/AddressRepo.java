@@ -37,14 +37,14 @@ public class AddressRepo implements IRepository<Address>{
     }
 
     @Override
-    public Address delete(Address toDelete) {
+    public Address delete(int id) {
         try {
             Connection conn  = databaseService.getConnection();
             PreparedStatement select  = conn.prepareStatement("SELECT * FROM Address WHERE AddressID = ? ");
-            select.setInt(1, toDelete.getAddressId());
+            select.setInt(1, id);
 
             PreparedStatement delete = conn.prepareStatement("DELETE FROM Address WHERE AddressID = ?");
-            delete.setInt(1, toDelete.getAddressId());
+            delete.setInt(1, id);
 
             ResultSet rs = select.executeQuery();
             delete.executeQuery();

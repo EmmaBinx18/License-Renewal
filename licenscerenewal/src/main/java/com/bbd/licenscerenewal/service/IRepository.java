@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface IRepository<T> {
     public T update(T toUpdate);
-    public T delete(T toDelete);
+    public T delete(int id);
     public T add(T toAdd);
     public List<T> convertResultSet(ResultSet toConvert) throws SQLException;
-    public T get(int Id);
+    public T get(int id);
 }

@@ -39,14 +39,14 @@ public class VehicleRepo implements IRepository<Vehicle>{
     }
 
     @Override
-    public Vehicle delete(Vehicle toDelete) {
+    public Vehicle delete(int id) {
         try {
             Connection conn  = databaseService.getConnection();
             PreparedStatement select  = conn.prepareStatement("SELECT * FROM Vehicle WHERE VehicleId = ? ");
-            select.setInt(1, toDelete.getVehicleId());
+            select.setInt(1, id);
 
             PreparedStatement delete = conn.prepareStatement("DELETE FROM Vehicle WHERE VehicleId = ?");
-            delete.setInt(1, toDelete.getVehicleId());
+            delete.setInt(1, id);
 
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
