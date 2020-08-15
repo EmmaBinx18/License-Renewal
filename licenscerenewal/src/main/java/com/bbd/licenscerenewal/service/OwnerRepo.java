@@ -1,7 +1,5 @@
 package com.bbd.licenscerenewal.service;
 
-import com.bbd.licenscerenewal.models.Address;
-import com.bbd.licenscerenewal.models.Organisation;
 import com.bbd.licenscerenewal.models.Owner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,56 +23,56 @@ public class OwnerRepo implements IRepository<Owner>{
 
     @Override
     public Owner update(Owner toUpdate) {
-        try {
-            Connection conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("");
-            update.setString(1, "put shit here");
+        // try {
+        //     Connection conn = databaseService.getConnection();
+        //     PreparedStatement update = conn.prepareStatement("");
+        //     update.setString(1, "put shit here");
 
 
-            update.executeUpdate();
-            databaseService.ReleaseConnection(conn);
-            return toUpdate;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
+        //     update.executeUpdate();
+        //     databaseService.ReleaseConnection(conn);
+        //     return toUpdate;
+        // } catch (SQLException throwable) {
+        //     throwable.printStackTrace();
+        // }
         return null;
     }
 
     @Override
     public Owner delete(int id) {
-        try {
-            Connection conn  = databaseService.getConnection();
-            PreparedStatement select  = conn.prepareStatement("");
-            select.setInt(1, id);
+        // try {
+        //     Connection conn  = databaseService.getConnection();
+        //     PreparedStatement select  = conn.prepareStatement("");
+        //     select.setInt(1, id);
 
-            PreparedStatement delete = conn.prepareStatement("");
-            delete.setInt(1, id);
+        //     PreparedStatement delete = conn.prepareStatement("");
+        //     delete.setInt(1, id);
 
-            ResultSet rs = select.executeQuery();
-            delete.executeQuery();
-            databaseService.ReleaseConnection(conn);
-            return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
+        //     ResultSet rs = select.executeQuery();
+        //     delete.executeQuery();
+        //     databaseService.ReleaseConnection(conn);
+        //     return convertResultSet(rs).get(0);
+        // } catch (SQLException throwable) {
+        //     throwable.printStackTrace();
+        // }
         return null;
     }
 
     @Override
     public Owner add(Owner toAdd) {
-        try {
-            Connection conn = databaseService.getConnection();
-            PreparedStatement insert = conn.prepareStatement("", Statement.RETURN_GENERATED_KEYS);
-            insert.setString(1, "Put shit here");
+        // try {
+        //     Connection conn = databaseService.getConnection();
+        //     PreparedStatement insert = conn.prepareStatement("", Statement.RETURN_GENERATED_KEYS);
+        //     insert.setString(1, "Put shit here");
 
 
-            insert.executeUpdate();
-            toAdd.setOwnerId(insert.getGeneratedKeys().getInt(0));
-            databaseService.ReleaseConnection(conn);
-            return toAdd;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
+        //     insert.executeUpdate();
+        //     toAdd.setOwnerId(insert.getGeneratedKeys().getInt(0));
+        //     databaseService.ReleaseConnection(conn);
+        //     return toAdd;
+        // } catch (SQLException throwable) {
+        //     throwable.printStackTrace();
+        // }
         return null;
     }
 
@@ -109,19 +107,19 @@ public class OwnerRepo implements IRepository<Owner>{
 
     @Override
     public Owner getById(int id) {
-        try {
-            Connection conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("");
-            get.setInt(1, id);
+        // try {
+        //     Connection conn  = databaseService.getConnection();
+        //     PreparedStatement get  = conn.prepareStatement("");
+        //     get.setInt(1, id);
 
-            ResultSet rs = get.executeQuery();
-            Owner owner = convertResultSet(rs).get(0);
-            databaseService.ReleaseConnection(conn);
-            return owner;
+        //     ResultSet rs = get.executeQuery();
+        //     Owner owner = convertResultSet(rs).get(0);
+        //     databaseService.ReleaseConnection(conn);
+        //     return owner;
 
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
+        // } catch (SQLException throwable) {
+        //     throwable.printStackTrace();
+        // }
         return null;
     }
 }

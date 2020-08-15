@@ -70,7 +70,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
             insert.setInt(6, toAdd.getVehicleTypeId());
 
             insert.executeUpdate();
-            toAdd.setVehicleId(insert.getGeneratedKeys().getInt(0));
+            toAdd.setVehicleId(insert.getGeneratedKeys().getInt(1));
             databaseService.ReleaseConnection(conn);
             return toAdd;
         } catch (SQLException throwable) {
@@ -81,7 +81,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
 
     @Override
     public List<Vehicle> convertResultSet(ResultSet toConvert) throws SQLException {
-        List<Vehicle> vehicles = new ArrayList<Vehicle>();
+        List<Vehicle> vehicles = new ArrayList<>();
 
         while(toConvert.next()){
             Vehicle vehicle = new Vehicle();
@@ -98,6 +98,20 @@ public class VehicleRepo implements IRepository<Vehicle>{
         return vehicles;
     }
 
+    public List<Vehicle> getAll() {
+        try {
+            Connection conn  = databaseService.getConnection();
+            PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle");
+            ResultSet rs = get.executeQuery();
+            databaseService.ReleaseConnection(conn);
+            return convertResultSet(rs);
+
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
     @Override
     public Vehicle getById(int id) {
         try {
@@ -106,9 +120,8 @@ public class VehicleRepo implements IRepository<Vehicle>{
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            Vehicle vehicle = convertResultSet(rs).get(0);
             databaseService.ReleaseConnection(conn);
-            return vehicle;
+            return convertResultSet(rs).get(0);
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -123,9 +136,8 @@ public class VehicleRepo implements IRepository<Vehicle>{
             get.setString(1, registrationNumber);
 
             ResultSet rs = get.executeQuery();
-            Vehicle vehicle = convertResultSet(rs).get(0);
             databaseService.ReleaseConnection(conn);
-            return vehicle;
+            return convertResultSet(rs).get(0);
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -140,13 +152,12 @@ public class VehicleRepo implements IRepository<Vehicle>{
             get.setString(1, make);
 
             ResultSet rs = get.executeQuery();
-            List<Vehicle> vehicles = convertResultSet(rs);
             databaseService.ReleaseConnection(conn);
-            return vehicles;
+            return convertResultSet(rs);
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 }

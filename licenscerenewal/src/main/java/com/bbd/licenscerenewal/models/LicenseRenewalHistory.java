@@ -3,31 +3,40 @@ package com.bbd.licenscerenewal.models;
 import java.sql.Date;
 
 public class LicenseRenewalHistory{
-    private License license;
+    private int licenseRenewalHistoryId;
+    private int licenseId;
     private Date renewalDate;
-    private Float fee;
+    private float fee;
 
-    public License getLicense(){
-        return license;
+    public int getLicenseRenewalHistoryId() {
+        return licenseRenewalHistoryId;
     }
 
-    public void setLicense(License license){
-        this.license = license;
+    public void setLicenseRenewalHistoryId(int licenseRenewalHistoryId) {
+        this.licenseRenewalHistoryId = licenseRenewalHistoryId;
     }
 
-    public Date getRenewalDate(){
+    public int getLicenseId() {
+        return licenseId;
+    }
+
+    public void setLicenseId(int licenseId) {
+        this.licenseId = licenseId;
+    }
+
+    public Date getRenewalDate() {
         return renewalDate;
     }
 
-    public void setRenewalDate(Date renewalDate){
+    public void setRenewalDate(Date renewalDate) {
         this.renewalDate = renewalDate;
     }
 
-    public Float getFee(){
+    public float getFee() {
         return fee;
     }
 
-    public void setFee(Float fee){
+    public void setFee(float fee) {
         this.fee = fee;
     }
 }

@@ -3,7 +3,7 @@ package com.bbd.licenscerenewal.models;
 import java.sql.Date;
 
 public class License{
-    private int LicenseId;
+    private int licenseId;
     private String licenseNumber;
     private int ownerId;
     private Date firstIssueDate;
@@ -12,9 +12,13 @@ public class License{
     private int licenseStatusId;
     private int licenseTypeId;
 
-    public int getLicenseId() { return LicenseId; }
+    public int getLicenseId() {
+        return licenseId;
+    }
 
-    public void setLicenseId(int licenseId) { LicenseId = licenseId; }
+    public void setLicenseId(int licenseId) {
+        this.licenseId = licenseId;
+    }
 
     public String getLicenseNumber(){
         return licenseNumber;

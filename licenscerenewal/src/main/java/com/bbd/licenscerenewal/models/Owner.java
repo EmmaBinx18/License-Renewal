@@ -1,7 +1,7 @@
 package com.bbd.licenscerenewal.models;
 
 public class Owner{
-    private int OwnerId;
+    private int ownerId;
     private String idNumber;
     private String idType;
     private String countryOfIssue;
@@ -147,7 +147,11 @@ public class Owner{
         this.chosenAddress = chosenAddress;
     }
 
-    public int getOwnerId() { return OwnerId; }
+    public int getOwnerId() { 
+        return ownerId; 
+    }
 
-    public void setOwnerId(int ownerId) { OwnerId = ownerId; }
+    public void setOwnerId(int ownerId) { 
+        this.ownerId = ownerId; 
+    }
 }

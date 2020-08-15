@@ -1,45 +1,31 @@
 package com.bbd.licenscerenewal.controllers;
 
-import com.bbd.licenscerenewal.models.Address;
-import com.bbd.licenscerenewal.models.License;
-
-import com.bbd.licenscerenewal.service.AddressRepo;
+import com.bbd.licenscerenewal.models.Vehicle;
+import com.bbd.licenscerenewal.service.VehicleRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-class LicenseRenewalController {
-
+class VehicleController {
 
     @Autowired
-    AddressRepo addressRepo;
+    VehicleRepo vehicleRepo;
 
-    @GetMapping("/license")
-    List<License> getAllLicenses()
+    @GetMapping("/vehicle")
+    public List<Vehicle> getAllLicenses()
     {
-        return null;
+        return vehicleRepo.getAll();
     }
 
-    @PostMapping("/license")
-    License postNewLicense(@RequestBody License newLicense){
-        return null;
-    }
+    // @GetMapping("/employees/{id}")
+    // Employee one(@PathVariable Long id) {
 
-    @PatchMapping("/license")
-    License patchLicense(@RequestBody License license){
-        return null;
-    }
-
-
-    @GetMapping("/address/{id}")
-    Address getAddress(@PathVariable("id") int id){
-        return addressRepo.getById(id);
-    }
+    //     return repository.findById(id)
+    //     .orElseThrow(() -> new EmployeeNotFoundException(id));
+    // }
 
     //API ENPOINTS TO CREATE
     //Get license ready for renewal based on dates passed

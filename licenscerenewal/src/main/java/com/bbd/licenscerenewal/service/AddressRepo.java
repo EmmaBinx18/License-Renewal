@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +66,7 @@ public class AddressRepo implements IRepository<Address>{
             insert.setString(4, toAdd.getPostalCode());
 
             insert.executeUpdate();
-            toAdd.setAddressId(insert.getGeneratedKeys().getInt(0));
+            toAdd.setAddressId(insert.getGeneratedKeys().getInt(1));
             databaseService.ReleaseConnection(conn);
             return toAdd;
         } catch (SQLException throwable) {
@@ -78,7 +77,7 @@ public class AddressRepo implements IRepository<Address>{
 
     @Override
     public List<Address> convertResultSet(ResultSet toConvert) throws SQLException {
-        List<Address> addresses = new ArrayList<Address>();
+        List<Address> addresses = new ArrayList<>();
 
         while(toConvert.next()){
             Address address = new Address();
@@ -101,9 +100,8 @@ public class AddressRepo implements IRepository<Address>{
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            Address address = convertResultSet(rs).get(0);
             databaseService.ReleaseConnection(conn);
-            return address;
+            return convertResultSet(rs).get(0);
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();

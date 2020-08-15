@@ -35,7 +35,7 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
     }
 
     @Override
-    public LicenseRenewalHistoryRepo getById(int Id) {
+    public LicenseRenewalHistoryRepo getById(int id) {
         return null;
     }
 }

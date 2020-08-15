@@ -71,7 +71,7 @@ public class LicenseRepo implements IRepository<License> {
             insert.setInt(7, toAdd.getLicenseTypeId());
 
             insert.executeUpdate();
-            toAdd.setLicenseId(insert.getGeneratedKeys().getInt(0));
+            toAdd.setLicenseId(insert.getGeneratedKeys().getInt(1));
             databaseService.ReleaseConnection(conn);
             return toAdd;
         } catch (SQLException throwable) {
@@ -82,7 +82,7 @@ public class LicenseRepo implements IRepository<License> {
 
     @Override
     public List<License> convertResultSet(ResultSet toConvert) throws SQLException {
-        List<License> licenses = new ArrayList<License>();
+        List<License> licenses = new ArrayList<>();
 
         while(toConvert.next()){
             License license = new License();
@@ -99,6 +99,20 @@ public class LicenseRepo implements IRepository<License> {
         return licenses;
     }
 
+    public List<License> getAll() {
+        try {
+            Connection conn  = databaseService.getConnection();
+            PreparedStatement get  = conn.prepareStatement("SELECT * FROM License");
+            ResultSet rs = get.executeQuery();
+            databaseService.ReleaseConnection(conn);
+            return convertResultSet(rs);
+
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
     @Override
     public License getById(int id) {
         try {
@@ -107,9 +121,8 @@ public class LicenseRepo implements IRepository<License> {
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            License license = convertResultSet(rs).get(0);
             databaseService.ReleaseConnection(conn);
-            return license;
+            return convertResultSet(rs).get(0);
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();

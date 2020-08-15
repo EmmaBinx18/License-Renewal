@@ -6,53 +6,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class LicenseStatusRepo implements IRepository<LicenseStatus>{
+public class LicenseStatusRepo {
 
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    @Autowired
-    LicenseStatusRepo licenseStatusRepo;
+    public List<LicenseStatus> getLicenseStatuses() {
+        try{
+            Connection conn  = databaseService.getConnection();
+            PreparedStatement get  = conn.prepareStatement("SELECT * FROM LicenseStatus");
+            ResultSet rs = get.executeQuery();
+            databaseService.ReleaseConnection(conn);
+            
+            List<LicenseStatus> licenseStatuses = new ArrayList<>();
+            while(rs.next()){
+                LicenseStatus licenseStatus = new LicenseStatus();
+                licenseStatus.setLicenseStatusId(rs.getInt(1));
+                licenseStatus.setName(rs.getString(2));
+                licenseStatuses.add(licenseStatus);
+            }
 
-    @Override
-    public LicenseStatus update(LicenseStatus toUpdate) {
-        return null;
-    }
-
-    @Override
-    public LicenseStatus delete(int id) {
-        return null;
-    }
-
-    @Override
-    public LicenseStatus add(LicenseStatus toAdd) {
-        return null;
-    }
-
-    @Override
-    public List<LicenseStatus> convertResultSet(ResultSet toConvert) throws SQLException {
-        List<LicenseStatus> licenseStatuses = new ArrayList<LicenseStatus>();
-
-        while(toConvert.next()){
-            LicenseStatus licenseStatus = new LicenseStatus();
-            licenseStatus.setLicenseStatusId(toConvert.getInt(1));
-            licenseStatus.setName(toConvert.getString(2));
-            licenseStatuses.add(licenseStatus);
+            return licenseStatuses;
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
-
-        return licenseStatuses;
-    }
-
-    @Override
-    public LicenseStatus getById(int id) {
-        return null;
+        return new ArrayList<>();
     }
 }

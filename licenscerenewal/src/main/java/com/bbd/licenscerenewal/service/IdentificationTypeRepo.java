@@ -1,6 +1,6 @@
 package com.bbd.licenscerenewal.service;
 
-import com.bbd.licenscerenewal.models.VehicleType;
+import com.bbd.licenscerenewal.models.IdentificationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -13,28 +13,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class VehicleTypeRepo{
+public class IdentificationTypeRepo {
 
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public List<VehicleType> getVehicleTypes() {
+    public List<IdentificationType> getIdentificationTypes() {
         try{
             Connection conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("SELECT * FROM VehicleType");
+            PreparedStatement get  = conn.prepareStatement("SELECT * FROM IdentificationType");
             ResultSet rs = get.executeQuery();
             databaseService.ReleaseConnection(conn);
             
-            List<VehicleType> vehicleTypes = new ArrayList<>();
+            List<IdentificationType> identificationTypes = new ArrayList<>();
             while(rs.next()){
-                VehicleType vehicleType = new VehicleType();
-                vehicleType.setVehicleTypeId(rs.getInt(1));
-                vehicleType.setName(rs.getString(2));
-                vehicleTypes.add(vehicleType);
+                IdentificationType identificationType = new IdentificationType();
+                identificationType.setIdentificationTypeId(rs.getInt(1));
+                identificationType.setName(rs.getString(2));
+                identificationTypes.add(identificationType);
             }
 
-            return vehicleTypes;
+            return identificationTypes;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
