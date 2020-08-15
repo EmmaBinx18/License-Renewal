@@ -19,18 +19,17 @@ public class AddressRepo implements IRepository<Address>{
     @Override
     public Address update(Address toUpdate) {
         try {
-            Connection conn  = databaseService.getConnection();
-            PreparedStatement update  = conn.prepareStatement("UPDATE TABLE Address SET AddressLine1 = ?,AddressLine2 = ?AddressLine3 = ? ,PostalCode = ? WHERE AddressId = ?");
-            update.setString(1,toUpdate.getAddressLine1());
-            update.setString(2,toUpdate.getAddressLine2());
-            update.setString(3,toUpdate.getAddressLine3());
-            update.setString(4,toUpdate.getPostalCode());
-            update.setInt(5,toUpdate.getAddressId());
+            Connection conn = databaseService.getConnection();
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE Address SET AddressLine1 = ?,AddressLine2 = ?AddressLine3 = ? ,PostalCode = ? WHERE AddressId = ?");
+            update.setString(1, toUpdate.getAddressLine1());
+            update.setString(2, toUpdate.getAddressLine2());
+            update.setString(3, toUpdate.getAddressLine3());
+            update.setString(4, toUpdate.getPostalCode());
+            update.setInt(5, toUpdate.getAddressId());
 
             update.executeUpdate();
             databaseService.ReleaseConnection(conn);
             return toUpdate;
-
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
@@ -42,16 +41,15 @@ public class AddressRepo implements IRepository<Address>{
         try {
             Connection conn  = databaseService.getConnection();
             PreparedStatement select  = conn.prepareStatement("SELECT * FROM Address WHERE AddressID = ? ");
-            select.setInt(1,toDelete.getAddressId());
+            select.setInt(1, toDelete.getAddressId());
 
-            PreparedStatement delete =conn.prepareStatement("DELETE FROM Address WHERE addressID = ?");
-            delete.setInt(1,toDelete.getAddressId());
+            PreparedStatement delete = conn.prepareStatement("DELETE FROM Address WHERE AddressID = ?");
+            delete.setInt(1, toDelete.getAddressId());
 
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
             databaseService.ReleaseConnection(conn);
             return convertResultSet(rs).get(0);
-
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
@@ -61,18 +59,17 @@ public class AddressRepo implements IRepository<Address>{
     @Override
     public Address add(Address toAdd) {
         try {
-            Connection conn  = databaseService.getConnection();
-            PreparedStatement insert  = conn.prepareStatement("INSERT INTO Address VALUES(?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
-            insert.setString(1,toAdd.getAddressLine1());
-            insert.setString(2,toAdd.getAddressLine2());
-            insert.setString(3,toAdd.getAddressLine3());
-            insert.setString(4,toAdd.getPostalCode());
+            Connection conn = databaseService.getConnection();
+            PreparedStatement insert = conn.prepareStatement("INSERT INTO Address VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            insert.setString(1, toAdd.getAddressLine1());
+            insert.setString(2, toAdd.getAddressLine2());
+            insert.setString(3, toAdd.getAddressLine3());
+            insert.setString(4, toAdd.getPostalCode());
 
             insert.executeUpdate();
             toAdd.setAddressId(insert.getGeneratedKeys().getInt(0));
             databaseService.ReleaseConnection(conn);
             return toAdd;
-
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
@@ -83,29 +80,29 @@ public class AddressRepo implements IRepository<Address>{
         List<Address> addresses = new ArrayList<Address>();
 
         while(toConvert.next()){
-        Address temp = new Address();
-        temp.setAddressId(toConvert.getInt(0));
-        temp.setAddressLine1(toConvert.getString(1));
-        temp.setAddressLine2(toConvert.getString(2));
-        temp.setAddressLine3(toConvert.getString(3));
-        temp.setPostalCode(toConvert.getString(4));
-
-        addresses.add(temp);
+            Address address = new Address();
+            address.setAddressId(toConvert.getInt(0));
+            address.setAddressLine1(toConvert.getString(1));
+            address.setAddressLine2(toConvert.getString(2));
+            address.setAddressLine3(toConvert.getString(3));
+            address.setPostalCode(toConvert.getString(4));
+            addresses.add(address);
         }
+
         return addresses;
     }
 
     @Override
-    public Address get(int Id) {
+    public Address get(int id) {
         try {
             Connection conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Address WHERE AddressId = ?");
-            get.setInt(1,Id);
+            get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            Address temp = convertResultSet(rs).get(0);
+            Address address = convertResultSet(rs).get(0);
             databaseService.ReleaseConnection(conn);
-            return temp;
+            return address;
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();

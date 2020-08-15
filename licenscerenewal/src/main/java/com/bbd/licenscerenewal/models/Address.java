@@ -1,11 +1,19 @@
 package com.bbd.licenscerenewal.models;
 
 public class Address{
-    private int AddressId;
+    private int addressId;
     private String addressLine1;
     private String addressLine2;
     private String addressLine3;
     private String postalCode;
+
+    public int getAddressId() { 
+        return addressId; 
+    }
+
+    public void setAddressId(int addressId) { 
+        this.addressId = addressId; 
+    }
 
     public String getAddressLine1() {
         return addressLine1;
@@ -22,10 +30,6 @@ public class Address{
     public void setAddressLine2(String addressLine2){
         this.addressLine2 = addressLine2;
     }
-
-    public int getAddressId() { return AddressId; }
-
-    public void setAddressId(int addressId) { AddressId = addressId; }
 
     public String getAddressLine3() {
         return addressLine3;
