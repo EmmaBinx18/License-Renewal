@@ -15,11 +15,11 @@ import java.util.List;
 @Service
 @Qualifier("DatabasePool")
 public class DatabaseService implements IDataBasePool {
-    private String connectionString = "jdbc:sqlserver://localhost:1433;databaseName=placeholder;integratedSecurity=True;";
+    private String connectionString = "Put connection string here";
     private List<Connection> connectionPool;
     private List<Connection> usedConnections =new ArrayList<Connection>();
     private static int MAX_POOL_SIZE = 100;
-    private static int INITIAL_POOL_SIZE = 10;
+    private static int INITIAL_POOL_SIZE = 1;
 
 
     public DatabaseService(){

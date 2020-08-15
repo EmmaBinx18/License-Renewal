@@ -22,10 +22,10 @@ public class Index {
         try {
             return DBS.getConnection().toString();
         } catch (SQLException e) {
-            e.printStackTrace(); //if you get here then there are no more connections available
-        }finally {
-            return "we got fucked";
+             e.printStackTrace(); //if you get here then there are no more connections available
+            return "We got fucked";
         }
+
     }
 
 
