@@ -37,9 +37,9 @@ class LicenseRenewalController {
     }
 
 
-    @GetMapping("/address")
-    Address getAddress(int Id){
-        return addressRepo.get(Id);
+    @GetMapping("/address/{id}")
+    Address getAddress(@PathVariable("id") int id){
+        return addressRepo.get(id);
     }
 
     //API ENPOINTS TO CREATE

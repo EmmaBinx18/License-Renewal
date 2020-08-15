@@ -80,13 +80,14 @@ public class AddressRepo implements IRepository<Address>{
         List<Address> addresses = new ArrayList<Address>();
 
         while(toConvert.next()){
-            Address address = new Address();
-            address.setAddressId(toConvert.getInt(0));
-            address.setAddressLine1(toConvert.getString(1));
-            address.setAddressLine2(toConvert.getString(2));
-            address.setAddressLine3(toConvert.getString(3));
-            address.setPostalCode(toConvert.getString(4));
-            addresses.add(address);
+        Address temp = new Address();
+        temp.setAddressId(toConvert.getInt(1));
+        temp.setAddressLine1(toConvert.getString(2));
+        temp.setAddressLine2(toConvert.getString(3));
+        temp.setAddressLine3(toConvert.getString(4));
+        temp.setPostalCode(toConvert.getString(5));
+
+        addresses.add(temp);
         }
 
         return addresses;
