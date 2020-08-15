@@ -9,4 +9,5 @@ public interface IRepository<T> {
     public T delete(T toDelete);
     public T add(T toAdd);
     public List<T> convertResultSet(ResultSet toConvert) throws SQLException;
+    public T get(int Id);
 }

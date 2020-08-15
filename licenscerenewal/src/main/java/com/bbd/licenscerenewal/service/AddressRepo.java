@@ -3,11 +3,13 @@ package com.bbd.licenscerenewal.service;
 import com.bbd.licenscerenewal.models.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+@Service
 public class AddressRepo implements IRepository<Address>{
 
     @Autowired
@@ -91,5 +93,23 @@ public class AddressRepo implements IRepository<Address>{
         addresses.add(temp);
         }
         return addresses;
+    }
+
+    @Override
+    public Address get(int Id) {
+        try {
+            Connection conn  = databaseService.getConnection();
+            PreparedStatement get  = conn.prepareStatement("SELECT * FROM Address WHERE AddressId = ?");
+            get.setInt(1,Id);
+
+            ResultSet rs = get.executeQuery();
+            Address temp = convertResultSet(rs).get(0);
+            databaseService.ReleaseConnection(conn);
+            return temp;
+
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return null;
     }
 }

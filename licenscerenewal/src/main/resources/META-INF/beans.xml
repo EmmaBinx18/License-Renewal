@@ -4,6 +4,15 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="DatabasePool" class="com.bbd.licenscerenewal.service.DatabaseService" />
+    <bean id="AddressRepo" class="com.bbd.licenscerenewal.service.AddressRepo"/>
+    <bean id="OwnerRepo" class="com.bbd.licenscerenewal.service.OwnerRepo"/>
+    <bean id="LicenseRenewalHistoryRepo" class="com.bbd.licenscerenewal.service.LicenseRenewalHistoryRepo"/>
+    <bean id="LicenseRepo" class="com.bbd.licenscerenewal.service.LicenseRepo"/>
+    <bean id="OrganisationRepo" class="com.bbd.licenscerenewal.service.OrganisationRepo"/>
+    <bean id="RenewalRepo" class="com.bbd.licenscerenewal.service.RenewalRepo"/>
+    <bean id="VehicleRepo" class="com.bbd.licenscerenewal.service.VehicleRepo"/>
+
+
 
 
 
