@@ -21,7 +21,7 @@ public class OrganisationRepo implements IRepository<Organisation>{
     }
 
     @Override
-    public Organisation delete(Organisation toDelete) {
+    public Organisation delete(int toDelete) {
         return null;
     }
 
@@ -36,7 +36,7 @@ public class OrganisationRepo implements IRepository<Organisation>{
     }
 
     @Override
-    public Organisation get(int Id) {
+    public Organisation getById(int Id) {
         return null;
     }
 }

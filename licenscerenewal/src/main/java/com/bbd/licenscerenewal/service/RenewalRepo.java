@@ -21,7 +21,7 @@ public class RenewalRepo implements IRepository<Renewal>{
     }
 
     @Override
-    public Renewal delete(Renewal toDelete) {
+    public Renewal delete(int id) {
         return null;
     }
 
@@ -36,7 +36,7 @@ public class RenewalRepo implements IRepository<Renewal>{
     }
 
     @Override
-    public Renewal get(int Id) {
+    public Renewal getById(int Id) {
         return null;
     }
 }

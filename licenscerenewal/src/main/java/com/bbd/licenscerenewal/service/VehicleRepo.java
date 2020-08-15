@@ -5,9 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 @Service
 public class VehicleRepo implements IRepository<Vehicle>{
@@ -71,7 +70,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
             insert.setInt(5, toAdd.getVehicleTypeId());
 
             insert.executeUpdate();
-            toAdd.setAddressId(insert.getGeneratedKeys().getInt(0));
+            toAdd.setVehicleId(insert.getGeneratedKeys().getInt(0));
             databaseService.ReleaseConnection(conn);
             return toAdd;
         } catch (SQLException throwable) {
@@ -117,7 +116,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
         return null;
     }
 
-    @Override
+
     public Vehicle getByRegistrationNumber(String registrationNumber) {
         try {
             Connection conn  = databaseService.getConnection();
@@ -135,7 +134,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
         return null;
     }
 
-    @Override
+
     public List<Vehicle> getByMake(String make) {
         try {
             Connection conn  = databaseService.getConnection();

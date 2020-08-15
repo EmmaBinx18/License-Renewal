@@ -21,7 +21,7 @@ public class LicenseRepo implements IRepository<License> {
     }
 
     @Override
-    public License delete(License toDelete) {
+    public License delete(int id) {
         return null;
     }
 
@@ -36,7 +36,7 @@ public class LicenseRepo implements IRepository<License> {
     }
 
     @Override
-    public License get(int Id) {
+    public License getById(int Id) {
         return null;
     }
 }

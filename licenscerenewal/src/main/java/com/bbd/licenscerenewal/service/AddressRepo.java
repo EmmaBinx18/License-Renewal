@@ -94,7 +94,7 @@ public class AddressRepo implements IRepository<Address>{
     }
 
     @Override
-    public Address get(int id) {
+    public Address getById(int id) {
         try {
             Connection conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Address WHERE AddressId = ?");

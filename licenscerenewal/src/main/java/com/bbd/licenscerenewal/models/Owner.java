@@ -146,4 +146,8 @@ public class Owner{
     public void setChosenAddress(String chosenAddress){
         this.chosenAddress = chosenAddress;
     }
+
+    public int getOwnerId() { return OwnerId; }
+
+    public void setOwnerId(int ownerId) { OwnerId = ownerId; }
 }

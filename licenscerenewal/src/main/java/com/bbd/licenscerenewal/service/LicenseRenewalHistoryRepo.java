@@ -20,7 +20,7 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
     }
 
     @Override
-    public LicenseRenewalHistoryRepo delete(LicenseRenewalHistoryRepo toDelete) {
+    public LicenseRenewalHistoryRepo delete(int id) {
         return null;
     }
 
@@ -35,7 +35,7 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
     }
 
     @Override
-    public LicenseRenewalHistoryRepo get(int Id) {
+    public LicenseRenewalHistoryRepo getById(int Id) {
         return null;
     }
 }
