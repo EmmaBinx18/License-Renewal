@@ -1,7 +1,9 @@
 package com.bbd.licenscerenewal.controllers;
 
 import com.bbd.licenscerenewal.models.Vehicle;
+import com.bbd.licenscerenewal.models.VehicleType;
 import com.bbd.licenscerenewal.service.VehicleRepo;
+import com.bbd.licenscerenewal.service.VehicleTypeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,47 +11,62 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/vehicles") 
 class VehicleController {
 
     @Autowired
     VehicleRepo vehicleRepo;
 
-    @GetMapping("/vehicle")
+    @Autowired
+    VehicleTypeRepo vehicleTypeRepo;
+
+    @GetMapping("/")
     public List<Vehicle> getAllLicenses()
     {
         return vehicleRepo.getAll();
     }
 
-    // @GetMapping("/employees/{id}")
-    // Employee one(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public Vehicle getById(@PathVariable int id) {
+        return vehicleRepo.getById(id);
+    }
 
-    //     return repository.findById(id)
-    //     .orElseThrow(() -> new EmployeeNotFoundException(id));
-    // }
+    @GetMapping("/")
+    public Vehicle getByRegistrationNumber(@RequestParam("registrationNumber") String registrationNumber) {
+        return vehicleRepo.getByRegistrationNumber(registrationNumber);
+    }
 
-    //API ENPOINTS TO CREATE
-    //Get license ready for renewal based on dates passed
-    //Get license based on license number
-    //Get license by expiry date
-    //Get license by date issued
-    //Get license by owner
-    //Get licenses for organisation
-    //Get license based on vehicle parameters
-    //Get licenses based on status
-    //Get licenses based on type
-    //Update license and everything that comes with that
+    @GetMapping("/")
+    public List<Vehicle> getByMake(@RequestParam("make") String make) {
+        return vehicleRepo.getByMake(make);
+    }
 
-    //Get all vehicles
-    //Get vehicle based on owner
-    //Get vehicle based on license 
-    //Get vehicle based on vin
-    //Get vehicle based on make
-    //Get vehicle by type
-    //Post register vehicle ???? NOT SURE ABOUT THIS
+    @GetMapping("/")
+    public Vehicle getByVin(@RequestParam("vin") String vin) {
+        return vehicleRepo.getByVin(vin);
+    }
 
-    //Get license renewal history based on license
-    //Get all renewal dates for license
-    //Get fee for license renewal
-    //Post pay for license
+    @GetMapping("/types")
+    public List<VehicleType> getVehicleTypes()
+    {
+        return vehicleTypeRepo.getVehicleTypes();
+    }
 
+    @PostMapping("/")
+    @ResponseBody
+    public Vehicle insert(@RequestBody Vehicle vehicle){
+        return vehicleRepo.add(vehicle);
+    }
+
+    @PutMapping("/")
+    @ResponseBody
+    public Vehicle update(@RequestBody Vehicle vehicle){
+        return vehicleRepo.update(vehicle);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public Vehicle delete(@PathVariable int id) {
+        return vehicleRepo.delete(id);
+    }
 }

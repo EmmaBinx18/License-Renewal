@@ -160,4 +160,20 @@ public class VehicleRepo implements IRepository<Vehicle>{
         }
         return new ArrayList<>();
     }
+
+    public Vehicle getByVin(String vin) {
+        try {
+            Connection conn  = databaseService.getConnection();
+            PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle WHERE VIN = ?");
+            get.setString(1, vin);
+
+            ResultSet rs = get.executeQuery();
+            databaseService.ReleaseConnection(conn);
+            return convertResultSet(rs).get(0);
+
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return null;
+    }
 }
