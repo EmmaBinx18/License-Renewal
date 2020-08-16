@@ -5,5 +5,5 @@ import java.sql.SQLException;
 
 public interface IDataBasePool {
     public Connection getConnection() throws SQLException;
-    public void ReleaseConnection(Connection conn);
+    public void releaseConnection(Connection conn);
 }

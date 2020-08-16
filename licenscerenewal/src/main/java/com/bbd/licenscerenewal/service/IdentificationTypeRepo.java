@@ -24,7 +24,7 @@ public class IdentificationTypeRepo {
             Connection conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM IdentificationType");
             ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
+            databaseService.releaseConnection(conn);
             
             List<IdentificationType> identificationTypes = new ArrayList<>();
             while(rs.next()){

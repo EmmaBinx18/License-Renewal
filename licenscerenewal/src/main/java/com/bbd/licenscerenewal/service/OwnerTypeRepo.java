@@ -1,7 +1,6 @@
 package com.bbd.licenscerenewal.service;
 
 
-import com.bbd.licenscerenewal.models.LicenseStatus;
 import com.bbd.licenscerenewal.models.OwnerType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +22,11 @@ public class OwnerTypeRepo {
     IDataBasePool databaseService;
 
     public List<OwnerType> getOwnerTypes() {
+        Connection conn = null;
         try{
-            Connection conn  = databaseService.getConnection();
+            conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM OwnerType");
             ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
             
             List<OwnerType> ownerTypes = new ArrayList<>();
             while(rs.next()){
@@ -40,6 +39,9 @@ public class OwnerTypeRepo {
             return ownerTypes;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }
+        finally{
+            databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
     }

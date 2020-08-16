@@ -1,7 +1,9 @@
 package com.bbd.licenscerenewal.controllers;
 
+import com.bbd.licenscerenewal.models.Owner;
 import com.bbd.licenscerenewal.models.Vehicle;
 import com.bbd.licenscerenewal.models.VehicleType;
+import com.bbd.licenscerenewal.service.OwnerRepo;
 import com.bbd.licenscerenewal.service.VehicleRepo;
 import com.bbd.licenscerenewal.service.VehicleTypeRepo;
 
@@ -62,4 +64,7 @@ class VehicleController {
     public Vehicle delete(@PathVariable int id) {
         return vehicleRepo.delete(id);
     }
+
+
+
 }

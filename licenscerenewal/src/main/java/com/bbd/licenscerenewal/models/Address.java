@@ -6,6 +6,7 @@ public class Address{
     private String addressLine2;
     private String addressLine3;
     private String postalCode;
+    private int addressTypeId;
 
     public int getAddressId() { 
         return addressId; 
@@ -47,5 +48,7 @@ public class Address{
         this.postalCode = postalCode;
     }
 
+    public int getAddressTypeId() { return addressTypeId; }
 
+    public void setAddressTypeId(int addressTypeId) { this.addressTypeId = addressTypeId; }
 }

@@ -17,28 +17,33 @@ public class AddressRepo implements IRepository<Address>{
 
     @Override
     public Address update(Address toUpdate) {
+        Connection conn = null;
         try {
-            Connection conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE Address SET AddressLine1 = ?,AddressLine2 = ?AddressLine3 = ? ,PostalCode = ? WHERE AddressId = ?");
+             conn = databaseService.getConnection();
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE Address SET AddressLine1 = ?,AddressLine2 = ?AddressLine3 = ? ,PostalCode = ?,AddressTypeId = ?  WHERE AddressId = ?");
             update.setString(1, toUpdate.getAddressLine1());
             update.setString(2, toUpdate.getAddressLine2());
             update.setString(3, toUpdate.getAddressLine3());
             update.setString(4, toUpdate.getPostalCode());
-            update.setInt(5, toUpdate.getAddressId());
+            update.setInt(5,toUpdate.getAddressTypeId());
+            update.setInt(6, toUpdate.getAddressId());
+
 
             update.executeUpdate();
-            databaseService.ReleaseConnection(conn);
             return toUpdate;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return null;
     }
 
     @Override
     public Address delete(int id) {
+        Connection conn = null;
         try {
-            Connection conn  = databaseService.getConnection();
+             conn  = databaseService.getConnection();
             PreparedStatement select  = conn.prepareStatement("SELECT * FROM Address WHERE AddressID = ? ");
             select.setInt(1, id);
 
@@ -47,32 +52,46 @@ public class AddressRepo implements IRepository<Address>{
 
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
-            databaseService.ReleaseConnection(conn);
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return null;
     }
 
     @Override
     public Address add(Address toAdd) {
+        Connection conn = null;
         try {
-            Connection conn = databaseService.getConnection();
-            PreparedStatement insert = conn.prepareStatement("INSERT INTO Address VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            conn = databaseService.getConnection();
+
+            return insert(toAdd,conn);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
+        }
+        return null;
+    }
+
+    public Address insert(Address toAdd, Connection conn) throws SQLException {
+
+
+            PreparedStatement insert = conn.prepareStatement("EXEC pCreateAddress ?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             insert.setString(1, toAdd.getAddressLine1());
             insert.setString(2, toAdd.getAddressLine2());
             insert.setString(3, toAdd.getAddressLine3());
             insert.setString(4, toAdd.getPostalCode());
+            insert.setInt(5,toAdd.getAddressTypeId());
 
             insert.executeUpdate();
             toAdd.setAddressId(insert.getGeneratedKeys().getInt(1));
-            databaseService.ReleaseConnection(conn);
+
             return toAdd;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-        return null;
+
+
     }
 
     @Override
@@ -85,7 +104,9 @@ public class AddressRepo implements IRepository<Address>{
             address.setAddressLine1(toConvert.getString(2));
             address.setAddressLine2(toConvert.getString(3));
             address.setAddressLine3(toConvert.getString(4));
-            address.setPostalCode(toConvert.getString(5));
+            address.setAddressTypeId(toConvert.getInt(5));
+            address.setPostalCode(toConvert.getString(6));
+
             addresses.add(address);
         }
 
@@ -94,18 +115,20 @@ public class AddressRepo implements IRepository<Address>{
 
     @Override
     public Address getById(int id) {
+        Connection conn = null;
         try {
-            Connection conn  = databaseService.getConnection();
+            conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Address WHERE AddressId = ?");
             get.setInt(1, id);
-
             ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
-            return convertResultSet(rs).get(0);
 
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return null;
     }
+
 }

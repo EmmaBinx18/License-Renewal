@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 @Service
 public class VehicleRepo implements IRepository<Vehicle>{
 
@@ -17,10 +15,19 @@ public class VehicleRepo implements IRepository<Vehicle>{
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
+    public Dictionary getParams = new Hashtable();
+
+    public VehicleRepo() {
+        getParams.put("registrationNumber"," AND RegistrationNumber = ?");
+        getParams.put("make", " AND Make = ?");
+        getParams.put("vin", " AND Vin =?");
+    }
+
     @Override
     public Vehicle update(Vehicle toUpdate) {
+        Connection conn = null;
         try {
-            Connection conn = databaseService.getConnection();
+            conn = databaseService.getConnection();
             PreparedStatement update = conn.prepareStatement("UPDATE TABLE Vehicle SET RegistrationNumber = ?,VIN = ?,Make = ? ,Model = ?, Odo = ?, VehicleTypeId = ? WHERE VehicleId = ?");
             update.setString(1, toUpdate.getRegistrationNumber());
             update.setString(2, toUpdate.getVin());
@@ -29,20 +36,22 @@ public class VehicleRepo implements IRepository<Vehicle>{
             update.setInt(5, toUpdate.getOdometer());
             update.setInt(6, toUpdate.getVehicleTypeId());
             update.setInt(7, toUpdate.getVehicleId());
-
             update.executeUpdate();
-            databaseService.ReleaseConnection(conn);
+
             return toUpdate;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return null;
     }
 
     @Override
     public Vehicle delete(int id) {
+        Connection conn = null;
         try {
-            Connection conn  = databaseService.getConnection();
+            conn  = databaseService.getConnection();
             PreparedStatement select  = conn.prepareStatement("SELECT * FROM Vehicle WHERE VehicleId = ? ");
             select.setInt(1, id);
 
@@ -51,18 +60,21 @@ public class VehicleRepo implements IRepository<Vehicle>{
 
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
-            databaseService.ReleaseConnection(conn);
+
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return null;
     }
 
     @Override
     public Vehicle add(Vehicle toAdd) {
+        Connection conn = null;
         try {
-            Connection conn  = databaseService.getConnection();
+            conn  = databaseService.getConnection();
             PreparedStatement insert  = conn.prepareStatement("INSERT INTO Vehicle VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             insert.setString(1, toAdd.getRegistrationNumber());
             insert.setString(2, toAdd.getVin());
@@ -73,10 +85,12 @@ public class VehicleRepo implements IRepository<Vehicle>{
 
             insert.executeUpdate();
             toAdd.setVehicleId(insert.getGeneratedKeys().getInt(1));
-            databaseService.ReleaseConnection(conn);
+
             return toAdd;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return null;
     }
@@ -101,70 +115,61 @@ public class VehicleRepo implements IRepository<Vehicle>{
     }
 
     public List<Vehicle> getAll() {
+        Connection conn = null;
         try {
-            Connection conn  = databaseService.getConnection();
+            conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle");
             ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
             return convertResultSet(rs);
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
     }
 
     @Override
     public Vehicle getById(int id) {
+        Connection conn = null;
         try {
-            Connection conn  = databaseService.getConnection();
+            conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle WHERE VehicleId = ?");
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
             return convertResultSet(rs).get(0);
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return null;
     }
 
     public <T> List<Vehicle> getByQueryParams(Set<Map.Entry<String,T>> params) {
+        Connection conn = null;
         try {
-            Connection conn  = databaseService.getConnection();
-            String query = "SELECT * FROM Vehicle WHERE 1=1";
-            params.forEach(param -> {
-                if(param.getKey().equals("registrationNumber")){
-                    query += " AND RegistrationNumber = ?";
+                conn  = databaseService.getConnection();
+                String query = "SELECT * FROM Vehicle WHERE 1=1 ";
+                for (Map.Entry<String,T> param: params) {
+                    query += getParams.get(param.getKey());
                 }
-                else if(param.getKey().equals("make")){
-                    query += " AND Make = ?";
-                }
-                else if(param.getKey().equals("vin")){
-                    query += " AND VIN = ?";
-                }
-            });
 
-            PreparedStatement get  = conn.prepareStatement(query);
-            int index = 1;
-            params.forEach(param -> {
-                if(param.getValue() instanceof String){
-                    get.setString(index, param.getValue());
+                PreparedStatement get  = conn.prepareStatement(query);
+                int index = 1;
+                for (Map.Entry<String,T> param: params) {
+                    get.setObject(index,param.getValue());
                 }
-                else{
-                    get.setInt(index, param.getValue());
-                }
-                
-                index += 1;
-            });
 
-            ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
-            return convertResultSet(rs);
+                ResultSet rs = get.executeQuery();
+                return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
     }

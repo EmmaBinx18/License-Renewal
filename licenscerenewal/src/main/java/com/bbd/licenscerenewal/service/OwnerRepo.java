@@ -1,5 +1,6 @@
 package com.bbd.licenscerenewal.service;
 
+import com.bbd.licenscerenewal.models.Address;
 import com.bbd.licenscerenewal.models.Owner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,68 +24,152 @@ public class OwnerRepo implements IRepository<Owner>{
 
     @Override
     public Owner update(Owner toUpdate) {
-        // try {
-        //     Connection conn = databaseService.getConnection();
-        //     PreparedStatement update = conn.prepareStatement("");
-        //     update.setString(1, "put shit here");
+         try {
+             Connection conn = databaseService.getConnection();
+             PreparedStatement update = conn.prepareStatement("UPDATE [dbo].[Owner]\n" +
+                     "   SET [IdentificationTypeId] = ?\n" +
+                     "      ,[IdNumber] =? \n" +
+                     "      ,[ForeignIdCountry] = ?\n" +
+                     "      ,[SurnameOrganisationName] = ?\n" +
+                     "      ,[Initials] = ?\n" +
+                     "      ,[FirstName] = ?\n" +
+                     "      ,[MiddleNames] = ?\n" +
+                     "      ,[EmailAddress] = ?\n" +
+                     "      ,[HomeTel] = ?\n" +
+                     "      ,[WorkTel] = ?\n" +
+                     "      ,[CellphoneNumber] = ?\n" +
+                     "      ,[FaxNumber] = ?\n" +
+                     "      ,[PostalAddressId] = ?\n" +
+                     "      ,[StreetAddressId] = ?\n" +
+                     "      ,[PrefferedAddressType] = ?\n" +
+                     "      ,[OrganisationId] = ?\n" +
+                     " WHERE OwnerId = ?");
+
+             update.setInt(1, toUpdate.getIdType());
+             update.setString(2,toUpdate.getIdNumber());
+             update.setString(3,toUpdate.getCountryOfIssue());
+             update.setString(4,toUpdate.getSurname());
+             update.setString(5,toUpdate.getInitials());
+             update.setString(6,toUpdate.getFirstName());
+             update.setString(7,toUpdate.getMiddleName());
+             update.setString(8,toUpdate.getEmailAddress());
+             update.setString(9, toUpdate.getHomeTel());
+             update.setString(10, toUpdate.getWorkTel());
+             update.setString(11, toUpdate.getCellphoneNumber());
+             update.setString(12, toUpdate.getFaxNumber());
+             update.setInt(13,toUpdate.getPostalAddress().getAddressId());
+             update.setInt(14,toUpdate.getStreetAddress().getAddressId());
+             update.setInt(15,toUpdate.getChosenAddress());
+             update.setInt(16,toUpdate.getOrganisationId());
 
 
-        //     update.executeUpdate();
-        //     databaseService.ReleaseConnection(conn);
-        //     return toUpdate;
-        // } catch (SQLException throwable) {
-        //     throwable.printStackTrace();
-        // }
+             update.executeUpdate();
+             databaseService.releaseConnection(conn);
+             return toUpdate;
+         } catch (SQLException throwable) {
+             throwable.printStackTrace();
+         }
         return null;
     }
 
     @Override
     public Owner delete(int id) {
-        // try {
-        //     Connection conn  = databaseService.getConnection();
-        //     PreparedStatement select  = conn.prepareStatement("");
-        //     select.setInt(1, id);
+        Connection conn = null;
+         try {
+             conn  = databaseService.getConnection();
+             Owner removed = getById(id);
 
-        //     PreparedStatement delete = conn.prepareStatement("");
-        //     delete.setInt(1, id);
+             PreparedStatement delete = conn.prepareStatement("DELETE FROM Owner WHERE OwnerId = ?");
+             delete.setInt(1, id);
+             delete.executeQuery();
 
-        //     ResultSet rs = select.executeQuery();
-        //     delete.executeQuery();
-        //     databaseService.ReleaseConnection(conn);
-        //     return convertResultSet(rs).get(0);
-        // } catch (SQLException throwable) {
-        //     throwable.printStackTrace();
-        // }
+             return removed;
+         } catch (SQLException throwable) {
+             throwable.printStackTrace();
+         }finally{
+             databaseService.releaseConnection(conn);
+         }
         return null;
     }
 
+
+    public Owner addOwnerAndAddresses(Owner toAdd) {
+        Connection conn = null;
+         try {
+             conn = databaseService.getConnection();
+             conn.setAutoCommit(false);
+             Address postalAddress = addressRepo.insert(toAdd.getPostalAddress(),conn);
+             Address streetAddress = addressRepo.insert(toAdd.getStreetAddress(),conn);
+             toAdd = addOnlyOwner(toAdd,conn);
+             conn.commit();
+
+
+             toAdd.setStreetAddress(streetAddress);
+             toAdd.setPostalAddress(postalAddress);
+
+             return toAdd;
+         } catch (SQLException throwable) {
+             throwable.printStackTrace();
+         }finally{
+             databaseService.releaseConnection(conn);
+         }
+        return null;
+    }
     @Override
-    public Owner add(Owner toAdd) {
-        // try {
-        //     Connection conn = databaseService.getConnection();
-        //     PreparedStatement insert = conn.prepareStatement("", Statement.RETURN_GENERATED_KEYS);
-        //     insert.setString(1, "Put shit here");
+    public Owner add(Owner toAdd){
+        Connection conn = null;
+        try {
+            conn = databaseService.getConnection();
+            return addOnlyOwner(toAdd,conn);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
+        }
+        return null;
+    }
 
+    private Owner addOnlyOwner(Owner toAdd,Connection conn){
 
-        //     insert.executeUpdate();
-        //     toAdd.setOwnerId(insert.getGeneratedKeys().getInt(0));
-        //     databaseService.ReleaseConnection(conn);
-        //     return toAdd;
-        // } catch (SQLException throwable) {
-        //     throwable.printStackTrace();
-        // }
+        try {
+            PreparedStatement insert = conn.prepareStatement("EXEC pCreateOwner ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?");
+            insert.setInt(1, toAdd.getIdType());
+            insert.setString(2,toAdd.getIdNumber());
+            insert.setString(3,toAdd.getCountryOfIssue());
+            insert.setString(4,toAdd.getSurname());
+            insert.setString(5,toAdd.getInitials());
+            insert.setString(6,toAdd.getFirstName());
+            insert.setString(7,toAdd.getMiddleName());
+            insert.setString(8,toAdd.getEmailAddress());
+            insert.setString(9, toAdd.getHomeTel());
+            insert.setString(10, toAdd.getWorkTel());
+            insert.setString(11, toAdd.getCellphoneNumber());
+            insert.setString(12, toAdd.getFaxNumber());
+            insert.setInt(13,toAdd.getPostalAddress().getAddressId());
+            insert.setInt(14,toAdd.getStreetAddress().getAddressId());
+            insert.setInt(15,toAdd.getChosenAddress());
+            insert.setInt(16,toAdd.getOrganisationId());
+            insert.executeUpdate();
+
+            toAdd.setOwnerId(insert.getGeneratedKeys().getInt(0));
+            return toAdd;
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
         return null;
     }
 
     @Override
     public List<Owner> convertResultSet(ResultSet toConvert) throws SQLException {
         List<Owner> owners = new ArrayList<Owner>();
+
         while(toConvert.next())
         {
+
             Owner temp = new Owner();
             temp.setOwnerId(toConvert.getInt(1));
             temp.setIdNumber(toConvert.getString(2));
-            temp.setIdType(toConvert.getString(3));
+            temp.setIdType(toConvert.getInt(3));
             temp.setCountryOfIssue(toConvert.getString(4));
             temp.setOrganisationName(toConvert.getString(5));
             temp.setSurname(toConvert.getString(6));
@@ -98,7 +183,8 @@ public class OwnerRepo implements IRepository<Owner>{
             temp.setFaxNumber(toConvert.getString(14));
             temp.setPostalAddress(addressRepo.getById(toConvert.getInt(15)));
             temp.setStreetAddress(addressRepo.getById(toConvert.getInt(16)));
-            temp.setChosenAddress(toConvert.getString(17));
+            temp.setChosenAddress(toConvert.getInt(17));
+            temp.setOrganisationId(toConvert.getInt(18));
 
             owners.add(temp);
         }
@@ -107,19 +193,24 @@ public class OwnerRepo implements IRepository<Owner>{
 
     @Override
     public Owner getById(int id) {
-        // try {
-        //     Connection conn  = databaseService.getConnection();
-        //     PreparedStatement get  = conn.prepareStatement("");
-        //     get.setInt(1, id);
+        Connection conn = null;
+         try {
+             conn  = databaseService.getConnection();
+             PreparedStatement get  = conn.prepareStatement("SELECT OwnerId,IdNumber,IdentificationTypeId,ForeignIdCountry,SurnameOrganisationName, SurnameOrganisationName,Initials,\n" +
+                     "FirstName,MiddleNames,EmailAddress,HomeTel,WorkTel,CellphoneNumber,FaxNumber,PostalAddressId,StreetAddressId, PrefferedAddressType,OrganisationId FROM Owner\n" +
+                     "WHERE  OwnerId = ?");
+             get.setInt(1, id);
 
-        //     ResultSet rs = get.executeQuery();
-        //     Owner owner = convertResultSet(rs).get(0);
-        //     databaseService.ReleaseConnection(conn);
-        //     return owner;
+             ResultSet rs = get.executeQuery();
+             Owner owner = convertResultSet(rs).get(0);
 
-        // } catch (SQLException throwable) {
-        //     throwable.printStackTrace();
-        // }
+             return owner;
+
+         } catch (SQLException throwable) {
+             throwable.printStackTrace();
+         }finally{
+             databaseService.releaseConnection(conn);
+         }
         return null;
     }
 }

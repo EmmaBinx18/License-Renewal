@@ -20,11 +20,12 @@ public class VehicleTypeRepo{
     IDataBasePool databaseService;
 
     public List<VehicleType> getVehicleTypes() {
+        Connection conn = null;
         try{
-            Connection conn  = databaseService.getConnection();
+            conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM VehicleType");
             ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
+
             
             List<VehicleType> vehicleTypes = new ArrayList<>();
             while(rs.next()){
@@ -37,6 +38,8 @@ public class VehicleTypeRepo{
             return vehicleTypes;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
     }

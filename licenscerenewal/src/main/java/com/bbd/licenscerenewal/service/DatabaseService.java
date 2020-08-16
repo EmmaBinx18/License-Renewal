@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 @Qualifier("DatabasePool")
 public class DatabaseService implements IDataBasePool {
-    private String connectionString = "";
+    private String connectionString = "jdbc:sqlserver://license-renewal.database.windows.net;databaseName=production;user=grad-admin;password=Apple@jane56";
     private List<Connection> connectionPool;
     private List<Connection> usedConnections = new ArrayList<Connection>();
     private static int MAX_POOL_SIZE = 100;
@@ -45,9 +45,11 @@ public class DatabaseService implements IDataBasePool {
     }
 
     @Override
-    public void ReleaseConnection(Connection conn) {
-        connectionPool.add(conn);
-        usedConnections.remove(conn);
+    public void releaseConnection(Connection conn) {
+        if(conn != null) {
+            connectionPool.add(conn);
+            usedConnections.remove(conn);
+        }
     }
 
     private Connection createConnection() {

@@ -21,11 +21,11 @@ public class LicenseStatusRepo {
     IDataBasePool databaseService;
 
     public List<LicenseStatus> getLicenseStatuses() {
+        Connection conn = null;
         try{
-            Connection conn  = databaseService.getConnection();
+            conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM LicenseStatus");
             ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
             
             List<LicenseStatus> licenseStatuses = new ArrayList<>();
             while(rs.next()){
@@ -38,6 +38,8 @@ public class LicenseStatusRepo {
             return licenseStatuses;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        }finally{
+            databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
     }

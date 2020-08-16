@@ -3,7 +3,7 @@ package com.bbd.licenscerenewal.models;
 public class Owner{
     private int ownerId;
     private String idNumber;
-    private String idType;
+    private int idType;
     private String countryOfIssue;
     private String organisationName;
     private String surname;
@@ -17,7 +17,8 @@ public class Owner{
     private String faxNumber;
     private Address postalAddress;
     private Address streetAddress;
-    private String chosenAddress;
+    private int chosenAddress;
+    private int organisationId;
 
     public String getIdNumber() {
         return idNumber;
@@ -27,11 +28,11 @@ public class Owner{
         this.idNumber = idNumber;
     }
 
-    public String getIdType() {
+    public int getIdType() {
         return idType;
     }
 
-    public void setIdType(String idType){
+    public void setIdType(int idType){
         this.idType = idType;
     }
 
@@ -139,11 +140,11 @@ public class Owner{
         this.streetAddress = streetAddress;
     }
 
-    public String getChosenAddress() {
+    public int getChosenAddress() {
         return chosenAddress;
     }
 
-    public void setChosenAddress(String chosenAddress){
+    public void setChosenAddress(int chosenAddress){
         this.chosenAddress = chosenAddress;
     }
 
@@ -154,4 +155,8 @@ public class Owner{
     public void setOwnerId(int ownerId) { 
         this.ownerId = ownerId; 
     }
+
+    public int getOrganisationId() { return organisationId; }
+
+    public void setOrganisationId(int organisationId) { this.organisationId = organisationId; }
 }
