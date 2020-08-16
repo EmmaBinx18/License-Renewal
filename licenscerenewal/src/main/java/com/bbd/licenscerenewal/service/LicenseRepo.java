@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 @Service
 public class LicenseRepo implements IRepository<License> {
 
@@ -31,6 +33,46 @@ public class LicenseRepo implements IRepository<License> {
             update.executeUpdate();
             databaseService.ReleaseConnection(conn);
             return toUpdate;
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return null;
+    }
+
+    public License updateExpiryDate(int id, Date expiryDate) {
+        try {
+            Connection conn = databaseService.getConnection();
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET ExpiryDate = ? WHERE LicenseId = ?");
+            update.setDate(1, expiryDate);
+            update.setInt(2, id);
+
+            update.executeUpdate();
+
+            PreparedStatement select  = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ? ");
+            select.setInt(1, id);
+            ResultSet rs = select.executeQuery();
+            databaseService.ReleaseConnection(conn);
+            return convertResultSet(rs).get(0);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return null;
+    }
+
+    public License updateStatus(int id, int licenseStatusId) {
+        try {
+            Connection conn = databaseService.getConnection();
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET LicenseStatusId = ? WHERE LicenseId = ?");
+            update.setInt(1, licenseStatusId);
+            update.setInt(2, id);
+
+            update.executeUpdate();
+
+            PreparedStatement select  = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ? ");
+            select.setInt(1, id);
+            ResultSet rs = select.executeQuery();
+            databaseService.ReleaseConnection(conn);
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
@@ -106,7 +148,6 @@ public class LicenseRepo implements IRepository<License> {
             ResultSet rs = get.executeQuery();
             databaseService.ReleaseConnection(conn);
             return convertResultSet(rs);
-
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
@@ -123,10 +164,14 @@ public class LicenseRepo implements IRepository<License> {
             ResultSet rs = get.executeQuery();
             databaseService.ReleaseConnection(conn);
             return convertResultSet(rs).get(0);
-
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
         return null;
+    }
+
+    public <T> List<License> getByQueryParams(Set<Map.Entry<String,T>> params) {
+        //NEED TO FIX THIS TO DO THE RIGHT THING
+        return new ArrayList<>();
     }
 }

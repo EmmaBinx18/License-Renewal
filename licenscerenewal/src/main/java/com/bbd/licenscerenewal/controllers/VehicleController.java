@@ -9,9 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
-@RequestMapping("/vehicles") 
 class VehicleController {
 
     @Autowired
@@ -20,51 +21,43 @@ class VehicleController {
     @Autowired
     VehicleTypeRepo vehicleTypeRepo;
 
-    @GetMapping("/")
-    public List<Vehicle> getAllLicenses()
+    @GetMapping("/vehicles")
+    @ResponseBody
+    public <T> List<Vehicle> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams)
     {
-        return vehicleRepo.getAll();
+        Set<Map.Entry<String,T>> params = allParams.entrySet();
+        if(params.isEmpty()){
+            return vehicleRepo.getAll();
+        }
+        else{
+            return vehicleRepo.getByQueryParams(params);
+        }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/vehicles/{id}")
     public Vehicle getById(@PathVariable int id) {
         return vehicleRepo.getById(id);
     }
 
-    @GetMapping("/")
-    public Vehicle getByRegistrationNumber(@RequestParam("registrationNumber") String registrationNumber) {
-        return vehicleRepo.getByRegistrationNumber(registrationNumber);
-    }
-
-    @GetMapping("/")
-    public List<Vehicle> getByMake(@RequestParam("make") String make) {
-        return vehicleRepo.getByMake(make);
-    }
-
-    @GetMapping("/")
-    public Vehicle getByVin(@RequestParam("vin") String vin) {
-        return vehicleRepo.getByVin(vin);
-    }
-
-    @GetMapping("/types")
+    @GetMapping("/vehicles/types")
     public List<VehicleType> getVehicleTypes()
     {
         return vehicleTypeRepo.getVehicleTypes();
     }
 
-    @PostMapping("/")
+    @PostMapping("/vehicles")
     @ResponseBody
     public Vehicle insert(@RequestBody Vehicle vehicle){
         return vehicleRepo.add(vehicle);
     }
 
-    @PutMapping("/")
+    @PutMapping("/vehicles")
     @ResponseBody
     public Vehicle update(@RequestBody Vehicle vehicle){
         return vehicleRepo.update(vehicle);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/vehicles/{id}")
     @ResponseBody
     public Vehicle delete(@PathVariable int id) {
         return vehicleRepo.delete(id);

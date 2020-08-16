@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 @Service
 public class VehicleRepo implements IRepository<Vehicle>{
 
@@ -129,51 +131,41 @@ public class VehicleRepo implements IRepository<Vehicle>{
         return null;
     }
 
-    public Vehicle getByRegistrationNumber(String registrationNumber) {
+    public <T> List<Vehicle> getByQueryParams(Set<Map.Entry<String,T>> params) {
         try {
             Connection conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle WHERE RegistrationNumber = ?");
-            get.setString(1, registrationNumber);
+            String query = "SELECT * FROM Vehicle WHERE 1=1";
+            params.forEach(param -> {
+                if(param.getKey().equals("registrationNumber")){
+                    query += " AND RegistrationNumber = ?";
+                }
+                else if(param.getKey().equals("make")){
+                    query += " AND Make = ?";
+                }
+                else if(param.getKey().equals("vin")){
+                    query += " AND VIN = ?";
+                }
+            });
 
-            ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
-            return convertResultSet(rs).get(0);
-
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<Vehicle> getByMake(String make) {
-        try {
-            Connection conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle WHERE Make = ?");
-            get.setString(1, make);
+            PreparedStatement get  = conn.prepareStatement(query);
+            int index = 1;
+            params.forEach(param -> {
+                if(param.getValue() instanceof String){
+                    get.setString(index, param.getValue());
+                }
+                else{
+                    get.setInt(index, param.getValue());
+                }
+                
+                index += 1;
+            });
 
             ResultSet rs = get.executeQuery();
             databaseService.ReleaseConnection(conn);
             return convertResultSet(rs);
-
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
         return new ArrayList<>();
-    }
-
-    public Vehicle getByVin(String vin) {
-        try {
-            Connection conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle WHERE VIN = ?");
-            get.setString(1, vin);
-
-            ResultSet rs = get.executeQuery();
-            databaseService.ReleaseConnection(conn);
-            return convertResultSet(rs).get(0);
-
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-        return null;
     }
 }
