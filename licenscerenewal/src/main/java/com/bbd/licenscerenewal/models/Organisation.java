@@ -8,7 +8,7 @@ public class Organisation{
     private String initials;
     private String ownerType;
 
-    public int getIdType() {
+    public String getIdType() {
         return idType;
     }
 
