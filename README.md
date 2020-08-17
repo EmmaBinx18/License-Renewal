@@ -33,7 +33,9 @@ Swaggar Documentation:
 ```json
 POST /authenticate HTTP/1.1
 Accept: application/json
+Date: Mon, 17 Aug 2020 09:32:01 GMT
 Content-Type: application/json
+Server: Heroku-server
 {
     "username": "foo",
     "password": "1234567" 
@@ -42,7 +44,10 @@ Content-Type: application/json
 **Successful Response:**
 ```json
 HTTP/1.1 200 OK
+Date: Mon, 17 Aug 2020 09:32:12 GMT
 Content-Type: application/json
+Content-Length: 113
+Server: Heroku-server
 {
    "jwttoken": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }
