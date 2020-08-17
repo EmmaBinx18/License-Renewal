@@ -49,7 +49,7 @@ Content-Type: application/json
 ```
 
 ## Additional Information
-### Helpful References
+### Helpful References:
 
 **Identification Types:**
 ```
