@@ -1,8 +1,10 @@
 package com.bbd.licenscerenewal.controllers;
 
 import com.bbd.licenscerenewal.models.License;
+import com.bbd.licenscerenewal.models.LicenseRenewalHistory;
 import com.bbd.licenscerenewal.models.LicenseStatus;
 import com.bbd.licenscerenewal.models.LicenseType;
+import com.bbd.licenscerenewal.services.LicenseRenewalHistoryRepo;
 import com.bbd.licenscerenewal.services.LicenseRepo;
 import com.bbd.licenscerenewal.services.LicenseStatusRepo;
 import com.bbd.licenscerenewal.services.LicenseTypeRepo;
@@ -26,10 +28,12 @@ class LicenseController {
     @Autowired
     LicenseTypeRepo licenseTypeRepo;
 
+    @Autowired
+    LicenseRenewalHistoryRepo licenseRenwalHistoryRepo;
+
     @GetMapping("/licenses")
     @ResponseBody
-    public <T> List<License> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams)
-    {
+    public <T> List<License> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
             return licenseRepo.getAll();
@@ -46,14 +50,12 @@ class LicenseController {
     }
 
     @GetMapping("/licenses/statuses")
-    public List<LicenseStatus> getLicenseStatuses()
-    {
+    public List<LicenseStatus> getLicenseStatuses() {
         return licenseStatusRepo.getLicenseStatuses();
     }
 
     @GetMapping("/licenses/types")
-    public List<LicenseType> getLicenseTypes()
-    {
+    public List<LicenseType> getLicenseTypes() {
         return licenseTypeRepo.getLicenseTypes();
     }
 
@@ -73,5 +75,17 @@ class LicenseController {
     @ResponseBody
     public License delete(@PathVariable int id) {
         return licenseRepo.delete(id);
+    }
+
+    // @PostMapping("/licenses/renewal/{id}")
+    // @ResponseBody
+    // public License renewLicense(@PathVariable int id) {
+    //     return licenseRepo.getById(id);
+    // }
+
+    @GetMapping("/licenses/renewal/{id}/history")
+    @ResponseBody
+    public LicenseRenewalHistory getRenewalHistory(@PathVariable int id) {
+        return licenseRenwalHistoryRepo.getById(id);
     }
 }
