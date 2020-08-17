@@ -1,17 +1,12 @@
 package com.bbd.licenscerenewal.service;
 
 import com.bbd.licenscerenewal.models.Organisation;
-import com.bbd.licenscerenewal.models.Owner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 @Service
 public class OrganisationRepo implements IRepository<Organisation>{
 
@@ -41,13 +36,11 @@ public class OrganisationRepo implements IRepository<Organisation>{
             add.setInt(7,toUpdate.getId());
 
             ResultSet rs = add.executeQuery();
-            Organisation organisation = convertResultSet(rs).get(0);
-
-            return organisation;
+            return convertResultSet(rs).get(0);
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -68,7 +61,7 @@ public class OrganisationRepo implements IRepository<Organisation>{
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -88,13 +81,10 @@ public class OrganisationRepo implements IRepository<Organisation>{
             add.setInt(6,toAdd.getOwnerType());
 
             ResultSet rs = add.executeQuery();
-            Organisation organisation = convertResultSet(rs).get(0);
-
-            return organisation;
-
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -102,11 +92,10 @@ public class OrganisationRepo implements IRepository<Organisation>{
 
     @Override
     public List<Organisation> convertResultSet(ResultSet toConvert) throws SQLException {
-        List<Organisation> owners = new ArrayList<Organisation>();
+        List<Organisation> owners = new ArrayList<>();
 
         while(toConvert.next())
         {
-
             Organisation temp = new Organisation();
             temp.setId(toConvert.getInt(1));
             temp.setIdType(toConvert.getInt(2));
@@ -118,8 +107,8 @@ public class OrganisationRepo implements IRepository<Organisation>{
 
             owners.add(temp);
         }
-        return owners;
 
+        return owners;
     }
 
     @Override
@@ -131,13 +120,10 @@ public class OrganisationRepo implements IRepository<Organisation>{
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            Organisation organisation = convertResultSet(rs).get(0);
-
-            return organisation;
-
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;

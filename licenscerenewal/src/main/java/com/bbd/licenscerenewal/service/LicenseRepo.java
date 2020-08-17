@@ -6,16 +6,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.sql.Date;
+import java.util.*;
 @Service
 public class LicenseRepo implements IRepository<License> {
 
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
+
+    public final Dictionary<String,String> getParams = new Hashtable();
+
+    public LicenseRepo() {
+        getParams.put("owner"," AND OwnerId = ?");
+        getParams.put("vehicle", " AND VehicleId = ?");
+        getParams.put("expiryDate", " AND ExpiryDate =?");
+        getParams.put("status", " AND LicenseStatusId =?");
+        getParams.put("type", " AND LicenseTypeId =?");
+    }
 
     @Override
     public License update(License toUpdate) {
@@ -35,7 +43,7 @@ public class LicenseRepo implements IRepository<License> {
             return toUpdate;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -58,7 +66,7 @@ public class LicenseRepo implements IRepository<License> {
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -80,7 +88,7 @@ public class LicenseRepo implements IRepository<License> {
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -102,7 +110,7 @@ public class LicenseRepo implements IRepository<License> {
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -127,7 +135,7 @@ public class LicenseRepo implements IRepository<License> {
             return toAdd;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -161,7 +169,7 @@ public class LicenseRepo implements IRepository<License> {
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
@@ -180,14 +188,34 @@ public class LicenseRepo implements IRepository<License> {
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
     }
 
     public <T> List<License> getByQueryParams(Set<Map.Entry<String,T>> params) {
-        //NEED TO FIX THIS TO DO THE RIGHT THING
+        Connection conn = null;
+        try {
+                conn  = databaseService.getConnection();
+                String query = "SELECT * FROM License WHERE 1=1 ";
+                for (Map.Entry<String,T> param: params) {
+                    query += getParams.get(param.getKey());
+                }
+
+                PreparedStatement get  = conn.prepareStatement(query);
+                int index = 1;
+                for (Map.Entry<String,T> param: params) {
+                    get.setObject(index,param.getValue());
+                }
+
+                ResultSet rs = get.executeQuery();
+                return convertResultSet(rs);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
         return new ArrayList<>();
     }
 }

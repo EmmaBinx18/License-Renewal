@@ -5,12 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 
 @Service
 public class VehicleTypeRepo{
@@ -25,7 +21,6 @@ public class VehicleTypeRepo{
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM VehicleType");
             ResultSet rs = get.executeQuery();
-
             
             List<VehicleType> vehicleTypes = new ArrayList<>();
             while(rs.next()){
@@ -34,11 +29,10 @@ public class VehicleTypeRepo{
                 vehicleType.setName(rs.getString(2));
                 vehicleTypes.add(vehicleType);
             }
-
             return vehicleTypes;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();

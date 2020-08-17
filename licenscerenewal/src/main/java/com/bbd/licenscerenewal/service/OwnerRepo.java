@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 @Service
 public class OwnerRepo implements IRepository<Owner>{
 
@@ -24,95 +23,96 @@ public class OwnerRepo implements IRepository<Owner>{
 
     @Override
     public Owner update(Owner toUpdate) {
+        Connection conn = null;
          try {
-             Connection conn = databaseService.getConnection();
-             PreparedStatement update = conn.prepareStatement("UPDATE [dbo].[Owner]\n" +
-                     "   SET [IdentificationTypeId] = ?\n" +
-                     "      ,[IdNumber] =? \n" +
-                     "      ,[ForeignIdCountry] = ?\n" +
-                     "      ,[SurnameOrganisationName] = ?\n" +
-                     "      ,[Initials] = ?\n" +
-                     "      ,[FirstName] = ?\n" +
-                     "      ,[MiddleNames] = ?\n" +
-                     "      ,[EmailAddress] = ?\n" +
-                     "      ,[HomeTel] = ?\n" +
-                     "      ,[WorkTel] = ?\n" +
-                     "      ,[CellphoneNumber] = ?\n" +
-                     "      ,[FaxNumber] = ?\n" +
-                     "      ,[PostalAddressId] = ?\n" +
-                     "      ,[StreetAddressId] = ?\n" +
-                     "      ,[PrefferedAddressType] = ?\n" +
-                     "      ,[OrganisationId] = ?\n" +
-                     " WHERE OwnerId = ?");
+            conn = databaseService.getConnection();
+            PreparedStatement update = conn.prepareStatement("UPDATE [dbo].[Owner]\n" +
+                    "   SET [IdentificationTypeId] = ?\n" +
+                    "      ,[IdNumber] =? \n" +
+                    "      ,[ForeignIdCountry] = ?\n" +
+                    "      ,[SurnameOrganisationName] = ?\n" +
+                    "      ,[Initials] = ?\n" +
+                    "      ,[FirstName] = ?\n" +
+                    "      ,[MiddleNames] = ?\n" +
+                    "      ,[EmailAddress] = ?\n" +
+                    "      ,[HomeTel] = ?\n" +
+                    "      ,[WorkTel] = ?\n" +
+                    "      ,[CellphoneNumber] = ?\n" +
+                    "      ,[FaxNumber] = ?\n" +
+                    "      ,[PostalAddressId] = ?\n" +
+                    "      ,[StreetAddressId] = ?\n" +
+                    "      ,[PrefferedAddressType] = ?\n" +
+                    "      ,[OrganisationId] = ?\n" +
+                    " WHERE OwnerId = ?");
 
-             update.setInt(1, toUpdate.getIdType());
-             update.setString(2,toUpdate.getIdNumber());
-             update.setString(3,toUpdate.getCountryOfIssue());
-             update.setString(4,toUpdate.getSurname());
-             update.setString(5,toUpdate.getInitials());
-             update.setString(6,toUpdate.getFirstName());
-             update.setString(7,toUpdate.getMiddleName());
-             update.setString(8,toUpdate.getEmailAddress());
-             update.setString(9, toUpdate.getHomeTel());
-             update.setString(10, toUpdate.getWorkTel());
-             update.setString(11, toUpdate.getCellphoneNumber());
-             update.setString(12, toUpdate.getFaxNumber());
-             update.setInt(13,toUpdate.getPostalAddress().getAddressId());
-             update.setInt(14,toUpdate.getStreetAddress().getAddressId());
-             update.setInt(15,toUpdate.getChosenAddress());
-             update.setInt(16,toUpdate.getOrganisationId());
+            update.setInt(1, toUpdate.getIdType());
+            update.setString(2,toUpdate.getIdNumber());
+            update.setString(3,toUpdate.getCountryOfIssue());
+            update.setString(4,toUpdate.getSurname());
+            update.setString(5,toUpdate.getInitials());
+            update.setString(6,toUpdate.getFirstName());
+            update.setString(7,toUpdate.getMiddleName());
+            update.setString(8,toUpdate.getEmailAddress());
+            update.setString(9, toUpdate.getHomeTel());
+            update.setString(10, toUpdate.getWorkTel());
+            update.setString(11, toUpdate.getCellphoneNumber());
+            update.setString(12, toUpdate.getFaxNumber());
+            update.setInt(13,toUpdate.getPostalAddress().getAddressId());
+            update.setInt(14,toUpdate.getStreetAddress().getAddressId());
+            update.setInt(15,toUpdate.getChosenAddress());
+            update.setInt(16,toUpdate.getOrganisationId());
 
-
-             update.executeUpdate();
-             databaseService.releaseConnection(conn);
-             return toUpdate;
-         } catch (SQLException throwable) {
-             throwable.printStackTrace();
-         }
+            update.executeUpdate();
+            databaseService.releaseConnection(conn);
+            return toUpdate;
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
         return null;
     }
 
     @Override
     public Owner delete(int id) {
         Connection conn = null;
-         try {
-             conn  = databaseService.getConnection();
-             Owner removed = getById(id);
+        try {
+            conn  = databaseService.getConnection();
+            Owner removed = getById(id);
 
-             PreparedStatement delete = conn.prepareStatement("DELETE FROM Owner WHERE OwnerId = ?");
-             delete.setInt(1, id);
-             delete.executeQuery();
+            PreparedStatement delete = conn.prepareStatement("DELETE FROM Owner WHERE OwnerId = ?");
+            delete.setInt(1, id);
+            delete.executeQuery();
 
-             return removed;
-         } catch (SQLException throwable) {
-             throwable.printStackTrace();
-         }finally{
-             databaseService.releaseConnection(conn);
-         }
+            return removed;
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
         return null;
     }
 
 
     public Owner addOwnerAndAddresses(Owner toAdd) {
         Connection conn = null;
-         try {
-             conn = databaseService.getConnection();
-             conn.setAutoCommit(false);
-             Address postalAddress = addressRepo.insert(toAdd.getPostalAddress(),conn);
-             Address streetAddress = addressRepo.insert(toAdd.getStreetAddress(),conn);
-             toAdd = addOnlyOwner(toAdd,conn);
-             conn.commit();
+        try {
+            conn = databaseService.getConnection();
+            conn.setAutoCommit(false);
+            Address postalAddress = addressRepo.insert(toAdd.getPostalAddress(),conn);
+            Address streetAddress = addressRepo.insert(toAdd.getStreetAddress(),conn);
+            toAdd = addOnlyOwner(toAdd,conn);
+            conn.commit();
 
+            toAdd.setStreetAddress(streetAddress);
+            toAdd.setPostalAddress(postalAddress);
 
-             toAdd.setStreetAddress(streetAddress);
-             toAdd.setPostalAddress(postalAddress);
-
-             return toAdd;
-         } catch (SQLException throwable) {
-             throwable.printStackTrace();
-         }finally{
-             databaseService.releaseConnection(conn);
-         }
+            return toAdd;
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
         return null;
     }
     @Override
@@ -123,14 +123,13 @@ public class OwnerRepo implements IRepository<Owner>{
             return addOnlyOwner(toAdd,conn);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
     }
 
     private Owner addOnlyOwner(Owner toAdd,Connection conn){
-
         try {
             PreparedStatement insert = conn.prepareStatement("EXEC pCreateOwner ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?");
             insert.setInt(1, toAdd.getIdType());
@@ -151,7 +150,7 @@ public class OwnerRepo implements IRepository<Owner>{
             insert.setInt(16,toAdd.getOrganisationId());
             insert.executeUpdate();
 
-            toAdd.setOwnerId(insert.getGeneratedKeys().getInt(0));
+            toAdd.setOwnerId(insert.getGeneratedKeys().getInt(1));
             return toAdd;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -161,11 +160,10 @@ public class OwnerRepo implements IRepository<Owner>{
 
     @Override
     public List<Owner> convertResultSet(ResultSet toConvert) throws SQLException {
-        List<Owner> owners = new ArrayList<Owner>();
+        List<Owner> owners = new ArrayList<>();
 
         while(toConvert.next())
         {
-
             Owner temp = new Owner();
             temp.setOwnerId(toConvert.getInt(1));
             temp.setIdNumber(toConvert.getString(2));
@@ -194,23 +192,20 @@ public class OwnerRepo implements IRepository<Owner>{
     @Override
     public Owner getById(int id) {
         Connection conn = null;
-         try {
-             conn  = databaseService.getConnection();
-             PreparedStatement get  = conn.prepareStatement("SELECT OwnerId,IdNumber,IdentificationTypeId,ForeignIdCountry,SurnameOrganisationName, SurnameOrganisationName,Initials,\n" +
-                     "FirstName,MiddleNames,EmailAddress,HomeTel,WorkTel,CellphoneNumber,FaxNumber,PostalAddressId,StreetAddressId, PrefferedAddressType,OrganisationId FROM Owner\n" +
-                     "WHERE  OwnerId = ?");
-             get.setInt(1, id);
+        try {
+            conn  = databaseService.getConnection();
+            PreparedStatement get  = conn.prepareStatement("SELECT OwnerId,IdNumber,IdentificationTypeId,ForeignIdCountry,SurnameOrganisationName, SurnameOrganisationName,Initials,\n" +
+                    "FirstName,MiddleNames,EmailAddress,HomeTel,WorkTel,CellphoneNumber,FaxNumber,PostalAddressId,StreetAddressId, PrefferedAddressType,OrganisationId FROM Owner\n" +
+                    "WHERE  OwnerId = ?");
+            get.setInt(1, id);
 
-             ResultSet rs = get.executeQuery();
-             Owner owner = convertResultSet(rs).get(0);
-
-             return owner;
-
-         } catch (SQLException throwable) {
-             throwable.printStackTrace();
-         }finally{
-             databaseService.releaseConnection(conn);
-         }
+            ResultSet rs = get.executeQuery();
+            return convertResultSet(rs).get(0);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
         return null;
     }
 }

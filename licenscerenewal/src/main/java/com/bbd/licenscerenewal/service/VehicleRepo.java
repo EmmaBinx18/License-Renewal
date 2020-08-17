@@ -15,12 +15,12 @@ public class VehicleRepo implements IRepository<Vehicle>{
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public Dictionary getParams = new Hashtable();
+    public final Dictionary<String,String> getParams = new Hashtable();
 
     public VehicleRepo() {
         getParams.put("registrationNumber"," AND RegistrationNumber = ?");
         getParams.put("make", " AND Make = ?");
-        getParams.put("vin", " AND Vin =?");
+        getParams.put("vin", " AND VIN =?");
     }
 
     @Override
@@ -37,11 +37,10 @@ public class VehicleRepo implements IRepository<Vehicle>{
             update.setInt(6, toUpdate.getVehicleTypeId());
             update.setInt(7, toUpdate.getVehicleId());
             update.executeUpdate();
-
             return toUpdate;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -64,7 +63,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -89,7 +88,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
             return toAdd;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -121,10 +120,9 @@ public class VehicleRepo implements IRepository<Vehicle>{
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle");
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
-
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
@@ -140,10 +138,9 @@ public class VehicleRepo implements IRepository<Vehicle>{
 
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs).get(0);
-
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return null;
@@ -152,23 +149,23 @@ public class VehicleRepo implements IRepository<Vehicle>{
     public <T> List<Vehicle> getByQueryParams(Set<Map.Entry<String,T>> params) {
         Connection conn = null;
         try {
-                conn  = databaseService.getConnection();
-                String query = "SELECT * FROM Vehicle WHERE 1=1 ";
-                for (Map.Entry<String,T> param: params) {
-                    query += getParams.get(param.getKey());
-                }
+            conn  = databaseService.getConnection();
+            String query = "SELECT * FROM Vehicle WHERE 1=1 ";
+            for (Map.Entry<String,T> param: params) {
+                query += getParams.get(param.getKey());
+            }
 
-                PreparedStatement get  = conn.prepareStatement(query);
-                int index = 1;
-                for (Map.Entry<String,T> param: params) {
-                    get.setObject(index,param.getValue());
-                }
+            PreparedStatement get  = conn.prepareStatement(query);
+            int index = 1;
+            for (Map.Entry<String,T> param: params) {
+                get.setObject(index,param.getValue());
+            }
 
-                ResultSet rs = get.executeQuery();
-                return convertResultSet(rs);
+            ResultSet rs = get.executeQuery();
+            return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
-        }finally{
+        } finally {
             databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
