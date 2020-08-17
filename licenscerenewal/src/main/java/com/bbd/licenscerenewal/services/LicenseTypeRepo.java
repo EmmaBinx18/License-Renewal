@@ -1,8 +1,6 @@
-package com.bbd.licenscerenewal.service;
+package com.bbd.licenscerenewal.services;
 
-
-import com.bbd.licenscerenewal.models.OwnerType;
-
+import com.bbd.licenscerenewal.models.LicenseType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -11,27 +9,28 @@ import java.sql.*;
 import java.util.*;
 
 @Service
-public class OwnerTypeRepo {
+public class LicenseTypeRepo{
 
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public List<OwnerType> getOwnerTypes() {
+    public List<LicenseType> getLicenseTypes() {
         Connection conn = null;
         try{
             conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("SELECT * FROM OwnerType");
+            PreparedStatement get  = conn.prepareStatement("SELECT * FROM LicenseType");
             ResultSet rs = get.executeQuery();
             
-            List<OwnerType> ownerTypes = new ArrayList<>();
+            List<LicenseType> licenseTypes = new ArrayList<>();
             while(rs.next()){
-                OwnerType ownerType = new OwnerType();
-                ownerType.setOwnerTypeId(rs.getInt(1));
-                ownerType.setName(rs.getString(2));
-                ownerTypes.add(ownerType);
+                LicenseType licenseType = new LicenseType();
+                licenseType.setLicenseTypeId(rs.getInt(1));
+                licenseType.setName(rs.getString(2));
+                licenseTypes.add(licenseType);
             }
-            return ownerTypes;
+
+            return licenseTypes;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {

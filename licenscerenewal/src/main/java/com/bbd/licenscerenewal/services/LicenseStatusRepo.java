@@ -1,4 +1,4 @@
-package com.bbd.licenscerenewal.service;
+package com.bbd.licenscerenewal.services;
 
 
 import com.bbd.licenscerenewal.models.LicenseStatus;

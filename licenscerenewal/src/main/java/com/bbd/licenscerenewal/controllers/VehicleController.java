@@ -2,8 +2,8 @@ package com.bbd.licenscerenewal.controllers;
 
 import com.bbd.licenscerenewal.models.Vehicle;
 import com.bbd.licenscerenewal.models.VehicleType;
-import com.bbd.licenscerenewal.service.VehicleRepo;
-import com.bbd.licenscerenewal.service.VehicleTypeRepo;
+import com.bbd.licenscerenewal.services.VehicleRepo;
+import com.bbd.licenscerenewal.services.VehicleTypeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

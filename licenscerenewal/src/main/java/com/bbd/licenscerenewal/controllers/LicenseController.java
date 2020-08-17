@@ -3,9 +3,9 @@ package com.bbd.licenscerenewal.controllers;
 import com.bbd.licenscerenewal.models.License;
 import com.bbd.licenscerenewal.models.LicenseStatus;
 import com.bbd.licenscerenewal.models.LicenseType;
-import com.bbd.licenscerenewal.service.LicenseRepo;
-import com.bbd.licenscerenewal.service.LicenseStatusRepo;
-import com.bbd.licenscerenewal.service.LicenseTypeRepo;
+import com.bbd.licenscerenewal.services.LicenseRepo;
+import com.bbd.licenscerenewal.services.LicenseStatusRepo;
+import com.bbd.licenscerenewal.services.LicenseTypeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

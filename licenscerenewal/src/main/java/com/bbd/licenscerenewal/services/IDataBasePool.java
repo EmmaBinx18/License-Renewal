@@ -1,4 +1,4 @@
-package com.bbd.licenscerenewal.service;
+package com.bbd.licenscerenewal.services;
 
 import java.sql.Connection;
 import java.sql.SQLException;

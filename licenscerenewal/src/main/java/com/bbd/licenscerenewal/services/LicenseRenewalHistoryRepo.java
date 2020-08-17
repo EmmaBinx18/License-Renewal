@@ -1,4 +1,4 @@
-package com.bbd.licenscerenewal.service;
+package com.bbd.licenscerenewal.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
