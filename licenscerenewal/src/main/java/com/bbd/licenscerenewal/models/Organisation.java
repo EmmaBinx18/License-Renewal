@@ -1,18 +1,23 @@
 package com.bbd.licenscerenewal.models;
 
 public class Organisation{
-    private String idType;
+    private int id;
+    private int idType;
     private String idNumber;
     private String countryOfIssue;
     private String surname;
     private String initials;
-    private String ownerType;
+    private int ownerType;
+
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 
     public int getIdType() {
         return idType;
     }
 
-    public void setIdType(String idType){
+    public void setIdType(int idType){
         this.idType = idType;
     }
 
@@ -48,11 +53,11 @@ public class Organisation{
         this.initials = initials;
     }
 
-    public String getOwnerType() {
+    public int getOwnerType() {
         return ownerType;
     }
 
-    public void setOwnerType(String ownerType){
+    public void setOwnerType(int ownerType){
         this.ownerType = ownerType;
     }
 }
