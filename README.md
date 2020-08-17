@@ -47,3 +47,12 @@ Content-Type: application/json
    "jwttoken": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }
 ```
+
+## Additional Information
+**Identification Type:**
+| Id     | Name                     |
+| ------ | ------------------------:|
+| 1      | Traffic Register Number  |
+| 2      | RSA ID                   |
+| 3      | Foreign Id               |
+| 4      | Business Register Number |
