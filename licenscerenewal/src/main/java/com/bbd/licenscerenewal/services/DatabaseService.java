@@ -19,7 +19,7 @@ public class DatabaseService implements IDataBasePool {
         System.out.println("Starting");
         connectionPool = new ArrayList<>(INITIAL_POOL_SIZE);
         for(int i = 0; i < INITIAL_POOL_SIZE; i++){
-            conectionPool.add(createConnection());
+            connectionPool.add(createConnection());
         }
         System.out.println("Created Pool");
     }
@@ -36,7 +36,7 @@ public class DatabaseService implements IDataBasePool {
 
         Connection conn = connectionPool.remove(connectionPool.size() - 1);
         usedConnections.add(conn);
-        System.our.println("Returned the connection");
+        System.out.println("Returned the connection");
         return conn;
     }
 

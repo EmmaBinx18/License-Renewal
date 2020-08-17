@@ -10,6 +10,7 @@ import com.bbd.licenscerenewal.services.LicenseStatusRepo;
 import com.bbd.licenscerenewal.services.LicenseTypeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,48 +34,48 @@ class LicenseController {
 
     @GetMapping("/licenses")
     @ResponseBody
-    public <T> List<License> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) {
+    public <T> ResponseEntity<List<License>> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
-            return licenseRepo.getAll();
+            return ResponseEntity.ok().body(licenseRepo.getAll());
         }
         else{
-            return licenseRepo.getByQueryParams(params);
+            return ResponseEntity.ok().body(licenseRepo.getByQueryParams(params));
         }
     }
 
     @GetMapping("/licenses/{id}")
     @ResponseBody
-    public License getById(@PathVariable int id) {
-        return licenseRepo.getById(id);
+    public ResponseEntity<License> getById(@PathVariable int id) {
+        return ResponseEntity.ok().body(licenseRepo.getById(id));
     }
 
     @GetMapping("/licenses/statuses")
-    public List<LicenseStatus> getLicenseStatuses() {
-        return licenseStatusRepo.getLicenseStatuses();
+    public ResponseEntity<List<LicenseStatus>> getLicenseStatuses() {
+        return ResponseEntity.ok().body(licenseStatusRepo.getLicenseStatuses());
     }
 
     @GetMapping("/licenses/types")
-    public List<LicenseType> getLicenseTypes() {
-        return licenseTypeRepo.getLicenseTypes();
+    public ResponseEntity<List<LicenseType>> getLicenseTypes() {
+        return ResponseEntity.ok().body(licenseTypeRepo.getLicenseTypes());
     }
 
     @PostMapping("/licenses")
     @ResponseBody
-    public License insert(@RequestBody License license){
-        return licenseRepo.add(license);
+    public ResponseEntity<License> insert(@RequestBody License license){
+        return ResponseEntity.created(null).body(licenseRepo.add(license));
     }
 
     @PutMapping("/licenses")
     @ResponseBody
-    public License update(@RequestBody License license){
-        return licenseRepo.update(license);
+    public ResponseEntity<License> update(@RequestBody License license){
+        return ResponseEntity.ok().body(licenseRepo.update(license));
     }
 
     @DeleteMapping("/licenses/{id}")
     @ResponseBody
-    public License delete(@PathVariable int id) {
-        return licenseRepo.delete(id);
+    public ResponseEntity<License> delete(@PathVariable int id) {
+        return ResponseEntity.ok().body(licenseRepo.delete(id));
     }
 
     // @PostMapping("/licenses/renewal/{id}")
@@ -85,7 +86,7 @@ class LicenseController {
 
     @GetMapping("/licenses/renewal/{id}/history")
     @ResponseBody
-    public LicenseRenewalHistory getRenewalHistory(@PathVariable int id) {
-        return licenseRenwalHistoryRepo.getById(id);
+    public ResponseEntity<LicenseRenewalHistory> getRenewalHistory(@PathVariable int id) {
+        return ResponseEntity.ok().body(licenseRenwalHistoryRepo.getById(id));
     }
 }
