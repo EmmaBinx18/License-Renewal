@@ -49,10 +49,32 @@ Content-Type: application/json
 ```
 
 ## Additional Information
-**Identification Type:**
-| Id     | Name                     |
-| ------ | ------------------------:|
-| 1      | Traffic Register Number  |
-| 2      | RSA ID                   |
-| 3      | Foreign Id               |
-| 4      | Business Register Number |
+### Helpful References
+
+**Identification Types:**
+1. Traffic Register Number
+2. RSA ID
+3. Foreign Id
+4. Business Register Number
+
+**License Types:**   
+1. Code 1
+2. Code 2
+3. Code 3
+
+**License Status Options:**
+1. Pending Approval
+2. Active
+3. Suspended
+
+**Owner Types:**
+1. Owner
+2. Organisation Proxy
+3. Organisation Representative
+
+**Vehicle Types:**
+1. Drawn
+2. Left Steering
+3. Right Steering
+4. Middle Steering
+
