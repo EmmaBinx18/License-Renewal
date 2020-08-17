@@ -49,7 +49,7 @@ Content-Type: application/json
 Content-Length: 113
 Server: Heroku-server
 {
-   "jwttoken": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   "token": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }
 ```
 
