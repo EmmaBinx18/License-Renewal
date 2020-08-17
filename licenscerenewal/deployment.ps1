@@ -1,0 +1,1 @@
+git init | git add . | git commit -m "Deployment" | heroku login | heroku git:remote -a license-renewal | git push heroku master
