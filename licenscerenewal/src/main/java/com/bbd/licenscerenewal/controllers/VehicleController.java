@@ -22,7 +22,6 @@ class VehicleController {
     VehicleTypeRepo vehicleTypeRepo;
 
     @GetMapping("/vehicles")
-    @ResponseBody
     public <T> List<Vehicle> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams)
     {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
@@ -46,19 +45,16 @@ class VehicleController {
     }
 
     @PostMapping("/vehicles")
-    @ResponseBody
     public Vehicle insert(@RequestBody Vehicle vehicle){
         return vehicleRepo.add(vehicle);
     }
 
     @PutMapping("/vehicles")
-    @ResponseBody
     public Vehicle update(@RequestBody Vehicle vehicle){
         return vehicleRepo.update(vehicle);
     }
 
     @DeleteMapping("/vehicles/{id}")
-    @ResponseBody
     public Vehicle delete(@PathVariable int id) {
         return vehicleRepo.delete(id);
     }

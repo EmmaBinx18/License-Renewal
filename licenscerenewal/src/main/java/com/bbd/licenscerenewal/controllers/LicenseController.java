@@ -33,7 +33,6 @@ class LicenseController {
     LicenseRenewalHistoryRepo licenseRenwalHistoryRepo;
 
     @GetMapping("/licenses")
-    @ResponseBody
     public <T> ResponseEntity<List<License>> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
@@ -45,7 +44,6 @@ class LicenseController {
     }
 
     @GetMapping("/licenses/{id}")
-    @ResponseBody
     public ResponseEntity<License> getById(@PathVariable int id) {
         return ResponseEntity.ok().body(licenseRepo.getById(id));
     }
@@ -61,31 +59,27 @@ class LicenseController {
     }
 
     @PostMapping("/licenses")
-    @ResponseBody
     public ResponseEntity<License> insert(@RequestBody License license){
         return ResponseEntity.created(null).body(licenseRepo.add(license));
     }
 
     @PutMapping("/licenses")
-    @ResponseBody
     public ResponseEntity<License> update(@RequestBody License license){
         return ResponseEntity.ok().body(licenseRepo.update(license));
     }
 
     @DeleteMapping("/licenses/{id}")
-    @ResponseBody
     public ResponseEntity<License> delete(@PathVariable int id) {
         return ResponseEntity.ok().body(licenseRepo.delete(id));
     }
 
-    // @PostMapping("/licenses/renewal/{id}")
+    // @PostMapping("/licenses/{id}/renew")
     // @ResponseBody
     // public License renewLicense(@PathVariable int id) {
     //     return licenseRepo.getById(id);
     // }
 
-    @GetMapping("/licenses/renewal/{id}/history")
-    @ResponseBody
+    @GetMapping("/licenses/{id}/history")
     public ResponseEntity<LicenseRenewalHistory> getRenewalHistory(@PathVariable int id) {
         return ResponseEntity.ok().body(licenseRenwalHistoryRepo.getById(id));
     }
