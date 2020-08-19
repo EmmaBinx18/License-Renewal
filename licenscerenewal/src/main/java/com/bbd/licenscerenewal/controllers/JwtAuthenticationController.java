@@ -1,6 +1,5 @@
-package com.bbd.licenscerenewal.controller;
+package com.bbd.licenscerenewal.controllers;
 
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,15 +7,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import com.bbd.licenscerenewal.service.JwtUserDetailsService;
+import org.springframework.web.bind.annotation.*;
+
 import com.bbd.licenscerenewal.config.JwtTokenUtil;
-import com.bbd.licenscerenewal.model.JwtRequest;
-import com.bbd.licenscerenewal.model.JwtResponse;
+import com.bbd.licenscerenewal.models.JwtRequest;
+import com.bbd.licenscerenewal.models.JwtResponse;
+import com.bbd.licenscerenewal.services.JwtUserDetailsService;
 
 @RestController
 @CrossOrigin
@@ -31,14 +27,11 @@ public class JwtAuthenticationController {
 	@Autowired
 	private JwtUserDetailsService userDetailsService;
 
-	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+	@PostMapping("/authenticate")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
-
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-		final UserDetails userDetails = userDetailsService
-				.loadUserByUsername(authenticationRequest.getUsername());
-
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
 		return ResponseEntity.ok(new JwtResponse(token));

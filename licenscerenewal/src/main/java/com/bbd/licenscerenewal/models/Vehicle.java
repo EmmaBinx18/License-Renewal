@@ -1,12 +1,21 @@
 package com.bbd.licenscerenewal.models;
 
 public class Vehicle{
+    private int vehicleId;
     private String registrationNumber;
     private String vin;
     private String make;
     private String model;
     private int odometer;
-    private String licenseType;
+    private int vehicleTypeId;
+
+    public int getVehicleId() {
+        return vehicleId;
+    }
+
+    public void setVehicleId(int vehicleId){
+        this.vehicleId = vehicleId;
+    }
 
     public String getRegistrationNumber(){
         return registrationNumber;
@@ -48,11 +57,11 @@ public class Vehicle{
         this.odometer = odometer;
     }
 
-    public String getLicenseType() {
-        return licenseType;
+    public int getVehicleTypeId() {
+        return vehicleTypeId;
     }
 
-    public void setLicenseType(String licenseType){
-        this.licenseType = licenseType;
+    public void setVehicleTypeId(int vehicleTypeId){
+        this.vehicleTypeId = vehicleTypeId;
     }
 }

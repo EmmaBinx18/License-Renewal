@@ -1,4 +1,4 @@
-package com.bbd.licenscerenewal.model;
+package com.bbd.licenscerenewal.models;
 
 import java.io.Serializable;
 
