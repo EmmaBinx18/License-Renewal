@@ -6,6 +6,8 @@ import com.bbd.licenscerenewal.services.VehicleRepo;
 import com.bbd.licenscerenewal.services.VehicleTypeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +24,7 @@ class VehicleController {
     VehicleTypeRepo vehicleTypeRepo;
 
     @GetMapping("/vehicles")
-    public <T> List<Vehicle> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams)
-    {
+    public <T> List<Vehicle> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams){
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
             return vehicleRepo.getAll();
@@ -34,29 +35,36 @@ class VehicleController {
     }
 
     @GetMapping("/vehicles/{id}")
-    public Vehicle getById(@PathVariable int id) {
-        return vehicleRepo.getById(id);
+    public ResponseEntity<Vehicle> getById(@PathVariable int id) {
+        Vehicle result = vehicleRepo.getById(id);
+        if(result == null){
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/vehicles/types")
-    public List<VehicleType> getVehicleTypes()
-    {
-        return vehicleTypeRepo.getVehicleTypes();
+    public ResponseEntity<List<VehicleType>> getVehicleTypes(){
+        List<VehicleType> result = vehicleTypeRepo.getVehicleTypes();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/vehicles")
-    public Vehicle insert(@RequestBody Vehicle vehicle){
-        return vehicleRepo.add(vehicle);
+    public ResponseEntity<Vehicle> insert(@RequestBody Vehicle vehicle){
+        Vehicle result = vehicleRepo.add(vehicle);
+        return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 
     @PutMapping("/vehicles")
-    public Vehicle update(@RequestBody Vehicle vehicle){
-        return vehicleRepo.update(vehicle);
+    public ResponseEntity<Vehicle> update(@RequestBody Vehicle vehicle){
+        Vehicle result = vehicleRepo.update(vehicle);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/vehicles/{id}")
-    public Vehicle delete(@PathVariable int id) {
-        return vehicleRepo.delete(id);
+    public ResponseEntity<Vehicle> delete(@PathVariable int id) {
+        Vehicle result = vehicleRepo.delete(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }

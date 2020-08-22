@@ -10,12 +10,18 @@ import com.bbd.licenscerenewal.services.LicenseStatusRepo;
 import com.bbd.licenscerenewal.services.LicenseTypeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.text.html.HTML;
+
+import java.sql.Date;
 
 @RestController
 class LicenseController {
@@ -33,54 +39,75 @@ class LicenseController {
     LicenseRenewalHistoryRepo licenseRenwalHistoryRepo;
 
     @GetMapping("/licenses")
-    public <T> ResponseEntity<List<License>> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) {
+    public <T> List<License> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
-            return ResponseEntity.ok().body(licenseRepo.getAll());
+            return licenseRepo.getAll();
         }
         else{
-            return ResponseEntity.ok().body(licenseRepo.getByQueryParams(params));
+            return licenseRepo.getByQueryParams(params);
         }
     }
 
     @GetMapping("/licenses/{id}")
     public ResponseEntity<License> getById(@PathVariable int id) {
-        return ResponseEntity.ok().body(licenseRepo.getById(id));
+        License result = licenseRepo.getById(id);
+        if(result == null){
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/licenses/statuses")
     public ResponseEntity<List<LicenseStatus>> getLicenseStatuses() {
-        return ResponseEntity.ok().body(licenseStatusRepo.getLicenseStatuses());
+        List<LicenseStatus> result =licenseStatusRepo.getLicenseStatuses();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/licenses/types")
     public ResponseEntity<List<LicenseType>> getLicenseTypes() {
-        return ResponseEntity.ok().body(licenseTypeRepo.getLicenseTypes());
+        List<LicenseType> result = licenseTypeRepo.getLicenseTypes();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/licenses")
     public ResponseEntity<License> insert(@RequestBody License license){
-        return ResponseEntity.created(null).body(licenseRepo.add(license));
+        License result = licenseRepo.add(license);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @PutMapping("/licenses")
     public ResponseEntity<License> update(@RequestBody License license){
-        return ResponseEntity.ok().body(licenseRepo.update(license));
+        License result = licenseRepo.update(license);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/licenses/{id}")
     public ResponseEntity<License> delete(@PathVariable int id) {
-        return ResponseEntity.ok().body(licenseRepo.delete(id));
+        License result = licenseRepo.delete(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    // @PostMapping("/licenses/{id}/renew")
-    // @ResponseBody
-    // public License renewLicense(@PathVariable int id) {
-    //     return licenseRepo.getById(id);
-    // }
+    @PostMapping("/licenses/{id}/renew")
+    @ResponseBody
+    public ResponseEntity<License> renewLicense(@PathVariable int id) {
+        Calendar currenttime = Calendar.getInstance();
+        Date date = new Date((currenttime.getTime()).getTime());
+
+        License license = licenseRepo.renew(id);
+        LicenseRenewalHistory history = new LicenseRenewalHistory();
+        history.setLicenseId(license.getLicenseId());
+        history.setRenewalDate(date);
+        history.setFee(200.00);
+        history.setRenewalActionId(1);
+        licenseRenwalHistoryRepo.add(history);
+
+        return new ResponseEntity<>(license, HttpStatus.OK);
+    }
 
     @GetMapping("/licenses/{id}/history")
-    public ResponseEntity<LicenseRenewalHistory> getRenewalHistory(@PathVariable int id) {
-        return ResponseEntity.ok().body(licenseRenwalHistoryRepo.getById(id));
+    public ResponseEntity<List<LicenseRenewalHistory>> getRenewalHistory(@PathVariable int id) {
+        List<LicenseRenewalHistory> result = licenseRenwalHistoryRepo.getByLicenseId(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

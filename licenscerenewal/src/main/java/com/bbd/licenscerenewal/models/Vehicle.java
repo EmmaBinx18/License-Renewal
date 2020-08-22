@@ -2,7 +2,7 @@ package com.bbd.licenscerenewal.models;
 
 public class Vehicle{
     private int vehicleId;
-    private String registrationNumber;
+    private String registerNumber;
     private String vin;
     private String make;
     private String model;
@@ -17,12 +17,12 @@ public class Vehicle{
         this.vehicleId = vehicleId;
     }
 
-    public String getRegistrationNumber(){
-        return registrationNumber;
+    public String getRegisterNumber(){
+        return registerNumber;
     }
 
-    public void setRegistrationNumber(String registrationNumber){
-        this.registrationNumber = registrationNumber;
+    public void setRegisterNumber(String registerNumber){
+        this.registerNumber = registerNumber;
     }
 
     public String getVin(){

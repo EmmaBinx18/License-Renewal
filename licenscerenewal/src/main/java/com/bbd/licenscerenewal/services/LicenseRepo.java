@@ -49,13 +49,17 @@ public class LicenseRepo implements IRepository<License> {
         return null;
     }
 
-    public License updateExpiryDate(int id, Date expiryDate) {
+    public License renew(int id) {
         Connection conn = null;
         try {
+            Calendar currenttime = Calendar.getInstance();
+            Date date = new Date((currenttime.getTime()).getTime());
+
             conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET ExpiryDate = ? WHERE LicenseId = ?");
-            update.setDate(1, expiryDate);
-            update.setInt(2, id);
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET ExpiryDate = ?, LicenseStatusId = ? WHERE LicenseId = ?");
+            update.setDate(1, Date.valueOf(date.toLocalDate().plusDays(365)));
+            update.setInt(2, 1);
+            update.setInt(3, id);
 
             update.executeUpdate();
 
@@ -63,28 +67,6 @@ public class LicenseRepo implements IRepository<License> {
             select.setInt(1, id);
             ResultSet rs = select.executeQuery();
             databaseService.releaseConnection(conn);
-            return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    public License updateStatus(int id, int licenseStatusId) {
-        Connection conn = null;
-        try {
-            conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET LicenseStatusId = ? WHERE LicenseId = ?");
-            update.setInt(1, licenseStatusId);
-            update.setInt(2, id);
-
-            update.executeUpdate();
-
-            PreparedStatement select  = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ? ");
-            select.setInt(1, id);
-            ResultSet rs = select.executeQuery();
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -144,16 +126,17 @@ public class LicenseRepo implements IRepository<License> {
     @Override
     public List<License> convertResultSet(ResultSet toConvert) throws SQLException {
         List<License> licenses = new ArrayList<>();
-
+        
         while(toConvert.next()){
             License license = new License();
             license.setLicenseId(toConvert.getInt(1));
             license.setLicenseNumber(toConvert.getString(2));
-            license.setFirstIssueDate(toConvert.getDate(3));
-            license.setExpiryDate(toConvert.getDate(4));
-            license.setVehicleId(toConvert.getInt(5));
-            license.setLicenseStatusId(toConvert.getInt(6));
-            license.setLicenseTypeId(toConvert.getInt(7));
+            license.setOwnerId(toConvert.getInt(3));
+            license.setFirstIssueDate(toConvert.getDate(4));
+            license.setExpiryDate(toConvert.getDate(5));
+            license.setVehicleId(toConvert.getInt(6));
+            license.setLicenseStatusId(toConvert.getInt(7));
+            license.setLicenseTypeId(toConvert.getInt(8));
             licenses.add(license);
         }
 

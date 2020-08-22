@@ -20,11 +20,12 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE LicenseRenewalHistory SET LicenseId = ?,RenewalDate = ?Fee = ? WHERE LicenseRenewalHistoryId = ?");
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE LicenseRenewalHistory SET LicenseId = ?,RenewalDate = ?,Fee = ?,RenewalActionId = ? WHERE LicenseRenewalHistoryId = ?");
             update.setInt(1, toUpdate.getLicenseId());
             update.setDate(2, toUpdate.getRenewalDate());
-            update.setFloat(3, toUpdate.getFee());
-            update.setInt(4, toUpdate.getLicenseRenewalHistoryId());
+            update.setDouble(3, toUpdate.getFee());
+            update.setInt(4, toUpdate.getRenewalActionId());
+            update.setInt(5, toUpdate.getLicenseRenewalHistoryId());
 
             update.executeUpdate();
             return toUpdate;
@@ -63,10 +64,11 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
-            PreparedStatement insert  = conn.prepareStatement("INSERT INTO LicenseRenewalHistory VALUES(?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement insert  = conn.prepareStatement("INSERT INTO LicenseRenewalHistory VALUES(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             insert.setInt(1, toAdd.getLicenseId());
             insert.setDate(2, toAdd.getRenewalDate());
-            insert.setFloat(3, toAdd.getFee());
+            insert.setDouble(3, toAdd.getFee());
+            insert.setInt(4, toAdd.getRenewalActionId());
 
             insert.executeUpdate();
             toAdd.setLicenseRenewalHistoryId(insert.getGeneratedKeys().getInt(1));
@@ -90,6 +92,7 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
             history.setLicenseId(toConvert.getInt(2));
             history.setRenewalDate(toConvert.getDate(3));
             history.setFee(toConvert.getFloat(4));
+            history.setRenewalActionId(toConvert.getInt(5));
 
             histories.add(history);
         }
@@ -113,5 +116,22 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
             databaseService.releaseConnection(conn);
         }
         return null;
+    }
+
+    public List<LicenseRenewalHistory> getByLicenseId(int id) {
+        Connection conn = null;
+        try {
+            conn  = databaseService.getConnection();
+            PreparedStatement get  = conn.prepareStatement("SELECT * FROM LicenseRenewalHistory WHERE LicenseId = ?");
+            get.setInt(1, id);
+            ResultSet rs = get.executeQuery();
+
+            return convertResultSet(rs);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
+        return new ArrayList<>();
     }
 }

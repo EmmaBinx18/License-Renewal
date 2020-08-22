@@ -18,9 +18,12 @@ public class VehicleRepo implements IRepository<Vehicle>{
     public final Dictionary<String,String> getParams = new Hashtable();
 
     public VehicleRepo() {
-        getParams.put("registrationNumber"," AND RegistrationNumber = ?");
+        getParams.put("registerNumber"," AND RegisterNumber = ?");
+        getParams.put("model", " AND Model = ?");
         getParams.put("make", " AND Make = ?");
-        getParams.put("vin", " AND VIN =?");
+        getParams.put("vin", " AND VIN = ?");
+        getParams.put("odometer", " AND Odo = ?");
+        getParams.put("vehicleTypeId", " AND VehicleTypeId = ?");
     }
 
     @Override
@@ -28,8 +31,8 @@ public class VehicleRepo implements IRepository<Vehicle>{
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE Vehicle SET RegistrationNumber = ?,VIN = ?,Make = ? ,Model = ?, Odo = ?, VehicleTypeId = ? WHERE VehicleId = ?");
-            update.setString(1, toUpdate.getRegistrationNumber());
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE Vehicle SET RegisterNumber = ?,VIN = ?,Make = ? ,Model = ?, Odo = ?, VehicleTypeId = ? WHERE VehicleId = ?");
+            update.setString(1, toUpdate.getRegisterNumber());
             update.setString(2, toUpdate.getVin());
             update.setString(3, toUpdate.getMake());
             update.setString(4, toUpdate.getModel());
@@ -75,7 +78,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
         try {
             conn  = databaseService.getConnection();
             PreparedStatement insert  = conn.prepareStatement("INSERT INTO Vehicle VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-            insert.setString(1, toAdd.getRegistrationNumber());
+            insert.setString(1, toAdd.getRegisterNumber());
             insert.setString(2, toAdd.getVin());
             insert.setString(3, toAdd.getMake());
             insert.setString(4, toAdd.getModel());
@@ -101,7 +104,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
         while(toConvert.next()){
             Vehicle vehicle = new Vehicle();
             vehicle.setVehicleId(toConvert.getInt(1));
-            vehicle.setRegistrationNumber(toConvert.getString(2));
+            vehicle.setRegisterNumber(toConvert.getString(2));
             vehicle.setVin(toConvert.getString(3));
             vehicle.setMake(toConvert.getString(4));
             vehicle.setModel(toConvert.getString(5));
@@ -154,13 +157,13 @@ public class VehicleRepo implements IRepository<Vehicle>{
             for (Map.Entry<String,T> param: params) {
                 query += getParams.get(param.getKey());
             }
-
+            
             PreparedStatement get  = conn.prepareStatement(query);
             int index = 1;
             for (Map.Entry<String,T> param: params) {
                 get.setObject(index,param.getValue());
             }
-
+            
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
         } catch (SQLException throwable) {
