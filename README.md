@@ -76,6 +76,7 @@ Server: Heroku-server
 1. Pending Approval
 2. Active
 3. Suspended
+4. Pending Suspension
 ```
 
 **Owner Types:**
