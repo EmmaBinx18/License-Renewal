@@ -16,50 +16,6 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
     IDataBasePool databaseService;
 
     @Override
-    public LicenseRenewalHistory update(LicenseRenewalHistory toUpdate) {
-        Connection conn = null;
-        try {
-            conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE LicenseRenewalHistory SET LicenseId = ?,RenewalDate = ?,Fee = ?,RenewalActionId = ? WHERE LicenseRenewalHistoryId = ?");
-            update.setInt(1, toUpdate.getLicenseId());
-            update.setDate(2, toUpdate.getRenewalDate());
-            update.setDouble(3, toUpdate.getFee());
-            update.setInt(4, toUpdate.getRenewalActionId());
-            update.setInt(5, toUpdate.getLicenseRenewalHistoryId());
-
-            update.executeUpdate();
-            return toUpdate;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    @Override
-    public LicenseRenewalHistory delete(int id) {
-        Connection conn = null;
-        try {
-            conn  = databaseService.getConnection();
-            PreparedStatement select  = conn.prepareStatement("SELECT * FROM LicenseRenewalHistory WHERE LicenseRenewalHistoryId = ? ");
-            select.setInt(1, id);
-
-            PreparedStatement delete = conn.prepareStatement("DELETE FROM LicenseRenewalHistory WHERE LicenseRenewalHistoryId = ?");
-            delete.setInt(1, id);
-
-            ResultSet rs = select.executeQuery();
-            delete.executeQuery();
-            return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    @Override
     public LicenseRenewalHistory add(LicenseRenewalHistory toAdd) {
         Connection conn = null;
         try {
@@ -74,6 +30,29 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
             toAdd.setLicenseRenewalHistoryId(insert.getGeneratedKeys().getInt(1));
 
             return toAdd;
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
+        return null;
+    }
+
+    public LicenseRenewalHistory updateRenewalAction(int id, int action) {
+        Connection conn = null;
+        try {
+            conn = databaseService.getConnection();
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE LicenseRenewalHistory SET RenewalActionId = ? WHERE LicenseRenewalHistoryId = ?");
+            update.setInt(1, action);
+            update.setInt(2, id);
+
+            update.executeUpdate();
+
+            PreparedStatement select = conn.prepareStatement("SELECT * FROM LicenseRenewalHistory WHERE icenseRenewalHistoryId = ?");
+            select.setInt(1, id);
+
+            ResultSet rs = select.executeQuery();
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {

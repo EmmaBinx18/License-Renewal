@@ -25,22 +25,67 @@ public class LicenseRepo implements IRepository<License> {
         getParams.put("type", " AND LicenseTypeId =?");
     }
 
-    @Override
-    public License update(License toUpdate) {
+    public License updateExpiryDate(int id, Date date) {
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET LicenseNumber = ?,OwnerId = ?,FirstIssueDate = ? ,ExpiryDate = ?, VehicleId = ?, LicenseStatusId = ?, LicenseTypeId = ? WHERE LicenseId = ?");
-            update.setString(1, toUpdate.getLicenseNumber());
-            update.setInt(2, toUpdate.getOwnerId());
-            update.setDate(3, toUpdate.getFirstIssueDate());
-            update.setDate(4, toUpdate.getExpiryDate());
-            update.setInt(5, toUpdate.getVehicleId());
-            update.setInt(6, toUpdate.getLicenseStatusId());
-            update.setInt(7, toUpdate.getLicenseTypeId());
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET ExpiryDate = ? WHERE LicenseId = ?");
+            update.setDate(1, date);
+            update.setInt(2, id);
 
             update.executeUpdate();
-            return toUpdate;
+
+            PreparedStatement select = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
+            select.setInt(1, id);
+
+            ResultSet rs = select.executeQuery();
+            return convertResultSet(rs).get(0);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
+        return null;
+    }
+
+    public License updateStatus(int id, int status) {
+        Connection conn = null;
+        try {
+            conn = databaseService.getConnection();
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET LicenseStatusId = ? WHERE LicenseId = ?");
+            update.setInt(1, status);
+            update.setInt(2, id);
+
+            update.executeUpdate();
+
+            PreparedStatement select = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
+            select.setInt(1, id);
+
+            ResultSet rs = select.executeQuery();
+            return convertResultSet(rs).get(0);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
+        return null;
+    }
+
+    public License updateType(int id, int type) {
+        Connection conn = null;
+        try {
+            conn = databaseService.getConnection();
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET LicenseTypeId = ? WHERE LicenseId = ?");
+            update.setInt(1, type);
+            update.setInt(2, id);
+
+            update.executeUpdate();
+
+            PreparedStatement select = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
+            select.setInt(1, id);
+
+            ResultSet rs = select.executeQuery();
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {
@@ -76,19 +121,21 @@ public class LicenseRepo implements IRepository<License> {
         return null;
     }
 
-    @Override
     public License delete(int id) {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
-            PreparedStatement select  = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ? ");
+
+            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET LicenseStatusId = ? WHERE LicenseId = ?");
+            update.setInt(1, 4);
+            update.setInt(2, id);
+
+            update.executeUpdate();
+
+            PreparedStatement select = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
             select.setInt(1, id);
 
-            PreparedStatement delete = conn.prepareStatement("DELETE FROM License WHERE LicenseId = ?");
-            delete.setInt(1, id);
-
             ResultSet rs = select.executeQuery();
-            delete.executeQuery();
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();

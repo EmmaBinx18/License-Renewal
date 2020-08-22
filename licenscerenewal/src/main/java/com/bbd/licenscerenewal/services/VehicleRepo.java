@@ -27,52 +27,6 @@ public class VehicleRepo implements IRepository<Vehicle>{
     }
 
     @Override
-    public Vehicle update(Vehicle toUpdate) {
-        Connection conn = null;
-        try {
-            conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE Vehicle SET RegisterNumber = ?,VIN = ?,Make = ? ,Model = ?, Odo = ?, VehicleTypeId = ? WHERE VehicleId = ?");
-            update.setString(1, toUpdate.getRegisterNumber());
-            update.setString(2, toUpdate.getVin());
-            update.setString(3, toUpdate.getMake());
-            update.setString(4, toUpdate.getModel());
-            update.setInt(5, toUpdate.getOdometer());
-            update.setInt(6, toUpdate.getVehicleTypeId());
-            update.setInt(7, toUpdate.getVehicleId());
-            update.executeUpdate();
-            return toUpdate;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    @Override
-    public Vehicle delete(int id) {
-        Connection conn = null;
-        try {
-            conn  = databaseService.getConnection();
-            PreparedStatement select  = conn.prepareStatement("SELECT * FROM Vehicle WHERE VehicleId = ? ");
-            select.setInt(1, id);
-
-            PreparedStatement delete = conn.prepareStatement("DELETE FROM Vehicle WHERE VehicleId = ?");
-            delete.setInt(1, id);
-
-            ResultSet rs = select.executeQuery();
-            delete.executeQuery();
-
-            return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    @Override
     public Vehicle add(Vehicle toAdd) {
         Connection conn = null;
         try {

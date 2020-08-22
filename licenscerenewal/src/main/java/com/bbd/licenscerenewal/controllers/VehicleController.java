@@ -55,16 +55,4 @@ class VehicleController {
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 
-    @PutMapping("/vehicles")
-    public ResponseEntity<Vehicle> update(@RequestBody Vehicle vehicle){
-        Vehicle result = vehicleRepo.update(vehicle);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/vehicles/{id}")
-    public ResponseEntity<Vehicle> delete(@PathVariable int id) {
-        Vehicle result = vehicleRepo.delete(id);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
 }

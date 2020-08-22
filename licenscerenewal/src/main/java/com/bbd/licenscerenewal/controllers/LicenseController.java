@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.text.html.HTML;
-
 import java.sql.Date;
 
 @RestController
@@ -76,9 +74,21 @@ class LicenseController {
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
-    @PutMapping("/licenses")
-    public ResponseEntity<License> update(@RequestBody License license){
-        License result = licenseRepo.update(license);
+    @PatchMapping("/licenses/{id}/expiryDate")
+    public ResponseEntity<License> updateExpiryDate(@PathVariable int id, @RequestBody Date expiryDate){
+        License result = licenseRepo.updateExpiryDate(id, expiryDate);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PatchMapping("/licenses/{id}/status")
+    public ResponseEntity<License> updateStatus(@PathVariable int id, @RequestBody int status){
+        License result = licenseRepo.updateStatus(id, status);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PatchMapping("/licenses/{id}/type")
+    public ResponseEntity<License> updateType(@PathVariable int id, @RequestBody int type){
+        License result = licenseRepo.updateType(id, type);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -108,6 +118,12 @@ class LicenseController {
     @GetMapping("/licenses/{id}/history")
     public ResponseEntity<List<LicenseRenewalHistory>> getRenewalHistory(@PathVariable int id) {
         List<LicenseRenewalHistory> result = licenseRenwalHistoryRepo.getByLicenseId(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PatchMapping("/licenses/{id}/history")
+    public ResponseEntity<LicenseRenewalHistory> updateRenewalAction(@PathVariable int id, @RequestBody int action){
+        LicenseRenewalHistory result = licenseRenwalHistoryRepo.updateRenewalAction(id, action);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
