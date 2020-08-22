@@ -3,13 +3,13 @@ package com.bbd.licenscerenewal.controllers;
 import com.bbd.licenscerenewal.models.License;
 import com.bbd.licenscerenewal.models.LicenseStatus;
 import com.bbd.licenscerenewal.models.LicenseType;
-import com.bbd.licenscerenewal.services.LicenseRepo;
-import com.bbd.licenscerenewal.services.LicenseStatusRepo;
-import com.bbd.licenscerenewal.services.LicenseTypeRepo;
+import com.bbd.licenscerenewal.services.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,13 +59,15 @@ class LicenseController {
 
     @PostMapping("/licenses")
     @ResponseBody
-    public License insert(@RequestBody License license){
+    @Validated(OnCreate.class)
+    public License insert(@Valid @RequestBody License license){
         return licenseRepo.add(license);
     }
 
     @PutMapping("/licenses")
     @ResponseBody
-    public License update(@RequestBody License license){
+    @Validated(OnUpdate.class)
+    public License update(@Valid @RequestBody License license){
         return licenseRepo.update(license);
     }
 

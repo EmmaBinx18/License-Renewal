@@ -1,22 +1,39 @@
 package com.bbd.licenscerenewal.models;
 
+import javax.validation.constraints.*;
+
 public class Owner{
+    @Min(0)
     private int ownerId;
+    @Pattern(regexp =  "(((\\d{2}((0[13578]|1[02])(0[1-9]|[12]\\d|3[01])|(0[13456789]|1[012])(0[1-9]|[12]\\d|30)|02(0[1-9]|1\\d|2[0-8])))|([02468][048]|[13579][26])0229))(( |-)(\\d{4})( |-)(\\d{3})|(\\d{7}))", message = "Invalid ID")
     private String idNumber;
+    @Min(0)
     private int idType;
+    @Size(min = 0, max = 25, message = "Invalid Country of issue")
     private String countryOfIssue;
     private String organisationName;
+    @NotNull(message = "Surname cannot be null")
     private String surname;
+    @NotNull(message = "Initials cannot be null")
     private String initials;
+    @NotNull(message = "First name cannot be null")
     private String firstName;
+    @NotNull(message = "Middle name cannot be null")
     private String middleName;
+    @Email(message = "Invalid email address")
     private String emailAddress;
+    @Size(min = 10, max = 15,message = "Invalid home number")
     private String homeTel;
+    @Size(min = 10, max = 15,message = "Invalid work number")
     private String workTel;
+    @Size(min = 10, max = 15,message = "Invalid cellphone number")
+    @NotNull(message = "Cellphone number cannot be null")
     private String cellphoneNumber;
+    @Size(min = 10, max = 15 ,message = "Invalid fax number")
     private String faxNumber;
     private Address postalAddress;
     private Address streetAddress;
+    @NotNull(message = "Chosen address cannot be null")
     private int chosenAddress;
     private int organisationId;
 

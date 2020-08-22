@@ -2,12 +2,17 @@ package com.bbd.licenscerenewal.controllers;
 
 import com.bbd.licenscerenewal.models.Vehicle;
 import com.bbd.licenscerenewal.models.VehicleType;
+import com.bbd.licenscerenewal.services.OnCreate;
+import com.bbd.licenscerenewal.services.OnUpdate;
 import com.bbd.licenscerenewal.services.VehicleRepo;
 import com.bbd.licenscerenewal.services.VehicleTypeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,13 +52,15 @@ class VehicleController {
 
     @PostMapping("/vehicles")
     @ResponseBody
-    public Vehicle insert(@RequestBody Vehicle vehicle){
+    @Validated(OnCreate.class)
+    public Vehicle insert(@Valid @RequestBody Vehicle vehicle){
         return vehicleRepo.add(vehicle);
     }
 
     @PutMapping("/vehicles")
     @ResponseBody
-    public Vehicle update(@RequestBody Vehicle vehicle){
+    @Validated(OnUpdate.class)
+    public Vehicle update(@Valid @RequestBody Vehicle vehicle){
         return vehicleRepo.update(vehicle);
     }
 
