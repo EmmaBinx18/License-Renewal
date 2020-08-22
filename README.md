@@ -85,6 +85,12 @@ Server: Heroku-server
 3. Organisation Representative
 ```
 
+**Renewal Actions:**
+```
+1. Renewal
+2. Suspended
+```
+
 **Vehicle Types:**
 ```
 1. Drawn
