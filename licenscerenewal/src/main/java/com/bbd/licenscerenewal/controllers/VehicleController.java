@@ -56,22 +56,9 @@ class VehicleController {
 
     @PostMapping("/vehicles")
     @Validated(OnCreate.class)
-    public ResponseEntity<Vehicle> insert(@RequestBody Vehicle vehicle){
+    public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle){
         Vehicle result = vehicleRepo.add(vehicle);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/vehicles")
-    @ResponseBody
-    @Validated(OnUpdate.class)
-    public Vehicle update(@Valid @RequestBody Vehicle vehicle){
-        return vehicleRepo.update(vehicle);
-    }
-
-    @DeleteMapping("/vehicles/{id}")
-    @ResponseBody
-    public Vehicle delete(@PathVariable int id) {
-        return vehicleRepo.delete(id);
     }
 
 }

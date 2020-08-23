@@ -18,7 +18,7 @@ public class LicenseRenewalHistory{
     @NotNull(message = "Renewal date cannot be null")
     private Date renewalDate;
     @Min(value = 0,message = "Fee cannot be less than zero")
-    private float fee;
+    private double fee;
     private int renewalActionId;
 
     public int getLicenseRenewalHistoryId() {

@@ -73,7 +73,7 @@ class LicenseController {
 
     @PostMapping("/licenses")
     @Validated(OnCreate.class)
-    public ResponseEntity<License> insert(@RequestBody License license){
+    public ResponseEntity<License> insert(@Valid @RequestBody License license){
         License result = licenseRepo.add(license);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
