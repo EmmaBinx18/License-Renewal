@@ -14,7 +14,6 @@ public class OrganisationRepo implements IRepository<Organisation>{
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    @Override
     public Organisation update(Organisation toUpdate) {
         Connection conn = null;
         try {
@@ -37,27 +36,6 @@ public class OrganisationRepo implements IRepository<Organisation>{
 
             ResultSet rs = add.executeQuery();
             return convertResultSet(rs).get(0);
-
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    @Override
-    public Organisation delete(int id) {
-        Connection conn = null;
-        try {
-            conn  = databaseService.getConnection();
-            Organisation organisation = getById(id);
-            PreparedStatement delete  = conn.prepareStatement("DELETE FROM Organisation WHERE OrganisationId = ?");
-            delete.setInt(1, id);
-
-            ResultSet rs = delete.executeQuery();
-
-            return organisation;
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();

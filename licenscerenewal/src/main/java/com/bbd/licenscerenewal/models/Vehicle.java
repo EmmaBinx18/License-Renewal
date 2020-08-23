@@ -13,7 +13,7 @@ public class Vehicle{
     @NotNull(groups = OnUpdate.class, message = "Vehicle Id not set on update")
     private int vehicleId;
     @Size(min = 0 , max = 8,message = "Invalid registration number")
-    private String registrationNumber;
+    private String registerNumber;
     @Size(min = 0,max = 17, message = "Invalid VIN number")
     private String vin;
     @NotNull(message = "Make cannot be null")
@@ -34,12 +34,12 @@ public class Vehicle{
         this.vehicleId = vehicleId;
     }
 
-    public String getRegistrationNumber(){
-        return registrationNumber;
+    public String getRegisterNumber(){
+        return registerNumber;
     }
 
-    public void setRegistrationNumber(String registrationNumber){
-        this.registrationNumber = registrationNumber;
+    public void setRegisterNumber(String registerNumber){
+        this.registerNumber = registerNumber;
     }
 
     public String getVin(){

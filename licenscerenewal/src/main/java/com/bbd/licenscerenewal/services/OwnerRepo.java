@@ -21,7 +21,6 @@ public class OwnerRepo implements IRepository<Owner>{
     @Autowired
     OrganisationRepo organisationRepo;
 
-    @Override
     public Owner update(Owner toUpdate) {
         Connection conn = null;
          try {
@@ -68,26 +67,6 @@ public class OwnerRepo implements IRepository<Owner>{
             update.executeUpdate();
             databaseService.releaseConnection(conn);
             return toUpdate;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    @Override
-    public Owner delete(int id) {
-        Connection conn = null;
-        try {
-            conn  = databaseService.getConnection();
-            Owner removed = getById(id);
-
-            PreparedStatement delete = conn.prepareStatement("DELETE FROM Owner WHERE OwnerId = ?");
-            delete.setInt(1, id);
-            delete.executeQuery();
-
-            return removed;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {

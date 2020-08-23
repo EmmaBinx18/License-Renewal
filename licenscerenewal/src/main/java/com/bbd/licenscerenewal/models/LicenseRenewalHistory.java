@@ -19,6 +19,7 @@ public class LicenseRenewalHistory{
     private Date renewalDate;
     @Min(value = 0,message = "Fee cannot be less than zero")
     private float fee;
+    private int renewalActionId;
 
     public int getLicenseRenewalHistoryId() {
         return licenseRenewalHistoryId;
@@ -44,11 +45,19 @@ public class LicenseRenewalHistory{
         this.renewalDate = renewalDate;
     }
 
-    public float getFee() {
+    public double getFee() {
         return fee;
     }
 
-    public void setFee(float fee) {
+    public void setFee(double fee) {
         this.fee = fee;
+    }
+
+    public int getRenewalActionId() {
+        return renewalActionId;
+    }
+
+    public void setRenewalActionId(int renewalActionId) {
+        this.renewalActionId = renewalActionId;
     }
 }
