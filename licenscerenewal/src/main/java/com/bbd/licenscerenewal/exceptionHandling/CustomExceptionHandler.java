@@ -26,7 +26,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 error = new ErrorMessage(401, "Unauthorized");
                 return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
             case 404:
-                error = new ErrorMessage(404, "Cannot be found");
+                error = new ErrorMessage(404, "Resource not found");
                 return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
             case 405:
                 error = new ErrorMessage(405, "Method not allowed");
