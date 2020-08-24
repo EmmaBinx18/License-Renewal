@@ -54,11 +54,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorMessage error = new ErrorMessage(ex.getErrorCode(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(SQLTimeoutException.class)
     public ResponseEntity<ErrorMessage> getSQLError(SQLTimeoutException ex){
         ErrorMessage error = new ErrorMessage(ex.getErrorCode(), ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
 }
