@@ -1,5 +1,8 @@
 package com.bbd.licenscerenewal.exceptionHandling;
 
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +47,18 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorMessage> getHttpServerError(HttpServerErrorException ex){
         ErrorMessage error = new ErrorMessage(ex.getRawStatusCode(), "Something has gone wrong. Please contact you service provider");
         return new ResponseEntity<>(error, ex.getStatusCode());
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<ErrorMessage> getSQLError(SQLException ex){
+        ErrorMessage error = new ErrorMessage(ex.getErrorCode(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(SQLTimeoutException.class)
+    public ResponseEntity<ErrorMessage> getSQLError(SQLTimeoutException ex){
+        ErrorMessage error = new ErrorMessage(ex.getErrorCode(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
 }
