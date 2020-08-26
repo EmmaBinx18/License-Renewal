@@ -10,7 +10,8 @@ Swaggar Documentation:
 201: Successfully Created Resource
 400: Bad request
 401: Unauthorized
-404: Cannot be found
+403: Unauthorized
+404: Resource not found
 405: Method not allowed
 422: Unprocessable Entity 
 50X: Server Error
