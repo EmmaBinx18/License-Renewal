@@ -4,8 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.bbd.licenscerenewal.models.LicenseRenewalHistory;
 @Service
@@ -86,8 +91,8 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM LicenseRenewalHistory WHERE LicenseRenewalHistoryId = ?");
             get.setInt(1, id);
-            ResultSet rs = get.executeQuery();
 
+            ResultSet rs = get.executeQuery();
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -103,8 +108,8 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM LicenseRenewalHistory WHERE LicenseId = ?");
             get.setInt(1, id);
-            ResultSet rs = get.executeQuery();
 
+            ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -113,4 +118,9 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
         }
         return new ArrayList<>();
     }
+
+    // public LicenseRenewalHistory getLatestHistory(int id) {
+    //     List<LicenseRenewalHistory> histories = getByLicenseId(id);
+    //     return histories.get(histories.size() - 1);
+    // }
 }

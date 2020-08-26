@@ -5,9 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 public class AddressRepo implements IRepository<Address>{
 
@@ -74,17 +79,15 @@ public class AddressRepo implements IRepository<Address>{
     }
 
     public Address insert(Address toAdd, Connection conn) throws SQLException {
-        PreparedStatement insert = conn.prepareStatement("EXEC pCreateAddress ?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-        insert.setString(1, toAdd.getAddressLine1());
-        insert.setString(2, toAdd.getAddressLine2());
-        insert.setString(3, toAdd.getAddressLine3());
-        insert.setString(4, toAdd.getPostalCode());
-        insert.setInt(5,toAdd.getAddressTypeId());
+        CallableStatement sp = conn.prepareCall("{CALL pCreateAddress(?,?,?,?,?)}");
+        sp.setString(1, toAdd.getAddressLine1());
+        sp.setString(2, toAdd.getAddressLine2());
+        sp.setString(3, toAdd.getAddressLine3());
+        sp.setString(4, toAdd.getPostalCode());
+        sp.setInt(5,toAdd.getAddressTypeId());
 
-        insert.executeUpdate();
-        toAdd.setAddressId(insert.getGeneratedKeys().getInt(1));
-
-        return toAdd;
+        ResultSet rs = sp.executeQuery();
+        return convertResultSet(rs).get(0);
     }
 
     @Override

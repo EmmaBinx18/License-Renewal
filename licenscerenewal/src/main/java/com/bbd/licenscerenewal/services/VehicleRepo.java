@@ -1,12 +1,25 @@
 package com.bbd.licenscerenewal.services;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.bbd.licenscerenewal.models.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
-import java.util.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class VehicleRepo implements IRepository<Vehicle>{
@@ -31,18 +44,16 @@ public class VehicleRepo implements IRepository<Vehicle>{
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
-            PreparedStatement insert  = conn.prepareStatement("INSERT INTO Vehicle VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-            insert.setString(1, toAdd.getRegisterNumber());
-            insert.setString(2, toAdd.getVin());
-            insert.setString(3, toAdd.getMake());
-            insert.setString(4, toAdd.getModel());
-            insert.setInt(5, toAdd.getOdometer());
-            insert.setInt(6, toAdd.getVehicleTypeId());
+            CallableStatement sp = conn.prepareCall("{CALL pCreateVehicle(?,?,?,?,?,?)}");
+            sp.setString(1, toAdd.getRegisterNumber());
+            sp.setString(2, toAdd.getVin());
+            sp.setString(3, toAdd.getMake());
+            sp.setString(4, toAdd.getModel());
+            sp.setInt(5, toAdd.getOdometer());
+            sp.setInt(6, toAdd.getVehicleTypeId());
 
-            insert.executeUpdate();
-            toAdd.setVehicleId(insert.getGeneratedKeys().getInt(1));
-
-            return toAdd;
+            ResultSet rs = sp.executeQuery();
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {
@@ -83,6 +94,13 @@ public class VehicleRepo implements IRepository<Vehicle>{
             databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
+    }
+
+    public Page<List<Vehicle>> getAllPaged(Pageable pageable) {
+        List<Vehicle> vehicles = getAll(); 
+        int start = (int) pageable.getOffset();
+        int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
+        return new PageImpl(vehicles.subList(start, end), pageable, vehicles.size());
     }
 
     @Override

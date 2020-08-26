@@ -1,23 +1,27 @@
 package com.bbd.licenscerenewal.models;
 
-public class Organisation{
-    private int id;
+public class Representative {
+    private int representativeId;
     private int idType;
     private String idNumber;
     private String countryOfIssue;
     private String surname;
     private String initials;
-    private int ownerType;
+    private int ownerTypeId;
 
-    public int getId() { return id; }
+    public int getRepresentativeId() {
+        return representativeId;
+    }
 
-    public void setId(int id) { this.id = id; }
+    public void setRepresentativeId(int representativeId) {
+        this.representativeId = representativeId;
+    }
 
     public int getIdType() {
         return idType;
     }
 
-    public void setIdType(int idType){
+    public void setIdType(int idType) {
         this.idType = idType;
     }
 
@@ -25,7 +29,7 @@ public class Organisation{
         return idNumber;
     }
 
-    public void setIdNumber(String idNumber){
+    public void setIdNumber(String idNumber) {
         this.idNumber = idNumber;
     }
 
@@ -33,7 +37,7 @@ public class Organisation{
         return countryOfIssue;
     }
 
-    public void setCountryOfIssue(String countryOfIssue){
+    public void setCountryOfIssue(String countryOfIssue) {
         this.countryOfIssue = countryOfIssue;
     }
 
@@ -41,7 +45,7 @@ public class Organisation{
         return surname;
     }
 
-    public void setSurname(String surname){
+    public void setSurname(String surname) {
         this.surname = surname;
     }
 
@@ -49,15 +53,15 @@ public class Organisation{
         return initials;
     }
 
-    public void setInitials(String initials){
+    public void setInitials(String initials) {
         this.initials = initials;
     }
 
-    public int getOwnerType() {
-        return ownerType;
+    public int getOwnerTypeId() {
+        return ownerTypeId;
     }
 
-    public void setOwnerType(int ownerType){
-        this.ownerType = ownerType;
+    public void setOwnerTypeId(int ownerTypeId) {
+        this.ownerTypeId = ownerTypeId;
     }
 }
