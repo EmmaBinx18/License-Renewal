@@ -40,7 +40,7 @@ class VehicleController {
     @Autowired
     VehicleTypeRepo vehicleTypeRepo;
 
-    @GetMapping("/vehicles")
+    @GetMapping(value = "/vehicles", headers = "X-API-VERSION=1")
     public <T> ResponseEntity<List<Vehicle>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
@@ -53,7 +53,7 @@ class VehicleController {
         }
     }
 
-    // @GetMapping("/vehicles")
+    // @GetMapping(value = "/vehicles", headers = "X-API-VERSION=1")
     // public ResponseEntity<Map<String, Object>> getAllVehiclesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) {
     //     try {
     //         Pageable paging = PageRequest.of(page, size);
@@ -75,7 +75,7 @@ class VehicleController {
     //     }
     // }
 
-    @GetMapping("/vehicles/{id}")
+    @GetMapping(value = "/vehicles/{id}", headers = "X-API-VERSION=1")
     public ResponseEntity<Vehicle> getById(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Vehicle result = vehicleRepo.getById(id);
         if(result == null){
@@ -84,13 +84,13 @@ class VehicleController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/vehicles/types")
+    @GetMapping(value = "/vehicles/types", headers = "X-API-VERSION=1")
     public ResponseEntity<List<VehicleType>> getVehicleTypes() throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<VehicleType> result = vehicleTypeRepo.getVehicleTypes();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping("/vehicles")
+    @PostMapping(value = "/vehicles", headers = "X-API-VERSION=1")
     @Validated(OnCreate.class)
     public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Vehicle result = vehicleRepo.add(vehicle);

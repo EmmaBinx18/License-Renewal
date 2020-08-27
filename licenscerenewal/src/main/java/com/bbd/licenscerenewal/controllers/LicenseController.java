@@ -54,7 +54,7 @@ class LicenseController {
     @Autowired
     LicenseRenewalHistoryRepo licenseRenwalHistoryRepo;
 
-    @GetMapping("/licenses")
+    @GetMapping(value = "/licenses", headers = "X-API-VERSION=1")
     public <T> ResponseEntity<List<License>> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
@@ -67,7 +67,7 @@ class LicenseController {
         }
     }
 
-    // @GetMapping("/licenses")
+    // @GetMapping(value = "/licenses", headers = "X-API-VERSION=1")
     // public ResponseEntity<Map<String, Object>> getAllLicensesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) {
     //     try {
     //         Pageable paging = PageRequest.of(page, size);
@@ -89,7 +89,7 @@ class LicenseController {
     //     }
     // }
 
-    @GetMapping("/licenses/{id}")
+    @GetMapping(value = "/licenses/{id}", headers = "X-API-VERSION=1")
     public ResponseEntity<License> getById(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.getById(id);
         if(result == null){
@@ -98,39 +98,39 @@ class LicenseController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/licenses/statuses")
+    @GetMapping(value = "/licenses/statuses", headers = "X-API-VERSION=1")
     public ResponseEntity<List<LicenseStatus>> getLicenseStatuses() throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseStatus> result =licenseStatusRepo.getLicenseStatuses();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/licenses/types")
+    @GetMapping(value = "/licenses/types", headers = "X-API-VERSION=1")
     public ResponseEntity<List<LicenseType>> getLicenseTypes() throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseType> result = licenseTypeRepo.getLicenseTypes();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping("/licenses")
+    @PostMapping(value = "/licenses", headers = "X-API-VERSION=1")
     @Validated(OnCreate.class)
     public ResponseEntity<License> insert(@Valid @RequestBody License license) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.add(license);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/licenses/{id}")
+    @PatchMapping(value = "/licenses/{id}", headers = "X-API-VERSION=1")
     public <T> ResponseEntity<License> patchLicense(@PathVariable int id, @RequestBody Map<String,T> value) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Set<Map.Entry<String,T>> values = value.entrySet();
         License result = licenseRepo.patchLicense(id, values);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping("/licenses/{id}")
+    @DeleteMapping(value = "/licenses/{id}", headers = "X-API-VERSION=1")
     public ResponseEntity<License> delete(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.delete(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping("/licenses/{id}/renew")
+    @PostMapping(value = "/licenses/{id}/renew", headers = "X-API-VERSION=1")
     public ResponseEntity<Map<String, Object>> renewLicense(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License license = licenseRepo.renew(id);
         // LicenseRenewalHistory history = licenseRenwalHistoryRepo.getLatestHistory(id);
@@ -142,13 +142,13 @@ class LicenseController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/licenses/{id}/history")
+    @GetMapping(value = "/licenses/{id}/history", headers = "X-API-VERSION=1")
     public ResponseEntity<List<LicenseRenewalHistory>> getRenewalHistory(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseRenewalHistory> result = licenseRenwalHistoryRepo.getByLicenseId(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PatchMapping("/licenses/{id}/history")
+    @PatchMapping(value = "/licenses/{id}/history", headers = "X-API-VERSION=1")
     public ResponseEntity<LicenseRenewalHistory> updateRenewalAction(@PathVariable int id, @RequestBody int action) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         LicenseRenewalHistory result = licenseRenwalHistoryRepo.updateRenewalAction(id, action);
         return new ResponseEntity<>(result, HttpStatus.OK);
