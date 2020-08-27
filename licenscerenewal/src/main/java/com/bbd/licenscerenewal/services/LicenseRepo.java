@@ -32,8 +32,8 @@ public class LicenseRepo implements IRepository<License> {
     public final Dictionary<String,String> putParams = new Hashtable();
 
     public LicenseRepo() {
-        getParams.put("owner"," AND OwnerId = ?");
-        getParams.put("vehicle", " AND VehicleId = ?");
+        getParams.put("ownerId"," AND OwnerId = ?");
+        getParams.put("vehicleId", " AND VehicleId = ?");
         getParams.put("expiryDate", " AND ExpiryDate =?");
         getParams.put("status", " AND LicenseStatusId =?");
         getParams.put("type", " AND LicenseTypeId =?");

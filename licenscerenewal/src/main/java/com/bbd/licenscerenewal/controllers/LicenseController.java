@@ -9,9 +9,9 @@ import com.bbd.licenscerenewal.services.LicenseRepo;
 import com.bbd.licenscerenewal.services.LicenseStatusRepo;
 import com.bbd.licenscerenewal.services.LicenseTypeRepo;
 
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.PageRequest;
-// import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,39 +46,29 @@ class LicenseController {
     LicenseRenewalHistoryRepo licenseRenwalHistoryRepo;
 
     @GetMapping("/licenses")
-    public <T> ResponseEntity<List<License>> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) {
-        Set<Map.Entry<String,T>> params = allParams.entrySet();
-        if(params.isEmpty()){
-            List<License> licenses = licenseRepo.getAll();
-            return new ResponseEntity<>(licenses, HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> getAllLicensesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<List<License>> vehicles = licenseRepo.getAllPaged(paging);
+
+        if (vehicles.getContent().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        else{
-            List<License> licenses = licenseRepo.getByQueryParams(params);
-            return new ResponseEntity<>(licenses, HttpStatus.OK);
-        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("vehicles", vehicles.getContent());
+        response.put("currentPage", vehicles.getNumber());
+        response.put("totalItems", vehicles.getTotalElements());
+        response.put("totalPages", vehicles.getTotalPages());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // @GetMapping("/licenses")
-    // public ResponseEntity<Map<String, Object>> getAllLicensesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) {
-    //     try {
-    //         Pageable paging = PageRequest.of(page, size);
-    //         Page<List<License>> vehicles = licenseRepo.getAllPaged(paging);
-
-    //         if (vehicles.getContent().isEmpty()) {
-    //             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    //         }
-
-    //         Map<String, Object> response = new HashMap<>();
-    //         response.put("vehicles", vehicles.getContent());
-    //         response.put("currentPage", vehicles.getNumber());
-    //         response.put("totalItems", vehicles.getTotalElements());
-    //         response.put("totalPages", vehicles.getTotalPages());
-
-    //         return new ResponseEntity<>(response, HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
+    @GetMapping("/licenses/query")
+    public <T> ResponseEntity<List<License>> getAllLicenses(@RequestParam Map<String,T> allParams) {
+        Set<Map.Entry<String,T>> params = allParams.entrySet();
+        List<License> licenses = licenseRepo.getByQueryParams(params);
+        return new ResponseEntity<>(licenses, HttpStatus.OK);
+    }
 
     @GetMapping("/licenses/{id}")
     public ResponseEntity<License> getById(@PathVariable int id) {
@@ -135,12 +125,6 @@ class LicenseController {
     @GetMapping("/licenses/{id}/history")
     public ResponseEntity<List<LicenseRenewalHistory>> getRenewalHistory(@PathVariable int id) {
         List<LicenseRenewalHistory> result = licenseRenwalHistoryRepo.getByLicenseId(id);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @PatchMapping("/licenses/{id}/history")
-    public ResponseEntity<LicenseRenewalHistory> updateRenewalAction(@PathVariable int id, @RequestBody int action){
-        LicenseRenewalHistory result = licenseRenwalHistoryRepo.updateRenewalAction(id, action);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

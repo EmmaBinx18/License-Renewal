@@ -43,29 +43,6 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
         return null;
     }
 
-    public LicenseRenewalHistory updateRenewalAction(int id, int action) {
-        Connection conn = null;
-        try {
-            conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE LicenseRenewalHistory SET RenewalActionId = ? WHERE LicenseRenewalHistoryId = ?");
-            update.setInt(1, action);
-            update.setInt(2, id);
-
-            update.executeUpdate();
-
-            PreparedStatement select = conn.prepareStatement("SELECT * FROM LicenseRenewalHistory WHERE icenseRenewalHistoryId = ?");
-            select.setInt(1, id);
-
-            ResultSet rs = select.executeQuery();
-            return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
     @Override
     public List<LicenseRenewalHistory> convertResultSet(ResultSet toConvert) throws SQLException {
         List<LicenseRenewalHistory> histories = new ArrayList<>();
