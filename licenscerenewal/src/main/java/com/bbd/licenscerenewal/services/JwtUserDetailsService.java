@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.sql.CallableStatement;
 
+import com.bbd.licenscerenewal.models.NullObjects;
+import com.bbd.licenscerenewal.models.Owner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.User;
@@ -29,6 +31,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 	@Autowired
 		private PasswordEncoder bcryptEncoder;
 
+	@Autowired
+	private NullObjects nullObjects;
+
 		public List<UserDB> convertResultSet(ResultSet toConvert) throws SQLException {
 			List<UserDB> users = new ArrayList<>();
 
@@ -48,8 +53,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
 		try {
 			UserDB user = getUser(username);
-		
-			if (!user.equals(null)) {
+			if (user != null) {
 				return new User(user.getUsername(), user.getPassword(),
 						new ArrayList<>());
 			} else {
@@ -91,7 +95,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 				sp.setString(1, username);
 
 				ResultSet rs = sp.executeQuery();
-        return convertResultSet(rs).get(0);
+
+			List<UserDB> list = convertResultSet(rs);
+			return list.isEmpty() ?   null : list.get(0);
 		} catch (SQLException exception) {
 				exception.printStackTrace();
 				throw exception;
