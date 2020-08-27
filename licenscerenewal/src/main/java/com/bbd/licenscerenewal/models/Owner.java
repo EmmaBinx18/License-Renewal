@@ -1,13 +1,17 @@
 package com.bbd.licenscerenewal.models;
 
+import com.bbd.licenscerenewal.services.OnCreate;
+import com.bbd.licenscerenewal.services.OnUpdate;
+
 import javax.validation.constraints.*;
 
 public class Owner{
-    @Min(0)
+    @NotNull(groups = OnUpdate.class)
+    @Null(groups = OnCreate.class)
     private int ownerId;
     @Pattern(regexp =  "(((\\d{2}((0[13578]|1[02])(0[1-9]|[12]\\d|3[01])|(0[13456789]|1[012])(0[1-9]|[12]\\d|30)|02(0[1-9]|1\\d|2[0-8])))|([02468][048]|[13579][26])0229))(( |-)(\\d{4})( |-)(\\d{3})|(\\d{7}))", message = "Invalid ID")
     private String idNumber;
-    @Min(0)
+    @Min(value = 0,message = "ID type cannot be negative")
     private int idType;
     @Size(min = 0, max = 25, message = "Invalid Country of issue")
     private String countryOfIssue;
@@ -31,10 +35,13 @@ public class Owner{
     private String cellphoneNumber;
     @Size(min = 10, max = 15 ,message = "Invalid fax number")
     private String faxNumber;
+    @NotNull(message = "Postal address ID cannot be null")
     private int postalAddressId;
+    @NotNull(message = "Street address ID cannot be null")
     private int streetAddressId;
     @NotNull(message = "Chosen address cannot be null")
     private int chosenAddress;
+    @Min(value = 0,message = "Representative ID cannot be null")
     private int representativeId;
 
     public String getIdNumber() {

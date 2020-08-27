@@ -3,7 +3,6 @@ package com.bbd.licenscerenewal.models;
 import com.bbd.licenscerenewal.services.OnCreate;
 import com.bbd.licenscerenewal.services.OnUpdate;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
