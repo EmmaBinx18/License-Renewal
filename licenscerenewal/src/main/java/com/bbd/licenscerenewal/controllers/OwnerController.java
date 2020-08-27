@@ -47,7 +47,7 @@ public class OwnerController {
     @Autowired
     IdentificationTypeRepo identificationTypeRepo;
 
-    @GetMapping("/owners")
+    @GetMapping(value = "/owners", headers = "X-API-VERSION=1")
     public <T> ResponseEntity<List<Owner>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
@@ -60,7 +60,7 @@ public class OwnerController {
         }
     }
 
-    @GetMapping("/owners/{id}")
+    @GetMapping(value = "/owners/{id}", headers = "X-API-VERSION=1")
     public ResponseEntity<Owner> getById(@PathVariable int id)  throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Owner result = ownerRepo.getById(id);
         if(result == null){
@@ -69,7 +69,7 @@ public class OwnerController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/owners/{id}/addresses")
+    @GetMapping(value = "/owners/{id}/addresses", headers = "X-API-VERSION=1")
     public ResponseEntity<Map<String, Object>> getAddresses(@PathVariable int id)  throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Owner owner = ownerRepo.getById(id);
         Address postalAddress = addressRepo.getById(owner.getPostalAddressId());
@@ -83,7 +83,7 @@ public class OwnerController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/owners/{id}/representative")
+    @GetMapping(value = "/owners/{id}/representative", headers = "X-API-VERSION=1")
     public ResponseEntity<Representative> getRepresentative(@PathVariable int id)  throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Representative result = representativeRepo.getById(id);
         if(result == null){
@@ -92,7 +92,7 @@ public class OwnerController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/owners/types")
+    @GetMapping(value = "/owners/types", headers = "X-API-VERSION=1")
     public ResponseEntity<List<OwnerType>> getOwnerTypes()  throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<OwnerType> result = ownerTypeRepo.getOwnerTypes();
         if(result == null){
@@ -101,21 +101,21 @@ public class OwnerController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PatchMapping("/owners/{id}")
+    @PatchMapping(value = "/owners/{id}", headers = "X-API-VERSION=1")
     public <T> ResponseEntity<Owner> patchOwner(@PathVariable int id, @RequestBody Map<String,T> value) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Set<Map.Entry<String,T>> values = value.entrySet();
         Owner result = ownerRepo.patchOwner(id, values);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping("/owners")
+    @PostMapping(value = "/owners", headers = "X-API-VERSION=1")
     @Validated(OnCreate.class)
     public ResponseEntity<Owner> insert(@Valid @RequestBody Owner owner) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Owner result = ownerRepo.add(owner);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 
-    @GetMapping("/identificationTypes")
+    @GetMapping(value = "/identificationTypes", headers = "X-API-VERSION=1")
     public ResponseEntity<List<IdentificationType>> getIdentificationTypes()  throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<IdentificationType> identificationTypes = identificationTypeRepo.getIdentificationTypes();
         return new ResponseEntity<>(identificationTypes, HttpStatus.OK);
