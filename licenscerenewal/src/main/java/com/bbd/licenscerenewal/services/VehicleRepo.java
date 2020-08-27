@@ -54,9 +54,9 @@ public class VehicleRepo implements IRepository<Vehicle>{
 
             ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -88,19 +88,24 @@ public class VehicleRepo implements IRepository<Vehicle>{
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle");
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
     }
 
     public Page<List<Vehicle>> getAllPaged(Pageable pageable) throws SQLException {
-        List<Vehicle> vehicles = getAll(); 
-        int start = (int) pageable.getOffset();
-        int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
-        return new PageImpl(vehicles.subList(start, end), pageable, vehicles.size());
+        try {
+            List<Vehicle> vehicles = getAll(); 
+            int start = (int) pageable.getOffset();
+            int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
+            return new PageImpl(vehicles.subList(start, end), pageable, vehicles.size());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
+        }
     }
 
     @Override
@@ -108,14 +113,14 @@ public class VehicleRepo implements IRepository<Vehicle>{
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle WHERE VehicleId = ?");
-            get.setInt(1, id);
+            CallableStatement sp = conn.prepareCall("{CALL pGetVehicle(?)}");
+            sp.setInt(1, id);
 
-            ResultSet rs = get.executeQuery();
+            ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -138,9 +143,9 @@ public class VehicleRepo implements IRepository<Vehicle>{
             
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }

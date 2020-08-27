@@ -121,11 +121,11 @@ class LicenseController {
     @PostMapping("/licenses/{id}/renew")
     public ResponseEntity<Map<String, Object>> renewLicense(@PathVariable int id) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License license = licenseRepo.renew(id);
-        // LicenseRenewalHistory history = licenseRenwalHistoryRepo.getLatestHistory(id);
+        LicenseRenewalHistory history = licenseRenwalHistoryRepo.getLatest(id);
 
         Map<String, Object> response = new HashMap<>();
         response.put("license", license);
-        // response.put("renewal", history);
+        response.put("renewal", history);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

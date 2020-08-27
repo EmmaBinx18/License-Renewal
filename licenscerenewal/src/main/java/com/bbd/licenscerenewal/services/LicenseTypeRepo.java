@@ -35,9 +35,9 @@ public class LicenseTypeRepo{
             }
 
             return licenseTypes;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }

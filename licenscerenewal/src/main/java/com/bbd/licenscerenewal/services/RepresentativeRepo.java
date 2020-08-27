@@ -59,9 +59,9 @@ public class RepresentativeRepo implements IRepository<Representative> {
 
             ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            throw throwables;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -84,9 +84,9 @@ public class RepresentativeRepo implements IRepository<Representative> {
             
             update.executeUpdate();
             return getById(id);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -119,9 +119,9 @@ public class RepresentativeRepo implements IRepository<Representative> {
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Representative");
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -132,14 +132,14 @@ public class RepresentativeRepo implements IRepository<Representative> {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("SELECT RepresentativeId,IdentificationTypeId,IdNumber,ForeignIdCountry,Surname, Initials,OwnerTypeId FROM Representative WHERE RepresentativeId = ?");
-            get.setInt(1, id);
+            CallableStatement sp = conn.prepareCall("{CALL pGetRepresentative(?)}");
+            sp.setInt(1, id);
 
-            ResultSet rs = get.executeQuery();
+            ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -162,9 +162,9 @@ public class RepresentativeRepo implements IRepository<Representative> {
             
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }

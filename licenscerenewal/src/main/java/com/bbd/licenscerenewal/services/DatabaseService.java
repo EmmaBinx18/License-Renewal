@@ -55,10 +55,10 @@ public class DatabaseService implements IDataBasePool {
     private Connection createConnection() {
         try {
             return DriverManager.getConnection(connectionString);
-        } catch (SQLTimeoutException e) {
-            e.printStackTrace();
-        } catch (SQLException e){
-            e.printStackTrace();
+        } catch (SQLTimeoutException exception) {
+            exception.printStackTrace();
+        } catch (SQLException exception){
+            exception.printStackTrace();
         }
         return null;
     }
