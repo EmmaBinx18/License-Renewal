@@ -15,9 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bbd.licenscerenewal.models.Representative;
 import com.bbd.licenscerenewal.services.RepresentativeRepo;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +33,7 @@ public class RepresentativeController {
     RepresentativeRepo representativeRepo;
 
     @GetMapping("/representative")
-    public <T> ResponseEntity<List<Representative>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams){
+    public <T> ResponseEntity<List<Representative>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
             List<Representative> representatives = representativeRepo.getAll();
@@ -43,13 +47,13 @@ public class RepresentativeController {
 
     @PostMapping("/representative")
     @Validated(OnCreate.class)
-    public ResponseEntity<Representative> insertRepresentative(@Valid @RequestBody Representative representative){
+    public ResponseEntity<Representative> insertRepresentative(@Valid @RequestBody Representative representative) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Representative result = representativeRepo.add(representative);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 
     @PatchMapping("/representative/{id}")
-    public <T> ResponseEntity<Representative> patchRepresentative(@PathVariable int id, @RequestBody Map<String,T> value){
+    public <T> ResponseEntity<Representative> patchRepresentative(@PathVariable int id, @RequestBody Map<String,T> value) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Set<Map.Entry<String,T>> values = value.entrySet();
         Representative result = representativeRepo.patchRepresentative(id, values);
         return new ResponseEntity<>(result, HttpStatus.OK);

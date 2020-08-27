@@ -20,7 +20,7 @@ public class LicenseStatusRepo {
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public List<LicenseStatus> getLicenseStatuses() {
+    public List<LicenseStatus> getLicenseStatuses() throws SQLException {
         Connection conn = null;
         try{
             conn  = databaseService.getConnection();
@@ -38,9 +38,9 @@ public class LicenseStatusRepo {
             return licenseStatuses;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 }
