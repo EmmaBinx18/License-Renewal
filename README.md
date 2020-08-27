@@ -13,7 +13,7 @@ All requests need to include a `Bearer Token` as well as the `X-API-VERSION` hea
 201: Successfully Created Resource
 400: Bad request
 401: Unauthorized
-403: Unauthorized
+403: Forbidden
 404: Resource not found
 405: Method not allowed
 422: Unprocessable Entity 
