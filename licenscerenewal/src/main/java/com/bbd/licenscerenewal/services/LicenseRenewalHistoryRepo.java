@@ -1,5 +1,7 @@
 package com.bbd.licenscerenewal.services;
 
+import com.bbd.licenscerenewal.models.License;
+import com.bbd.licenscerenewal.models.NullObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -12,12 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bbd.licenscerenewal.models.LicenseRenewalHistory;
+
+
 @Service
 public class LicenseRenewalHistoryRepo {
 
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
+
+    @Autowired
+    NullObjects nullObjects;
 
     public List<LicenseRenewalHistory> convertResultSet(ResultSet toConvert) throws SQLException {
         List<LicenseRenewalHistory> histories = new ArrayList<>();
@@ -44,7 +51,8 @@ public class LicenseRenewalHistoryRepo {
             sp.setInt(1, id);
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            List<LicenseRenewalHistory> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getLicenseRenewalHistory():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;

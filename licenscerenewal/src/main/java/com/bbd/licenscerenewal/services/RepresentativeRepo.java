@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.bbd.licenscerenewal.models.NullObjects;
 import com.bbd.licenscerenewal.models.Representative;
 
+import com.bbd.licenscerenewal.models.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,9 @@ public class RepresentativeRepo implements IRepository<Representative> {
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
+
+    @Autowired
+    NullObjects nullObjects;
 
     public final Dictionary<String,String> getParams = new Hashtable();
     public final Dictionary<String,String> putParams = new Hashtable();
@@ -58,7 +63,8 @@ public class RepresentativeRepo implements IRepository<Representative> {
             sp.setInt(6, toAdd.getOwnerTypeId());
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            List<Representative> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getRepresentative():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;
@@ -136,7 +142,8 @@ public class RepresentativeRepo implements IRepository<Representative> {
             sp.setInt(1, id);
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            List<Representative> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getRepresentative():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;

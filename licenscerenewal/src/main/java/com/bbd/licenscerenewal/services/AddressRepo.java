@@ -1,6 +1,8 @@
 package com.bbd.licenscerenewal.services;
 
 import com.bbd.licenscerenewal.models.Address;
+import com.bbd.licenscerenewal.models.LicenseRenewalHistory;
+import com.bbd.licenscerenewal.models.NullObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ public class AddressRepo implements IRepository<Address>{
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
+
+    @Autowired
+    NullObjects nullObjects;
 
     public Address update(Address toUpdate) throws SQLException {
         Connection conn = null;
@@ -54,10 +59,11 @@ public class AddressRepo implements IRepository<Address>{
 
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
-            return convertResultSet(rs).get(0);
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-            throw exception;
+            List<Address> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getAddress():list.get(0);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -86,7 +92,8 @@ public class AddressRepo implements IRepository<Address>{
         sp.setInt(5,toAdd.getAddressTypeId());
 
         ResultSet rs = sp.executeQuery();
-        return convertResultSet(rs).get(0);
+        List<Address> list = convertResultSet(rs);
+        return list.isEmpty() ?   nullObjects.getAddress():list.get(0);
     }
 
     @Override
@@ -117,7 +124,8 @@ public class AddressRepo implements IRepository<Address>{
             get.setInt(1, id);
             ResultSet rs = get.executeQuery();
 
-            return convertResultSet(rs).get(0);
+            List<Address> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getAddress():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;

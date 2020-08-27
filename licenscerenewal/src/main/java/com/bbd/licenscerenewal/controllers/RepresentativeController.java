@@ -36,11 +36,19 @@ public class RepresentativeController {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
             List<Representative> representatives = representativeRepo.getAll();
-            return new ResponseEntity<>(representatives, HttpStatus.OK);
+            if(representatives.size()>0)
+            {
+                return new ResponseEntity<>(representatives, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(representatives, HttpStatus.NO_CONTENT);
         }
         else{
             List<Representative> representatives = representativeRepo.getByQueryParams(params);
-            return new ResponseEntity<>(representatives, HttpStatus.OK);
+            if(representatives.size() >0 ) {
+                return new ResponseEntity<>(representatives, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(representatives, HttpStatus.NO_CONTENT);
+
         }
     }
 
@@ -48,6 +56,10 @@ public class RepresentativeController {
     @Validated(OnCreate.class)
     public ResponseEntity<Representative> insertRepresentative(@Valid @RequestBody Representative representative) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Representative result = representativeRepo.add(representative);
+        if(result.getRepresentativeId() == -1)
+        {
+            return new ResponseEntity<> (result, HttpStatus.NOT_MODIFIED);
+        }
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 
@@ -55,6 +67,10 @@ public class RepresentativeController {
     public <T> ResponseEntity<Representative> patchRepresentative(@PathVariable int id, @RequestBody Map<String,T> value) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Set<Map.Entry<String,T>> values = value.entrySet();
         Representative result = representativeRepo.patchRepresentative(id, values);
+        if(result.getRepresentativeId() == -1)
+        {
+            return new ResponseEntity<>(result, HttpStatus.NOT_MODIFIED);
+        }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
