@@ -3,6 +3,9 @@ package com.bbd.licenscerenewal.services;
 import com.bbd.licenscerenewal.models.Address;
 import com.bbd.licenscerenewal.models.LicenseRenewalHistory;
 import com.bbd.licenscerenewal.models.NullObjects;
+import com.bbd.licenscerenewal.utils.logging.LogSQL;
+import com.bbd.licenscerenewal.utils.logging.LogType;
+import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -49,7 +52,7 @@ public class AddressRepo implements IRepository<Address>{
 
             return toUpdate;
         } catch (SQLException exception) { 
-            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
+            logger.log("{Error SQL}" + exception.getMessage(), LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
