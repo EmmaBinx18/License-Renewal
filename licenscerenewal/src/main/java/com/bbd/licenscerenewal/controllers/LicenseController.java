@@ -53,9 +53,6 @@ class LicenseController {
     @Autowired
     LicenseRenewalHistoryRepo licenseRenwalHistoryRepo;
 
-    // private static final String API_VERSION = System.getenv("version");
-    // @RequestHeader(value="X-API-VERSION", required = false, defaultValue = API_VERSION) int version
-
     @GetMapping("/licenses")
     public ResponseEntity<Map<String, Object>> getAllLicensesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {        
         Pageable paging = PageRequest.of(page, size);
@@ -104,7 +101,7 @@ class LicenseController {
     @GetMapping(value = "/licenses/types", headers = "X-API-VERSION=1")
     public ResponseEntity<List<LicenseType>> getLicenseTypes() throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseType> result = licenseTypeRepo.getLicenseTypes();
-        if(result.size() >0)
+        if(result.size() > 0)
         {
             return new ResponseEntity<>(result, HttpStatus.OK);
         }

@@ -1,7 +1,6 @@
 package com.bbd.licenscerenewal.services;
 
 import com.bbd.licenscerenewal.models.Address;
-import com.bbd.licenscerenewal.models.LicenseRenewalHistory;
 import com.bbd.licenscerenewal.models.NullObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
