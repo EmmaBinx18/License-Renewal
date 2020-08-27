@@ -15,6 +15,9 @@ import java.util.Set;
 import com.bbd.licenscerenewal.models.Owner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -163,6 +166,18 @@ public class OwnerRepo implements IRepository<Owner>{
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
+        }
+    }
+
+    public Page<List<Owner>> getAllPaged(Pageable pageable) throws SQLException {
+        try {
+            List<Owner> owners = getAll(); 
+            int start = (int) pageable.getOffset();
+            int end = ((start + pageable.getPageSize()) > owners.size() ? owners.size() : (start + pageable.getPageSize()));
+            return new PageImpl(owners.subList(start, end), pageable, owners.size());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         }
     }
 

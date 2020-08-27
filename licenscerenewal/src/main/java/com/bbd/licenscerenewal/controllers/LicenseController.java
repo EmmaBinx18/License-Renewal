@@ -55,17 +55,17 @@ class LicenseController {
     @GetMapping(value = "/licenses", headers = "X-API-VERSION=1")
     public ResponseEntity<Map<String, Object>> getAllLicensesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Pageable paging = PageRequest.of(page, size);
-        Page<List<License>> vehicles = licenseRepo.getAllPaged(paging);
+        Page<List<License>> licenses = licenseRepo.getAllPaged(paging);
 
-        if (vehicles.getContent().isEmpty()) {
+        if (licenses.getContent().isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
         Map<String, Object> response = new HashMap<>();
-        response.put("vehicles", vehicles.getContent());
-        response.put("currentPage", vehicles.getNumber());
-        response.put("totalItems", vehicles.getTotalElements());
-        response.put("totalPages", vehicles.getTotalPages());
+        response.put("licenses", licenses.getContent());
+        response.put("currentPage", licenses.getNumber());
+        response.put("totalItems", licenses.getTotalElements());
+        response.put("totalPages", licenses.getTotalPages());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

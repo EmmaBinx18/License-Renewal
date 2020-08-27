@@ -8,6 +8,9 @@ import com.bbd.licenscerenewal.models.Representative;
 import com.bbd.licenscerenewal.services.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -48,16 +51,28 @@ public class OwnerController {
     IdentificationTypeRepo identificationTypeRepo;
 
     @GetMapping(value = "/owners", headers = "X-API-VERSION=1")
-    public <T> ResponseEntity<List<Owner>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
+    public ResponseEntity<Map<String, Object>> getAllLicensesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {
+        Pageable paging = PageRequest.of(page, size);
+        Page<List<Owner>> owners = ownerRepo.getAllPaged(paging);
+
+        if (owners.getContent().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("owners", owners.getContent());
+        response.put("currentPage", owners.getNumber());
+        response.put("totalItems", owners.getTotalElements());
+        response.put("totalPages", owners.getTotalPages());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/owners/query", headers = "X-API-VERSION=1")
+    public <T> ResponseEntity<List<Owner>> getAllLicenses(@RequestParam Map<String,T> allParams) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
-        if(params.isEmpty()){
-            List<Owner> owners = ownerRepo.getAll();
+        List<Owner> owners = ownerRepo.getByQueryParams(params);
             return new ResponseEntity<>(owners, HttpStatus.OK);
-        }
-        else{
-            List<Owner> owners = ownerRepo.getByQueryParams(params);
-            return new ResponseEntity<>(owners, HttpStatus.OK);
-        }
     }
 
     @GetMapping(value = "/owners/{id}", headers = "X-API-VERSION=1")
