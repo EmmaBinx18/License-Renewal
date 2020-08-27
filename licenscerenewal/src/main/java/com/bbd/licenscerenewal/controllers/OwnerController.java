@@ -63,7 +63,7 @@ public class OwnerController {
     @GetMapping(value = "/owners/{id}", headers = "X-API-VERSION=1")
     public ResponseEntity<Owner> getById(@PathVariable int id)  throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Owner result = ownerRepo.getById(id);
-        if(result == null){
+        if(result.getOwnerId() == -1){
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -86,7 +86,7 @@ public class OwnerController {
     @GetMapping(value = "/owners/{id}/representative", headers = "X-API-VERSION=1")
     public ResponseEntity<Representative> getRepresentative(@PathVariable int id)  throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Representative result = representativeRepo.getById(id);
-        if(result == null){
+        if(result.getRepresentativeId() == -1){
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -95,16 +95,20 @@ public class OwnerController {
     @GetMapping(value = "/owners/types", headers = "X-API-VERSION=1")
     public ResponseEntity<List<OwnerType>> getOwnerTypes()  throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<OwnerType> result = ownerTypeRepo.getOwnerTypes();
-        if(result == null){
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        if(result.size() >0){
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
     }
 
     @PatchMapping(value = "/owners/{id}", headers = "X-API-VERSION=1")
     public <T> ResponseEntity<Owner> patchOwner(@PathVariable int id, @RequestBody Map<String,T> value) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Set<Map.Entry<String,T>> values = value.entrySet();
         Owner result = ownerRepo.patchOwner(id, values);
+        if(result.getOwnerId() == -1)
+        {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -112,12 +116,19 @@ public class OwnerController {
     @Validated(OnCreate.class)
     public ResponseEntity<Owner> insert(@Valid @RequestBody Owner owner) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Owner result = ownerRepo.add(owner);
+        if(result.getOwnerId() ==-1){
+            return new ResponseEntity<> (result, HttpStatus.NOT_MODIFIED);
+        }
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/identificationTypes", headers = "X-API-VERSION=1")
     public ResponseEntity<List<IdentificationType>> getIdentificationTypes()  throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<IdentificationType> identificationTypes = identificationTypeRepo.getIdentificationTypes();
-        return new ResponseEntity<>(identificationTypes, HttpStatus.OK);
+        if(identificationTypes.size() > 0 )
+        {
+            return new ResponseEntity<>(identificationTypes, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(identificationTypes, HttpStatus.NOT_MODIFIED);
     }
 }

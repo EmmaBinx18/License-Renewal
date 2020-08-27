@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.bbd.licenscerenewal.models.License;
 import com.bbd.licenscerenewal.models.NullObjects;
+import com.bbd.licenscerenewal.models.Owner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -127,7 +128,8 @@ public class LicenseRepo implements IRepository<License> {
             sp.setInt(7, toAdd.getLicenseTypeId());
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getLicense();
+            List<License> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getLicense():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;
@@ -194,7 +196,8 @@ public class LicenseRepo implements IRepository<License> {
             sp.setInt(1, id);
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getLicense();
+            List<License> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getLicense():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;

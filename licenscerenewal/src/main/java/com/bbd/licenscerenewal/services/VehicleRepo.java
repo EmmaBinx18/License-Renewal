@@ -57,7 +57,8 @@ public class VehicleRepo implements IRepository<Vehicle>{
             sp.setInt(6, toAdd.getVehicleTypeId());
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getVehicle();
+            List<Vehicle> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getVehicle():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;
@@ -69,7 +70,6 @@ public class VehicleRepo implements IRepository<Vehicle>{
     @Override
     public List<Vehicle> convertResultSet(ResultSet toConvert) throws SQLException {
         List<Vehicle> vehicles = new ArrayList<>();
-
         while(toConvert.next()){
             Vehicle vehicle = new Vehicle();
             vehicle.setVehicleId(toConvert.getInt(1));
@@ -121,7 +121,8 @@ public class VehicleRepo implements IRepository<Vehicle>{
             sp.setInt(1, id);
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getVehicle();
+            List<Vehicle> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getVehicle():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;

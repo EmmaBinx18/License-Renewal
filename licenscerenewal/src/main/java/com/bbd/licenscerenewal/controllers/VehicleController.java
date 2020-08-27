@@ -68,8 +68,8 @@ class VehicleController {
     @GetMapping(value = "/vehicles/{id}", headers = "X-API-VERSION=1")
     public ResponseEntity<Vehicle> getById(@PathVariable int id) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Vehicle result = vehicleRepo.getById(id);
-        if(result == null){
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        if(result.getVehicleId() == -1){
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -77,6 +77,9 @@ class VehicleController {
     @GetMapping(value = "/vehicles/types", headers = "X-API-VERSION=1")
     public ResponseEntity<List<VehicleType>> getVehicleTypes() throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<VehicleType> result = vehicleTypeRepo.getVehicleTypes();
+        if(result.isEmpty()){
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -84,6 +87,10 @@ class VehicleController {
     @Validated(OnCreate.class)
     public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Vehicle result = vehicleRepo.add(vehicle);
+        if(result.getVehicleId() == -1)
+        {
+            return new ResponseEntity<> (result, HttpStatus.NOT_MODIFIED);
+        }
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 

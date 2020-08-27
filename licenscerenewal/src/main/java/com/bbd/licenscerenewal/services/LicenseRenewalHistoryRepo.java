@@ -1,5 +1,6 @@
 package com.bbd.licenscerenewal.services;
 
+import com.bbd.licenscerenewal.models.License;
 import com.bbd.licenscerenewal.models.NullObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,6 +22,9 @@ public class LicenseRenewalHistoryRepo {
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
+
+    @Autowired
+    NullObjects nullObjects;
 
     public List<LicenseRenewalHistory> convertResultSet(ResultSet toConvert) throws SQLException {
         List<LicenseRenewalHistory> histories = new ArrayList<>();
@@ -47,10 +51,11 @@ public class LicenseRenewalHistoryRepo {
             sp.setInt(1, id);
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).size() > 0? nullObjects.getLicenseRenewalHistory() : convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+            List<LicenseRenewalHistory> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getLicenseRenewalHistory():list.get(0);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }

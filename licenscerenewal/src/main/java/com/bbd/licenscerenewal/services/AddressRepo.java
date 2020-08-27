@@ -1,6 +1,7 @@
 package com.bbd.licenscerenewal.services;
 
 import com.bbd.licenscerenewal.models.Address;
+import com.bbd.licenscerenewal.models.LicenseRenewalHistory;
 import com.bbd.licenscerenewal.models.NullObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,7 +59,8 @@ public class AddressRepo implements IRepository<Address>{
 
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
-            return convertResultSet(rs).isEmpty()? nullObjects.getAddress() : convertResultSet(rs).get(0);
+            List<Address> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getAddress():list.get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
             throw throwable;
@@ -90,7 +92,8 @@ public class AddressRepo implements IRepository<Address>{
         sp.setInt(5,toAdd.getAddressTypeId());
 
         ResultSet rs = sp.executeQuery();
-        return convertResultSet(rs).size() > 0? nullObjects.getAddress() : convertResultSet(rs).get(0);
+        List<Address> list = convertResultSet(rs);
+        return list.isEmpty() ?   nullObjects.getAddress():list.get(0);
     }
 
     @Override
@@ -121,10 +124,11 @@ public class AddressRepo implements IRepository<Address>{
             get.setInt(1, id);
             ResultSet rs = get.executeQuery();
 
-            return convertResultSet(rs).size() > 0? nullObjects.getAddress() : convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+            List<Address> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getAddress():list.get(0);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
