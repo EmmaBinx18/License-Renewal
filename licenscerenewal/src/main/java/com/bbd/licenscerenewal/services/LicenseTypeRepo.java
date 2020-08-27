@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class LicenseTypeRepo{
 
+    Logger logger = new Logger(new LogSQL());
+
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
@@ -34,9 +36,15 @@ public class LicenseTypeRepo{
                 licenseTypes.add(licenseType);
             }
 
+            logger.log("SELECT * FROM LicenseType", LogType.QUERY);
+
+            logger.log(licenseTypes,LogType.RESPONSE);
+
+            logger.log("",LogType.COMPLETED);
+
             return licenseTypes;
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);

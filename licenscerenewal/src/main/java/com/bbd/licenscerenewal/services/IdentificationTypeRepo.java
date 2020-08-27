@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class IdentificationTypeRepo {
 
+    Logger logger = new Logger(new LogSQL());
+
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
@@ -35,9 +37,15 @@ public class IdentificationTypeRepo {
                 identificationTypes.add(identificationType);
             }
 
+            logger.log("SELECT * FROM IdentificationType", LogType.QUERY);
+
+            logger.log(identificationTypes,LogType.RESPONSE);
+            
+            logger.log("",LogType.COMPLETED);
+
             return identificationTypes;
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);

@@ -18,6 +18,8 @@ import java.util.List;
 @Service
 public class AddressRepo implements IRepository<Address>{
 
+    Logger logger = new Logger(new LogSQL());
+
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
@@ -38,9 +40,16 @@ public class AddressRepo implements IRepository<Address>{
             update.setInt(6, toUpdate.getAddressId());
 
             update.executeUpdate();
+
+            logger.log("UPDATE TABLE Address SET AddressLine1 = ?,AddressLine2 = ?AddressLine3 = ? ,PostalCode = ?,AddressTypeId = ?  WHERE AddressId = ?", LogType.QUERY);
+
+            logger.log(toUpdate, LogType.PARAMETERS);
+
+            logger.log("",LogType.COMPLETED);
+
             return toUpdate;
-        } catch (SQLException exception) {
-            exception.printStackTrace();
+        } catch (SQLException exception) { 
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -60,9 +69,17 @@ public class AddressRepo implements IRepository<Address>{
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
             List<Address> list = convertResultSet(rs);
+
+            logger.log("DELETE FROM Address WHERE AddressId = ?", LogType.QUERY);
+
+            logger.log(id, LogType.PARAMETERS);
+
+            logger.log(list,LogType.RESPONSE);
+
+            logger.log("",LogType.COMPLETED);
+
             return list.isEmpty() ?   nullObjects.getAddress():list.get(0);
         } catch (SQLException throwable) {
-            throwable.printStackTrace();
             throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
@@ -76,7 +93,7 @@ public class AddressRepo implements IRepository<Address>{
             conn = databaseService.getConnection();
             return insert(toAdd,conn);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -93,6 +110,15 @@ public class AddressRepo implements IRepository<Address>{
 
         ResultSet rs = sp.executeQuery();
         List<Address> list = convertResultSet(rs);
+
+        logger.log("{CALL pCreateAddress(?,?,?,?,?)}", LogType.QUERY);
+
+        logger.log(toAdd, LogType.PARAMETERS);
+
+        logger.log(list,LogType.RESPONSE);
+
+        logger.log("",LogType.COMPLETED);
+
         return list.isEmpty() ?   nullObjects.getAddress():list.get(0);
     }
 
@@ -125,9 +151,20 @@ public class AddressRepo implements IRepository<Address>{
             ResultSet rs = get.executeQuery();
 
             List<Address> list = convertResultSet(rs);
+
+            Logger logger = new Logger(new LogSQL());
+
+            logger.log("SELECT * FROM Address WHERE AddressId = ?", LogType.QUERY);
+            
+            logger.log(id, LogType.PARAMETERS);
+            
+            logger.log(list,LogType.RESPONSE);
+            
+            logger.log("",LogType.COMPLETED);
+
             return list.isEmpty() ?   nullObjects.getAddress():list.get(0);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
