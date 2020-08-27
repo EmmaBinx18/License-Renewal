@@ -1,10 +1,12 @@
 package com.bbd.licenscerenewal.controllers;
 
 import com.bbd.licenscerenewal.models.Address;
+import com.bbd.licenscerenewal.models.IdentificationType;
 import com.bbd.licenscerenewal.models.Owner;
 import com.bbd.licenscerenewal.models.OwnerType;
 import com.bbd.licenscerenewal.models.Representative;
 import com.bbd.licenscerenewal.services.AddressRepo;
+import com.bbd.licenscerenewal.services.IdentificationTypeRepo;
 import com.bbd.licenscerenewal.services.OwnerRepo;
 import com.bbd.licenscerenewal.services.OwnerTypeRepo;
 import com.bbd.licenscerenewal.services.RepresentativeRepo;
@@ -39,6 +41,9 @@ public class OwnerController {
 
     @Autowired
     RepresentativeRepo representativeRepo;
+
+    @Autowired
+    IdentificationTypeRepo identificationTypeRepo;
 
     @GetMapping("/owners")
     public <T> ResponseEntity<List<Owner>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams){
@@ -105,5 +110,11 @@ public class OwnerController {
     public ResponseEntity<Owner> insert(@RequestBody Owner owner){
         Owner result = ownerRepo.add(owner);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/identificationTypes")
+    public ResponseEntity<List<IdentificationType>> getIdentificationTypes() {
+        List<IdentificationType> identificationTypes = identificationTypeRepo.getIdentificationTypes();
+        return new ResponseEntity<>(identificationTypes, HttpStatus.OK);
     }
 }

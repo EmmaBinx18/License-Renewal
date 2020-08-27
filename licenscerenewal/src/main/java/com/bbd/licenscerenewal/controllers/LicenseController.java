@@ -9,9 +9,9 @@ import com.bbd.licenscerenewal.services.LicenseRepo;
 import com.bbd.licenscerenewal.services.LicenseStatusRepo;
 import com.bbd.licenscerenewal.services.LicenseTypeRepo;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+// import org.springframework.data.domain.Page;
+// import org.springframework.data.domain.PageRequest;
+// import org.springframework.data.domain.Pageable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
