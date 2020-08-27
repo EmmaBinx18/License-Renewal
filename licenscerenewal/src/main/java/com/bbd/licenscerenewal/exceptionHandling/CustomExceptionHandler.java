@@ -6,12 +6,14 @@ import java.sql.SQLTimeoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+@RestControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
-   
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> getRuntimeExceptionData(RuntimeException exception) {
         ErrorMessage error = new ErrorMessage(500, "Something has gone wrong. Please contact your service provider");
@@ -47,19 +49,19 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<ErrorMessage> getHttpServerError(HttpServerErrorException ex){
+    public ResponseEntity<ErrorMessage> getHttpServerError(HttpServerErrorException ex) {
         ErrorMessage error = new ErrorMessage(ex.getRawStatusCode(), "Internal Server Error");
         return new ResponseEntity<>(error, ex.getStatusCode());
     }
 
     @ExceptionHandler(SQLException.class)
-    public ResponseEntity<ErrorMessage> getSQLError(SQLException ex){
+    public ResponseEntity<ErrorMessage> getSQLError(SQLException ex) {
         ErrorMessage error = new ErrorMessage(ex.getErrorCode(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(SQLTimeoutException.class)
-    public ResponseEntity<ErrorMessage> getSQLError(SQLTimeoutException ex){
+    public ResponseEntity<ErrorMessage> getSQLError(SQLTimeoutException ex) {
         ErrorMessage error = new ErrorMessage(ex.getErrorCode(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
     }
