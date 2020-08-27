@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Qualifier("DatabasePool")
 public class DatabaseService implements IDataBasePool {
-    private String connectionString = "jdbc:sqlserver://license-renewal.database.windows.net;databaseName=production;user=grad-admin;password=Apple@jane56";
+    private String connectionString = System.getenv("JDBC_SQL");
     private List<Connection> connectionPool;
     private List<Connection> usedConnections = new ArrayList<>();
     private static int MAX_POOL_SIZE = 100;
