@@ -1,5 +1,8 @@
 package com.bbd.licenscerenewal.controllers;
 
+import com.bbd.licenscerenewal.utils.logging.LogRequest;
+import com.bbd.licenscerenewal.utils.logging.LogType;
+import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,9 @@ import java.util.Set;
 @RestController
 @CrossOrigin
 public class JwtAuthenticationController {
+
+
+	Logger logger = new Logger(new LogRequest());
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
