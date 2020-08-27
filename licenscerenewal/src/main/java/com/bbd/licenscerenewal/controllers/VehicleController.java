@@ -18,11 +18,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 // import org.springframework.data.domain.Page;
 // import org.springframework.data.domain.PageRequest;
 // import org.springframework.data.domain.Pageable;
 
 import javax.validation.Valid;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +41,7 @@ class VehicleController {
     VehicleTypeRepo vehicleTypeRepo;
 
     @GetMapping("/vehicles")
-    public <T> ResponseEntity<List<Vehicle>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams){
+    public <T> ResponseEntity<List<Vehicle>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
             List<Vehicle> vehicles = vehicleRepo.getAll();
@@ -72,7 +76,7 @@ class VehicleController {
     // }
 
     @GetMapping("/vehicles/{id}")
-    public ResponseEntity<Vehicle> getById(@PathVariable int id) {
+    public ResponseEntity<Vehicle> getById(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Vehicle result = vehicleRepo.getById(id);
         if(result == null){
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
@@ -81,14 +85,14 @@ class VehicleController {
     }
 
     @GetMapping("/vehicles/types")
-    public ResponseEntity<List<VehicleType>> getVehicleTypes(){
+    public ResponseEntity<List<VehicleType>> getVehicleTypes() throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<VehicleType> result = vehicleTypeRepo.getVehicleTypes();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/vehicles")
     @Validated(OnCreate.class)
-    public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle){
+    public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Vehicle result = vehicleRepo.add(vehicle);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }

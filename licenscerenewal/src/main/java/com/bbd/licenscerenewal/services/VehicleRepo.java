@@ -40,7 +40,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
     }
 
     @Override
-    public Vehicle add(Vehicle toAdd) {
+    public Vehicle add(Vehicle toAdd) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -56,10 +56,10 @@ public class VehicleRepo implements IRepository<Vehicle>{
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
         return vehicles;
     }
 
-    public List<Vehicle> getAll() {
+    public List<Vehicle> getAll() throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -90,13 +90,13 @@ public class VehicleRepo implements IRepository<Vehicle>{
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 
-    public Page<List<Vehicle>> getAllPaged(Pageable pageable) {
+    public Page<List<Vehicle>> getAllPaged(Pageable pageable) throws SQLException {
         List<Vehicle> vehicles = getAll(); 
         int start = (int) pageable.getOffset();
         int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
@@ -104,7 +104,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
     }
 
     @Override
-    public Vehicle getById(int id) {
+    public Vehicle getById(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -115,13 +115,13 @@ public class VehicleRepo implements IRepository<Vehicle>{
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public <T> List<Vehicle> getByQueryParams(Set<Map.Entry<String,T>> params) {
+    public <T> List<Vehicle> getByQueryParams(Set<Map.Entry<String,T>> params) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -140,9 +140,9 @@ public class VehicleRepo implements IRepository<Vehicle>{
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 }

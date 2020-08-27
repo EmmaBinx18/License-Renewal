@@ -45,7 +45,7 @@ public class RepresentativeRepo implements IRepository<Representative> {
     }
 
     @Override
-    public Representative add(Representative toAdd){
+    public Representative add(Representative toAdd) throws SQLException {
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
@@ -61,13 +61,13 @@ public class RepresentativeRepo implements IRepository<Representative> {
             return convertResultSet(rs).get(0);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            throw throwables;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public <T> Representative patchRepresentative(int id, Set<Map.Entry<String,T>> values) {
+    public <T> Representative patchRepresentative(int id, Set<Map.Entry<String,T>> values) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -86,10 +86,10 @@ public class RepresentativeRepo implements IRepository<Representative> {
             return getById(id);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class RepresentativeRepo implements IRepository<Representative> {
         return representatives;
     }
 
-    public List<Representative> getAll() {
+    public List<Representative> getAll() throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -121,14 +121,14 @@ public class RepresentativeRepo implements IRepository<Representative> {
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 
     @Override
-    public Representative getById(int id) {
+    public Representative getById(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -139,13 +139,13 @@ public class RepresentativeRepo implements IRepository<Representative> {
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public <T> List<Representative> getByQueryParams(Set<Map.Entry<String,T>> params) {
+    public <T> List<Representative> getByQueryParams(Set<Map.Entry<String,T>> params) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -164,10 +164,10 @@ public class RepresentativeRepo implements IRepository<Representative> {
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
     
 }

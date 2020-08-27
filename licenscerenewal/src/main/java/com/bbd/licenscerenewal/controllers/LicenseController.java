@@ -27,7 +27,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.util.Calendar;
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -51,7 +55,7 @@ class LicenseController {
     LicenseRenewalHistoryRepo licenseRenwalHistoryRepo;
 
     @GetMapping("/licenses")
-    public <T> ResponseEntity<List<License>> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) {
+    public <T> ResponseEntity<List<License>> getAllLicenses(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
             List<License> licenses = licenseRepo.getAll();
@@ -86,7 +90,7 @@ class LicenseController {
     // }
 
     @GetMapping("/licenses/{id}")
-    public ResponseEntity<License> getById(@PathVariable int id) {
+    public ResponseEntity<License> getById(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.getById(id);
         if(result == null){
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
@@ -95,39 +99,39 @@ class LicenseController {
     }
 
     @GetMapping("/licenses/statuses")
-    public ResponseEntity<List<LicenseStatus>> getLicenseStatuses() {
+    public ResponseEntity<List<LicenseStatus>> getLicenseStatuses() throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseStatus> result =licenseStatusRepo.getLicenseStatuses();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/licenses/types")
-    public ResponseEntity<List<LicenseType>> getLicenseTypes() {
+    public ResponseEntity<List<LicenseType>> getLicenseTypes() throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseType> result = licenseTypeRepo.getLicenseTypes();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/licenses")
     @Validated(OnCreate.class)
-    public ResponseEntity<License> insert(@Valid @RequestBody License license){
+    public ResponseEntity<License> insert(@Valid @RequestBody License license) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.add(license);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @PatchMapping("/licenses/{id}")
-    public <T> ResponseEntity<License> patchLicense(@PathVariable int id, @RequestBody Map<String,T> value){
+    public <T> ResponseEntity<License> patchLicense(@PathVariable int id, @RequestBody Map<String,T> value) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Set<Map.Entry<String,T>> values = value.entrySet();
         License result = licenseRepo.patchLicense(id, values);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/licenses/{id}")
-    public ResponseEntity<License> delete(@PathVariable int id) {
+    public ResponseEntity<License> delete(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.delete(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/licenses/{id}/renew")
-    public ResponseEntity<Map<String, Object>> renewLicense(@PathVariable int id) {
+    public ResponseEntity<Map<String, Object>> renewLicense(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License license = licenseRepo.renew(id);
         // LicenseRenewalHistory history = licenseRenwalHistoryRepo.getLatestHistory(id);
 
@@ -139,13 +143,13 @@ class LicenseController {
     }
 
     @GetMapping("/licenses/{id}/history")
-    public ResponseEntity<List<LicenseRenewalHistory>> getRenewalHistory(@PathVariable int id) {
+    public ResponseEntity<List<LicenseRenewalHistory>> getRenewalHistory(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseRenewalHistory> result = licenseRenwalHistoryRepo.getByLicenseId(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PatchMapping("/licenses/{id}/history")
-    public ResponseEntity<LicenseRenewalHistory> updateRenewalAction(@PathVariable int id, @RequestBody int action){
+    public ResponseEntity<LicenseRenewalHistory> updateRenewalAction(@PathVariable int id, @RequestBody int action) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         LicenseRenewalHistory result = licenseRenwalHistoryRepo.updateRenewalAction(id, action);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

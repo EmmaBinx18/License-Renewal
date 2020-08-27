@@ -61,7 +61,7 @@ public class OwnerRepo implements IRepository<Owner>{
     }
 
     @Override
-    public Owner add(Owner toAdd){
+    public Owner add(Owner toAdd) throws SQLException {
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
@@ -88,10 +88,11 @@ public class OwnerRepo implements IRepository<Owner>{
             return convertResultSet(rs).get(0);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            throw throwables;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
+
     }
 
     public <T> Owner patchOwner(int id, Set<Map.Entry<String,T>> values) {
