@@ -15,6 +15,9 @@ import java.util.Set;
 import com.bbd.licenscerenewal.models.License;
 import com.bbd.licenscerenewal.models.NullObjects;
 import com.bbd.licenscerenewal.models.Owner;
+import com.bbd.licenscerenewal.utils.logging.LogSQL;
+import com.bbd.licenscerenewal.utils.logging.LogType;
+import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ import org.springframework.data.domain.Pageable;
 
 @Service
 public class LicenseRepo implements IRepository<License> {
+
+    Logger logger = new Logger(new LogSQL());
 
     @Autowired
     NullObjects nullObjects;
@@ -68,9 +73,17 @@ public class LicenseRepo implements IRepository<License> {
             }
             
             update.executeUpdate();
+
+            logger.log("UPDATE TABLE License SET", LogType.QUERY);
+
+            logger.log(id, LogType.PARAMETERS);
+            logger.log(values, LogType.PARAMETERS);
+
+            logger.log("",LogType.COMPLETED);
+
             return getById(id);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);            
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -85,9 +98,21 @@ public class LicenseRepo implements IRepository<License> {
             sp.setInt(1, id);
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getLicense();
+
+            List<License> list = convertResultSet(rs);
+
+            logger.log("{CALL pRenewLicense(?)}", LogType.QUERY);
+
+            logger.log(id, LogType.PARAMETERS);
+            
+            logger.log(list,LogType.RESPONSE);
+            
+            logger.log("",LogType.COMPLETED);
+
+            return list.isEmpty() ?   nullObjects.getLicense():list.get(0);
+
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -103,9 +128,20 @@ public class LicenseRepo implements IRepository<License> {
             sp.setInt(1, id);
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+
+            List<License> list = convertResultSet(rs);
+
+            logger.log("{CALL pApproveSuspension(?)}", LogType.QUERY);
+
+            logger.log(id, LogType.PARAMETERS);
+
+            logger.log(list,LogType.RESPONSE);
+
+            logger.log("",LogType.COMPLETED);
+
+            return list.isEmpty() ?   nullObjects.getLicense():list.get(0);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -129,9 +165,18 @@ public class LicenseRepo implements IRepository<License> {
 
             ResultSet rs = sp.executeQuery();
             List<License> list = convertResultSet(rs);
+
+            logger.log("{CALL pCreateLicense(?,?,?,?,?,?,?)}", LogType.QUERY);
+
+            logger.log(toAdd, LogType.PARAMETERS);
+
+            logger.log(list,LogType.RESPONSE);
+
+            logger.log("",LogType.COMPLETED);
+
             return list.isEmpty() ?   nullObjects.getLicense():list.get(0);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -165,9 +210,18 @@ public class LicenseRepo implements IRepository<License> {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM License");
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs);
+
+            List<License> list = convertResultSet(rs);
+                   
+            logger.log("SELECT * FROM License", LogType.QUERY);
+
+            logger.log(list,LogType.RESPONSE);
+
+            logger.log("",LogType.COMPLETED);
+
+            return list;
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -182,7 +236,7 @@ public class LicenseRepo implements IRepository<License> {
             int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
             return new PageImpl(vehicles.subList(start, end), pageable, vehicles.size());
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         }
     }
@@ -197,9 +251,18 @@ public class LicenseRepo implements IRepository<License> {
 
             ResultSet rs = sp.executeQuery();
             List<License> list = convertResultSet(rs);
+
+            logger.log("{CALL pGetLicense(?)}", LogType.QUERY);
+
+            logger.log(id, LogType.PARAMETERS);
+            
+            logger.log(list,LogType.RESPONSE);
+            
+            logger.log("",LogType.COMPLETED);
+
             return list.isEmpty() ?   nullObjects.getLicense():list.get(0);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -223,9 +286,19 @@ public class LicenseRepo implements IRepository<License> {
                 }
 
                 ResultSet rs = get.executeQuery();
-                return convertResultSet(rs);
+                List<License> list = convertResultSet(rs);
+
+                logger.log(query, LogType.QUERY);
+
+                logger.log(params, LogType.PARAMETERS);
+
+                logger.log(list,LogType.RESPONSE);
+
+                logger.log("",LogType.COMPLETED);
+
+                return list;
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);

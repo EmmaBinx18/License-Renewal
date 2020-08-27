@@ -14,6 +14,11 @@ import java.util.Set;
 
 import com.bbd.licenscerenewal.models.NullObjects;
 import com.bbd.licenscerenewal.models.Vehicle;
+import com.bbd.licenscerenewal.utils.logging.LogRequest;
+import com.bbd.licenscerenewal.utils.logging.LogSQL;
+import com.bbd.licenscerenewal.utils.logging.LogType;
+import com.bbd.licenscerenewal.utils.logging.Logger;
+import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -24,6 +29,8 @@ import org.springframework.data.domain.Pageable;
 
 @Service
 public class VehicleRepo implements IRepository<Vehicle>{
+
+    private Logger logger = new Logger(new LogSQL());
 
     @Autowired
     @Qualifier("DatabasePool")
@@ -55,12 +62,16 @@ public class VehicleRepo implements IRepository<Vehicle>{
             sp.setString(4, toAdd.getModel());
             sp.setInt(5, toAdd.getOdometer());
             sp.setInt(6, toAdd.getVehicleTypeId());
+            logger.log("{CALL pCreateVehicle(?,?,?,?,?,?)}", LogType.QUERY);
+            logger.log(toAdd,LogType.PARAMETERS);
 
             ResultSet rs = sp.executeQuery();
             List<Vehicle> list = convertResultSet(rs);
+            logger.log(list,LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
             return list.isEmpty() ?   nullObjects.getVehicle():list.get(0);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -90,10 +101,14 @@ public class VehicleRepo implements IRepository<Vehicle>{
         try {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle");
+            logger.log("SELECT * FROM Vehicle",LogType.QUERY);
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs);
+            List<Vehicle> list = convertResultSet(rs);
+            logger.log(list,LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
+            return list;
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -107,7 +122,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
             int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
             return new PageImpl(vehicles.subList(start, end), pageable, vehicles.size());
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         }
     }
@@ -119,12 +134,16 @@ public class VehicleRepo implements IRepository<Vehicle>{
             conn  = databaseService.getConnection();
             CallableStatement sp = conn.prepareCall("{CALL pGetVehicle(?)}");
             sp.setInt(1, id);
+            logger.log("{CALL pGetVehicle(?)}",LogType.QUERY);
+            logger.log(id,LogType.PARAMETERS);
 
             ResultSet rs = sp.executeQuery();
             List<Vehicle> list = convertResultSet(rs);
+            logger.log(list, LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
             return list.isEmpty() ?   nullObjects.getVehicle():list.get(0);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -139,7 +158,8 @@ public class VehicleRepo implements IRepository<Vehicle>{
             for (Map.Entry<String,T> param: params) {
                 query += getParams.get(param.getKey());
             }
-            
+            logger.log("SELECT * FROM Vehicle WHERE 1=1", LogType.QUERY);
+            logger.log(params,LogType.PARAMETERS);
             PreparedStatement get  = conn.prepareStatement(query);
             int index = 1;
             for (Map.Entry<String,T> param: params) {
@@ -147,9 +167,12 @@ public class VehicleRepo implements IRepository<Vehicle>{
             }
             
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs);
+            List<Vehicle> list = convertResultSet(rs);
+            logger.log(list,LogType.RESPONSE);
+            logger.log("", LogType.COMPLETED);
+            return list;
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);

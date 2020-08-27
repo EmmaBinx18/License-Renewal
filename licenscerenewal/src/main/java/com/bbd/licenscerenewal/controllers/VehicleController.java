@@ -6,6 +6,9 @@ import com.bbd.licenscerenewal.services.OnCreate;
 import com.bbd.licenscerenewal.services.VehicleRepo;
 import com.bbd.licenscerenewal.services.VehicleTypeRepo;
 
+import com.bbd.licenscerenewal.utils.logging.LogRequest;
+import com.bbd.licenscerenewal.utils.logging.LogType;
+import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpStatus;
@@ -29,10 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
 class VehicleController {
+
+    Logger logger = new Logger(new LogRequest());
 
     @Autowired
     VehicleRepo vehicleRepo;
@@ -41,7 +47,10 @@ class VehicleController {
     VehicleTypeRepo vehicleTypeRepo;
 
     @GetMapping(value = "/vehicles", headers = "X-API-VERSION=1")
-    public ResponseEntity<Map<String, Object>> getAllVehiclesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {
+    public ResponseEntity<Map<String, Object>> getAllVehiclesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size, HttpServletRequest request) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {
+
+        logger.log(request.getRemoteAddr(), LogType.REQUEST);
+
         Pageable paging = PageRequest.of(page, size);
         Page<List<Vehicle>> vehicles = vehicleRepo.getAllPaged(paging);
 
@@ -59,14 +68,20 @@ class VehicleController {
     }
 
     @GetMapping(value = "/vehicles/query", headers = "X-API-VERSION=1")
-    public <T> ResponseEntity<List<Vehicle>> getAllVehicles(@RequestParam Map<String,T> allParams) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
+    public <T> ResponseEntity<List<Vehicle>> getAllVehicles(@RequestParam Map<String,T> allParams, HttpServletRequest request) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
+
+        logger.log(request.getRemoteAddr(), LogType.REQUEST);
+
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         List<Vehicle> vehicles = vehicleRepo.getByQueryParams(params);
         return new ResponseEntity<>(vehicles, HttpStatus.OK);
     }
 
     @GetMapping(value = "/vehicles/{id}", headers = "X-API-VERSION=1")
-    public ResponseEntity<Vehicle> getById(@PathVariable int id) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {
+    public ResponseEntity<Vehicle> getById(@PathVariable int id, HttpServletRequest request) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {
+
+        logger.log(request.getRemoteAddr(), LogType.REQUEST);
+
         Vehicle result = vehicleRepo.getById(id);
         if(result.getVehicleId() == -1){
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
@@ -75,7 +90,10 @@ class VehicleController {
     }
 
     @GetMapping(value = "/vehicles/types", headers = "X-API-VERSION=1")
-    public ResponseEntity<List<VehicleType>> getVehicleTypes() throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
+    public ResponseEntity<List<VehicleType>> getVehicleTypes(HttpServletRequest request) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
+
+        logger.log(request.getRemoteAddr(), LogType.REQUEST);
+
         List<VehicleType> result = vehicleTypeRepo.getVehicleTypes();
         if(result.isEmpty()){
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
@@ -85,7 +103,10 @@ class VehicleController {
 
     @PostMapping(value = "/vehicles", headers = "X-API-VERSION=1")
     @Validated(OnCreate.class)
-    public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
+    public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle,HttpServletRequest request) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
+
+        logger.log(request.getRemoteAddr(), LogType.REQUEST);
+
         Vehicle result = vehicleRepo.add(vehicle);
         if(result.getVehicleId() == -1)
         {
