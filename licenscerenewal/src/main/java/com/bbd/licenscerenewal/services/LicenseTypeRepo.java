@@ -19,7 +19,7 @@ public class LicenseTypeRepo{
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public List<LicenseType> getLicenseTypes() {
+    public List<LicenseType> getLicenseTypes() throws SQLException {
         Connection conn = null;
         try{
             conn  = databaseService.getConnection();
@@ -37,9 +37,9 @@ public class LicenseTypeRepo{
             return licenseTypes;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 }

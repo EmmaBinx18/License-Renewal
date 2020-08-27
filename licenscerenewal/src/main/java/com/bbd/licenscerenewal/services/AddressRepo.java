@@ -32,7 +32,6 @@ public class AddressRepo implements IRepository<Address>{
             update.setInt(5,toUpdate.getAddressTypeId());
             update.setInt(6, toUpdate.getAddressId());
 
-
             update.executeUpdate();
             return toUpdate;
         } catch (SQLException throwable) {

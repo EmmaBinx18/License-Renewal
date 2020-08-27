@@ -47,7 +47,7 @@ public class LicenseRepo implements IRepository<License> {
         putParams.put("licenseTypeId", " LicenseTypeId = ?,");
     }
 
-    public <T> License patchLicense(int id, Set<Map.Entry<String,T>> values) {
+    public <T> License patchLicense(int id, Set<Map.Entry<String,T>> values) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -66,13 +66,13 @@ public class LicenseRepo implements IRepository<License> {
             return getById(id);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public License renew(int id) {
+    public License renew(int id) throws SQLException {
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
@@ -83,13 +83,14 @@ public class LicenseRepo implements IRepository<License> {
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
+
     }
 
-    public License delete(int id) {
+    public License delete(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -102,14 +103,15 @@ public class LicenseRepo implements IRepository<License> {
             return getById(id);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
+
     }
 
     @Override
-    public License add(License toAdd) {
+    public License add(License toAdd) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -126,10 +128,11 @@ public class LicenseRepo implements IRepository<License> {
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
+
     }
 
     @Override
@@ -152,7 +155,7 @@ public class LicenseRepo implements IRepository<License> {
         return licenses;
     }
 
-    public List<License> getAll() {
+    public List<License> getAll() throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -161,13 +164,14 @@ public class LicenseRepo implements IRepository<License> {
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
+
     }
 
-    public Page<List<License>> getAllPaged(Pageable pageable) {
+    public Page<List<License>> getAllPaged(Pageable pageable) throws SQLException {
         List<License> vehicles = getAll(); 
         int start = (int) pageable.getOffset();
         int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
@@ -175,7 +179,7 @@ public class LicenseRepo implements IRepository<License> {
     }
 
     @Override
-    public License getById(int id) {
+    public License getById(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -187,13 +191,14 @@ public class LicenseRepo implements IRepository<License> {
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
+
     }
 
-    public <T> List<License> getByQueryParams(Set<Map.Entry<String,T>> params) {
+    public <T> List<License> getByQueryParams(Set<Map.Entry<String,T>> params) throws SQLException {
         Connection conn = null;
         try {
                 conn  = databaseService.getConnection();
@@ -212,9 +217,10 @@ public class LicenseRepo implements IRepository<License> {
                 return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
+
     }
 }

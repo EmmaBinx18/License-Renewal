@@ -14,7 +14,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
    
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> getRuntimeExceptionData(RuntimeException exception) {
-        ErrorMessage error = new ErrorMessage(500, "Something has gone wrong. Please contact you service provider");
+        ErrorMessage error = new ErrorMessage(500, "Something has gone wrong. Please contact your service provider");
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

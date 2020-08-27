@@ -20,7 +20,7 @@ public class OwnerTypeRepo {
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public List<OwnerType> getOwnerTypes() {
+    public List<OwnerType> getOwnerTypes() throws SQLException {
         Connection conn = null;
         try{
             conn  = databaseService.getConnection();
@@ -37,9 +37,9 @@ public class OwnerTypeRepo {
             return ownerTypes;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 }

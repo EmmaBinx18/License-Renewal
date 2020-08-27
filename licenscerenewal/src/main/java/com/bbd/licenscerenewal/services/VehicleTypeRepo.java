@@ -15,7 +15,7 @@ public class VehicleTypeRepo{
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public List<VehicleType> getVehicleTypes() {
+    public List<VehicleType> getVehicleTypes() throws SQLException {
         Connection conn = null;
         try{
             conn  = databaseService.getConnection();
@@ -32,9 +32,9 @@ public class VehicleTypeRepo{
             return vehicleTypes;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 }
