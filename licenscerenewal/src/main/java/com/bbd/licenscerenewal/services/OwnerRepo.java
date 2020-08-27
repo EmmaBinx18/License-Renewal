@@ -1,13 +1,22 @@
 package com.bbd.licenscerenewal.services;
 
-import com.bbd.licenscerenewal.models.Address;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.bbd.licenscerenewal.models.Owner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
-import java.util.*;
 @Service
 public class OwnerRepo implements IRepository<Owner>{
 
@@ -18,91 +27,65 @@ public class OwnerRepo implements IRepository<Owner>{
     @Autowired
     AddressRepo addressRepo;
 
-    @Autowired
-    OrganisationRepo organisationRepo;
+    public final Dictionary<String,String> getParams = new Hashtable();
+    public final Dictionary<String,String> putParams = new Hashtable();
 
-    public Owner update(Owner toUpdate) {
-        Connection conn = null;
-         try {
+    public OwnerRepo() {
+        getParams.put("idType"," AND IdentificationTypeId = ?");
+        getParams.put("idNumber", " AND IdNumber = ?");
+        getParams.put("countryOfIssue", " AND ForeignIdCountry = ?");
+        getParams.put("surname", " AND Surname = ?");
+        getParams.put("organisationName", " AND OrganisationName = ?");
+        getParams.put("firstName", " AND FirstName = ?");
+        getParams.put("emailAddress", " AND EmailAddress = ?");
+        getParams.put("cellphoneNumber", " AND CellphoneNumber = ?");
+        getParams.put("representativeId", " AND RepresentativeId = ?");
 
-            conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE [dbo].[Owner]\n" +
-                    "   SET [IdentificationTypeId] = ?\n" +
-                    "      ,[IdNumber] =? \n" +
-                    "      ,[ForeignIdCountry] = ?\n" +
-                    "      ,[Surname] = ?\n" +
-                    "      ,[OrganisationName] = ?\n" +
-                    "      ,[Initials] = ?\n" +
-                    "      ,[FirstName] = ?\n" +
-                    "      ,[MiddleNames] = ?\n" +
-                    "      ,[EmailAddress] = ?\n" +
-                    "      ,[HomeTel] = ?\n" +
-                    "      ,[WorkTel] = ?\n" +
-                    "      ,[CellphoneNumber] = ?\n" +
-                    "      ,[FaxNumber] = ?\n" +
-                    "      ,[PostalAddressId] = ?\n" +
-                    "      ,[StreetAddressId] = ?\n" +
-                    "      ,[PrefferedAddressType] = ?\n" +
-                    "      ,[OrganisationId] = ?\n" +
-                    " WHERE OwnerId = ?");
-
-            update.setInt(1, toUpdate.getIdType());
-            update.setString(2,toUpdate.getIdNumber());
-            update.setString(3,toUpdate.getCountryOfIssue());
-            update.setString(4,toUpdate.getSurname());
-            update.setString(5,toUpdate.getOrganisationName());
-            update.setString(6,toUpdate.getInitials());
-            update.setString(7,toUpdate.getFirstName());
-            update.setString(8,toUpdate.getMiddleName());
-            update.setString(9,toUpdate.getEmailAddress());
-            update.setString(10, toUpdate.getHomeTel());
-            update.setString(11, toUpdate.getWorkTel());
-            update.setString(12, toUpdate.getCellphoneNumber());
-            update.setString(13, toUpdate.getFaxNumber());
-            update.setInt(14,toUpdate.getPostalAddress().getAddressId());
-            update.setInt(15,toUpdate.getStreetAddress().getAddressId());
-            update.setInt(16,toUpdate.getChosenAddress());
-            update.setInt(17,toUpdate.getOrganisationId());
-
-            update.executeUpdate();
-            databaseService.releaseConnection(conn);
-            return toUpdate;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
+        putParams.put("idType", " IdentificationTypeId = ?,");
+        putParams.put("idNumber", " IdNumber = ?,");
+        putParams.put("countryOfIssue", " ForeignIdCountry = ?,");
+        putParams.put("surname", " Surname = ?,");
+        putParams.put("organisationName", " OrganisationName = ?,");
+        putParams.put("initials", " Initials = ?,");
+        putParams.put("firstName", " FirstName = ?,");
+        putParams.put("middleNames", " MiddleNames = ?,");
+        putParams.put("emailAddress", " EmailAddress = ?,");
+        putParams.put("homeTel", " HomeTel = ?,");
+        putParams.put("workTel", " WorkTel = ?,");
+        putParams.put("cellphoneNumber", " CellphoneNumber = ?,");
+        putParams.put("faxNumber", " FaxNumber = ?,");
+        putParams.put("postalAddressId", " PostalAddressId = ?,");
+        putParams.put("streetAddressId", " StreetAddressId = ?,");
+        putParams.put("chosenAddress", " PrefferedAddressType = ?,");
+        putParams.put("representativeId", " RepresentativeId = ?,");
     }
 
-
-    public Owner addOwnerAndAddresses(Owner toAdd) {
-        Connection conn = null;
-        try {
-            conn = databaseService.getConnection();
-            conn.setAutoCommit(false);
-            Address postalAddress = addressRepo.insert(toAdd.getPostalAddress(),conn);
-            Address streetAddress = addressRepo.insert(toAdd.getStreetAddress(),conn);
-            toAdd = addOnlyOwner(toAdd,conn);
-            conn.commit();
-
-            toAdd.setStreetAddress(streetAddress);
-            toAdd.setPostalAddress(postalAddress);
-
-            return toAdd;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
     @Override
     public Owner add(Owner toAdd){
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
-            return addOnlyOwner(toAdd,conn);
+            CallableStatement sp = conn.prepareCall("{CALL pCreate(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            sp.setInt(1, toAdd.getIdType());
+            sp.setString(2,toAdd.getIdNumber());
+            sp.setString(3,toAdd.getCountryOfIssue());
+            sp.setString(4,toAdd.getSurname());
+            sp.setString(5,toAdd.getOrganisationName());
+            sp.setString(6,toAdd.getInitials());
+            sp.setString(7,toAdd.getFirstName());
+            sp.setString(8,toAdd.getMiddleNames());
+            sp.setString(9,toAdd.getEmailAddress());
+            sp.setString(10, toAdd.getHomeTel());
+            sp.setString(11, toAdd.getWorkTel());
+            sp.setString(12, toAdd.getCellphoneNumber());
+            sp.setString(13, toAdd.getFaxNumber());
+            sp.setInt(14,toAdd.getPostalAddressId());
+            sp.setInt(15,toAdd.getStreetAddressId());
+            sp.setInt(16,toAdd.getChosenAddress());
+            sp.setInt(17,toAdd.getRepresentativeId());
+
+            ResultSet rs = sp.executeQuery();
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } finally {
@@ -111,32 +94,27 @@ public class OwnerRepo implements IRepository<Owner>{
         return null;
     }
 
-    private Owner addOnlyOwner(Owner toAdd,Connection conn){
+    public <T> Owner patchOwner(int id, Set<Map.Entry<String,T>> values) {
+        Connection conn = null;
         try {
-            PreparedStatement insert = conn.prepareStatement("EXEC pCreateOwner ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?");
-            insert.setInt(1, toAdd.getIdType());
-            insert.setString(2,toAdd.getIdNumber());
-            insert.setString(3,toAdd.getCountryOfIssue());
-            insert.setString(4,toAdd.getSurname());
-            insert.setString(5,toAdd.getOrganisationName());
-            insert.setString(6,toAdd.getInitials());
-            insert.setString(7,toAdd.getFirstName());
-            insert.setString(8,toAdd.getMiddleName());
-            insert.setString(9,toAdd.getEmailAddress());
-            insert.setString(10, toAdd.getHomeTel());
-            insert.setString(11, toAdd.getWorkTel());
-            insert.setString(12, toAdd.getCellphoneNumber());
-            insert.setString(13, toAdd.getFaxNumber());
-            insert.setInt(14,toAdd.getPostalAddress().getAddressId());
-            insert.setInt(15,toAdd.getStreetAddress().getAddressId());
-            insert.setInt(16,toAdd.getChosenAddress());
-            insert.setInt(17,toAdd.getOrganisationId());
-            insert.executeUpdate();
-
-            toAdd.setOwnerId(insert.getGeneratedKeys().getInt(1));
-            return toAdd;
+            conn  = databaseService.getConnection();
+            String query = "UPDATE TABLE Owner SET";
+            for (Map.Entry<String,T> value: values) {
+                query += putParams.get(value.getKey());
+            }
+            
+            PreparedStatement update  = conn.prepareStatement(query);
+            int index = 1;
+            for (Map.Entry<String,T> value: values) {
+                update.setObject(index,value.getValue());
+            }
+            
+            update.executeUpdate();
+            return getById(id);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
         }
         return null;
     }
@@ -156,42 +134,79 @@ public class OwnerRepo implements IRepository<Owner>{
             temp.setOrganisationName(toConvert.getString(6));
             temp.setInitials(toConvert.getString(7));
             temp.setFirstName(toConvert.getString(8));
-            temp.setMiddleName(toConvert.getString(9));
+            temp.setMiddleNames(toConvert.getString(9));
             temp.setEmailAddress(toConvert.getString(10));
             temp.setHomeTel(toConvert.getString(11));
             temp.setWorkTel(toConvert.getString(12));
             temp.setCellphoneNumber(toConvert.getString(13));
             temp.setFaxNumber(toConvert.getString(14));
-            temp.setPostalAddress(addressRepo.getById(toConvert.getInt(15)));
-            temp.setStreetAddress(addressRepo.getById(toConvert.getInt(16)));
+            temp.setPostalAddressId(toConvert.getInt(15));
+            temp.setStreetAddressId(toConvert.getInt(16));
             temp.setChosenAddress(toConvert.getInt(17));
-            temp.setOrganisationId(toConvert.getInt(18));
+            temp.setRepresentativeId(toConvert.getInt(18));
 
             owners.add(temp);
         }
         return owners;
     }
 
+    public List<Owner> getAll() {
+        Connection conn = null;
+        try {
+            conn  = databaseService.getConnection();
+            PreparedStatement get  = conn.prepareStatement("SELECT * FROM Owner");
+            ResultSet rs = get.executeQuery();
+            return convertResultSet(rs);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
+        return new ArrayList<>();
+    }
+
     @Override
     public Owner getById(int id) {
         Connection conn = null;
-         try {
-             conn  = databaseService.getConnection();
-             PreparedStatement get  = conn.prepareStatement("SELECT OwnerId,IdNumber,IdentificationTypeId,ForeignIdCountry,Surname, OrganisationName,Initials,\n" +
-                     "FirstName,MiddleNames,EmailAddress,HomeTel,WorkTel,CellphoneNumber,FaxNumber,PostalAddressId,StreetAddressId, PrefferedAddressType,OrganisationId FROM Owner\n" +
-                     "WHERE  OwnerId = ?");
-             get.setInt(1, id);
+        try {
+            conn  = databaseService.getConnection();
+            PreparedStatement get  = conn.prepareStatement("SELECT OwnerId,IdNumber,IdentificationTypeId,ForeignIdCountry,Surname, OrganisationName,Initials,\n" +
+                    "FirstName,MiddleNames,EmailAddress,HomeTel,WorkTel,CellphoneNumber,FaxNumber,PostalAddressId,StreetAddressId, PrefferedAddressType,RepresentativeId FROM Owner\n" +
+                    "WHERE  OwnerId = ?");
+            get.setInt(1, id);
 
-             ResultSet rs = get.executeQuery();
-             Owner owner = convertResultSet(rs).get(0);
-
-             return owner;
-
-         } catch (SQLException throwable) {
-             throwable.printStackTrace();
-         }finally{
-             databaseService.releaseConnection(conn);
-         }
+            ResultSet rs = get.executeQuery();
+            return convertResultSet(rs).get(0);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
         return null;
+    }
+
+    public <T> List<Owner> getByQueryParams(Set<Map.Entry<String,T>> params) {
+        Connection conn = null;
+        try {
+            conn  = databaseService.getConnection();
+            String query = "SELECT * FROM Owner WHERE 1=1 ";
+            for (Map.Entry<String,T> param: params) {
+                query += getParams.get(param.getKey());
+            }
+            
+            PreparedStatement get  = conn.prepareStatement(query);
+            int index = 1;
+            for (Map.Entry<String,T> param: params) {
+                get.setObject(index,param.getValue());
+            }
+            
+            ResultSet rs = get.executeQuery();
+            return convertResultSet(rs);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        } finally {
+            databaseService.releaseConnection(conn);
+        }
+        return new ArrayList<>();
     }
 }

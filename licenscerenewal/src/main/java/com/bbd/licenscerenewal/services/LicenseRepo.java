@@ -1,13 +1,26 @@
 package com.bbd.licenscerenewal.services;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.bbd.licenscerenewal.models.License;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
-import java.sql.Date;
-import java.util.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class LicenseRepo implements IRepository<License> {
 
@@ -16,6 +29,7 @@ public class LicenseRepo implements IRepository<License> {
     IDataBasePool databaseService;
 
     public final Dictionary<String,String> getParams = new Hashtable();
+    public final Dictionary<String,String> putParams = new Hashtable();
 
     public LicenseRepo() {
         getParams.put("owner"," AND OwnerId = ?");
@@ -23,69 +37,33 @@ public class LicenseRepo implements IRepository<License> {
         getParams.put("expiryDate", " AND ExpiryDate =?");
         getParams.put("status", " AND LicenseStatusId =?");
         getParams.put("type", " AND LicenseTypeId =?");
+
+        putParams.put("licenseNumber", " LicenseNumber = ?,");
+        putParams.put("ownerId", " OwnerId = ?,");
+        putParams.put("firstIssueDate", " FirstIssueDate = ?,");
+        putParams.put("expiryDate", " ExpiryDate = ?,");
+        putParams.put("vehicleId", " VehicleId = ?,");
+        putParams.put("licenseStatusId", " LicenseStatusId = ?,");
+        putParams.put("licenseTypeId", " LicenseTypeId = ?,");
     }
 
-    public License updateExpiryDate(int id, Date date) {
+    public <T> License patchLicense(int id, Set<Map.Entry<String,T>> values) {
         Connection conn = null;
         try {
-            conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET ExpiryDate = ? WHERE LicenseId = ?");
-            update.setDate(1, date);
-            update.setInt(2, id);
-
+            conn  = databaseService.getConnection();
+            String query = "UPDATE TABLE License SET";
+            for (Map.Entry<String,T> value: values) {
+                query += putParams.get(value.getKey());
+            }
+            
+            PreparedStatement update  = conn.prepareStatement(query);
+            int index = 1;
+            for (Map.Entry<String,T> value: values) {
+                update.setObject(index,value.getValue());
+            }
+            
             update.executeUpdate();
-
-            PreparedStatement select = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
-            select.setInt(1, id);
-
-            ResultSet rs = select.executeQuery();
-            return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    public License updateStatus(int id, int status) {
-        Connection conn = null;
-        try {
-            conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET LicenseStatusId = ? WHERE LicenseId = ?");
-            update.setInt(1, status);
-            update.setInt(2, id);
-
-            update.executeUpdate();
-
-            PreparedStatement select = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
-            select.setInt(1, id);
-
-            ResultSet rs = select.executeQuery();
-            return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    public License updateType(int id, int type) {
-        Connection conn = null;
-        try {
-            conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET LicenseTypeId = ? WHERE LicenseId = ?");
-            update.setInt(1, type);
-            update.setInt(2, id);
-
-            update.executeUpdate();
-
-            PreparedStatement select = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
-            select.setInt(1, id);
-
-            ResultSet rs = select.executeQuery();
-            return convertResultSet(rs).get(0);
+            return getById(id);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {
@@ -97,21 +75,11 @@ public class LicenseRepo implements IRepository<License> {
     public License renew(int id) {
         Connection conn = null;
         try {
-            Calendar currenttime = Calendar.getInstance();
-            Date date = new Date((currenttime.getTime()).getTime());
-
             conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET ExpiryDate = ?, LicenseStatusId = ? WHERE LicenseId = ?");
-            update.setDate(1, Date.valueOf(date.toLocalDate().plusDays(365)));
-            update.setInt(2, 1);
-            update.setInt(3, id);
+            CallableStatement sp = conn.prepareCall("{CALL pRenewLicense(?)}");
+            sp.setInt(1, id);
 
-            update.executeUpdate();
-
-            PreparedStatement select  = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ? ");
-            select.setInt(1, id);
-            ResultSet rs = select.executeQuery();
-            databaseService.releaseConnection(conn);
+            ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -131,12 +99,7 @@ public class LicenseRepo implements IRepository<License> {
             update.setInt(2, id);
 
             update.executeUpdate();
-
-            PreparedStatement select = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
-            select.setInt(1, id);
-
-            ResultSet rs = select.executeQuery();
-            return convertResultSet(rs).get(0);
+            return getById(id);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {
@@ -150,18 +113,17 @@ public class LicenseRepo implements IRepository<License> {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
-            PreparedStatement insert  = conn.prepareStatement("INSERT INTO License VALUES(?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-            insert.setString(1, toAdd.getLicenseNumber());
-            insert.setInt(2, toAdd.getOwnerId());
-            insert.setDate(3, toAdd.getFirstIssueDate());
-            insert.setDate(4, toAdd.getExpiryDate());
-            insert.setInt(5, toAdd.getVehicleId());
-            insert.setInt(6, toAdd.getLicenseStatusId());
-            insert.setInt(7, toAdd.getLicenseTypeId());
+            CallableStatement sp = conn.prepareCall("{CALL pCreateLicense(?,?,?,?,?,?,?)}");
+            sp.setString(1, toAdd.getLicenseNumber());
+            sp.setInt(2, toAdd.getOwnerId());
+            sp.setDate(3, toAdd.getFirstIssueDate());
+            sp.setDate(4, toAdd.getExpiryDate());
+            sp.setInt(5, toAdd.getVehicleId());
+            sp.setInt(6, toAdd.getLicenseStatusId());
+            sp.setInt(7, toAdd.getLicenseTypeId());
 
-            insert.executeUpdate();
-            toAdd.setLicenseId(insert.getGeneratedKeys().getInt(1));
-            return toAdd;
+            ResultSet rs = sp.executeQuery();
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {
@@ -203,6 +165,13 @@ public class LicenseRepo implements IRepository<License> {
             databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
+    }
+
+    public Page<List<License>> getAllPaged(Pageable pageable) {
+        List<License> vehicles = getAll(); 
+        int start = (int) pageable.getOffset();
+        int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
+        return new PageImpl(vehicles.subList(start, end), pageable, vehicles.size());
     }
 
     @Override
