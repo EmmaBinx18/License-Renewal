@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.bbd.licenscerenewal.models.License;
+import com.bbd.licenscerenewal.models.NullObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ import org.springframework.data.domain.Pageable;
 
 @Service
 public class LicenseRepo implements IRepository<License> {
+
+    @Autowired
+    NullObjects nullObjects;
 
     @Autowired
     @Qualifier("DatabasePool")
@@ -80,7 +84,7 @@ public class LicenseRepo implements IRepository<License> {
             sp.setInt(1, id);
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getLicense();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
             throw throwable;
@@ -125,7 +129,7 @@ public class LicenseRepo implements IRepository<License> {
             sp.setInt(7, toAdd.getLicenseTypeId());
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getLicense();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
             throw throwable;
@@ -188,7 +192,7 @@ public class LicenseRepo implements IRepository<License> {
 
             ResultSet rs = get.executeQuery();
 
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getLicense();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
             throw throwable;

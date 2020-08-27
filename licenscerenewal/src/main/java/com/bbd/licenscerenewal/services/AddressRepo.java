@@ -1,6 +1,7 @@
 package com.bbd.licenscerenewal.services;
 
 import com.bbd.licenscerenewal.models.Address;
+import com.bbd.licenscerenewal.models.NullObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,10 @@ public class AddressRepo implements IRepository<Address>{
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public Address update(Address toUpdate) {
+    @Autowired
+    NullObjects nullObjects;
+
+    public Address update(Address toUpdate) throws SQLException {
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
@@ -36,13 +40,13 @@ public class AddressRepo implements IRepository<Address>{
             return toUpdate;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public Address delete(int id) {
+    public Address delete(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -54,27 +58,27 @@ public class AddressRepo implements IRepository<Address>{
 
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).isEmpty()? nullObjects.getAddress() : convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
     @Override
-    public Address add(Address toAdd) {
+    public Address add(Address toAdd) throws SQLException {
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
             return insert(toAdd,conn);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            throw throwables;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
     public Address insert(Address toAdd, Connection conn) throws SQLException {
@@ -86,7 +90,7 @@ public class AddressRepo implements IRepository<Address>{
         sp.setInt(5,toAdd.getAddressTypeId());
 
         ResultSet rs = sp.executeQuery();
-        return convertResultSet(rs).get(0);
+        return convertResultSet(rs).size() > 0? nullObjects.getAddress() : convertResultSet(rs).get(0);
     }
 
     @Override
@@ -109,7 +113,7 @@ public class AddressRepo implements IRepository<Address>{
     }
 
     @Override
-    public Address getById(int id) {
+    public Address getById(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -117,13 +121,13 @@ public class AddressRepo implements IRepository<Address>{
             get.setInt(1, id);
             ResultSet rs = get.executeQuery();
 
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).size() > 0? nullObjects.getAddress() : convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
 }

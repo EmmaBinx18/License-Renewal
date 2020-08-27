@@ -19,7 +19,7 @@ public class IdentificationTypeRepo {
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public List<IdentificationType> getIdentificationTypes() {
+    public List<IdentificationType> getIdentificationTypes() throws SQLException {
         Connection conn = null;
         try{
             conn  = databaseService.getConnection();
@@ -38,9 +38,9 @@ public class IdentificationTypeRepo {
             return identificationTypes;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 }

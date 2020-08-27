@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.bbd.licenscerenewal.models.NullObjects;
 import com.bbd.licenscerenewal.models.Owner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,6 +27,9 @@ public class OwnerRepo implements IRepository<Owner>{
 
     @Autowired
     AddressRepo addressRepo;
+
+    @Autowired
+    NullObjects nullObjects;
 
     public final Dictionary<String,String> getParams = new Hashtable();
     public final Dictionary<String,String> putParams = new Hashtable();
@@ -85,7 +89,7 @@ public class OwnerRepo implements IRepository<Owner>{
             sp.setInt(17,toAdd.getRepresentativeId());
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).size() > 0 ?  convertResultSet(rs).get(0) : nullObjects.getOwner();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             throw throwables;
@@ -95,7 +99,7 @@ public class OwnerRepo implements IRepository<Owner>{
 
     }
 
-    public <T> Owner patchOwner(int id, Set<Map.Entry<String,T>> values) {
+    public <T> Owner patchOwner(int id, Set<Map.Entry<String,T>> values) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -114,10 +118,10 @@ public class OwnerRepo implements IRepository<Owner>{
             return getById(id);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
     @Override
@@ -151,7 +155,7 @@ public class OwnerRepo implements IRepository<Owner>{
         return owners;
     }
 
-    public List<Owner> getAll() {
+    public List<Owner> getAll() throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -160,14 +164,14 @@ public class OwnerRepo implements IRepository<Owner>{
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 
     @Override
-    public Owner getById(int id) {
+    public Owner getById(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -177,16 +181,16 @@ public class OwnerRepo implements IRepository<Owner>{
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).size() > 0 ?  convertResultSet(rs).get(0) : nullObjects.getOwner();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public <T> List<Owner> getByQueryParams(Set<Map.Entry<String,T>> params) {
+    public <T> List<Owner> getByQueryParams(Set<Map.Entry<String,T>> params) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -205,9 +209,9 @@ public class OwnerRepo implements IRepository<Owner>{
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.bbd.licenscerenewal.models.NullObjects;
 import com.bbd.licenscerenewal.models.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,6 +28,9 @@ public class VehicleRepo implements IRepository<Vehicle>{
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
+
+    @Autowired
+    NullObjects nullObjects;
 
     public final Dictionary<String,String> getParams = new Hashtable();
 
@@ -53,7 +57,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
             sp.setInt(6, toAdd.getVehicleTypeId());
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getVehicle();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
             throw throwable;
@@ -112,7 +116,8 @@ public class VehicleRepo implements IRepository<Vehicle>{
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs).get(0);
+
+            return convertResultSet(rs).size() > 0 ? convertResultSet(rs).get(0) : nullObjects.getVehicle();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
             throw throwable;

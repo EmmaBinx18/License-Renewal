@@ -92,9 +92,6 @@ class LicenseController {
     @GetMapping("/licenses/{id}")
     public ResponseEntity<License> getById(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.getById(id);
-        if(result == null){
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

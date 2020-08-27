@@ -1,5 +1,6 @@
 package com.bbd.licenscerenewal.services;
 
+import com.bbd.licenscerenewal.models.NullObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bbd.licenscerenewal.models.LicenseRenewalHistory;
+
+
 @Service
 public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHistory> {
 
@@ -20,8 +23,11 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
+    @Autowired
+    NullObjects nullObjects;
+
     @Override
-    public LicenseRenewalHistory add(LicenseRenewalHistory toAdd) {
+    public LicenseRenewalHistory add(LicenseRenewalHistory toAdd) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -37,13 +43,13 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
             return toAdd;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw  throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public LicenseRenewalHistory updateRenewalAction(int id, int action) {
+    public LicenseRenewalHistory updateRenewalAction(int id, int action) throws SQLException {
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
@@ -57,13 +63,13 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
             select.setInt(1, id);
 
             ResultSet rs = select.executeQuery();
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).size() > 0 ? nullObjects.getLicenseRenewalHistory() : convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
     @Override
@@ -85,7 +91,7 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
     }
 
     @Override
-    public LicenseRenewalHistory getById(int id) {
+    public LicenseRenewalHistory getById(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -93,16 +99,16 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs).get(0);
+            return convertResultSet(rs).size() > 0? nullObjects.getLicenseRenewalHistory() : convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public List<LicenseRenewalHistory> getByLicenseId(int id) {
+    public List<LicenseRenewalHistory> getByLicenseId(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -113,10 +119,10 @@ public class LicenseRenewalHistoryRepo implements IRepository<LicenseRenewalHist
             return convertResultSet(rs);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            throw throwable;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 
     // public LicenseRenewalHistory getLatestHistory(int id) {
