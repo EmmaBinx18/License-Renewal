@@ -1,10 +1,25 @@
 package com.bbd.licenscerenewal.models;
 
+import com.bbd.licenscerenewal.services.OnCreate;
+import com.bbd.licenscerenewal.services.OnUpdate;
+
+import javax.validation.constraints.*;
+
 public class Address{
+    @NotNull(groups = OnUpdate.class)
+    @Null(groups= OnCreate.class)
     private int addressId;
+    @NotNull(message = "Address line 1 null")
+    @Size(max = 100, message = "Address line 1 length too large")
     private String addressLine1;
+    @NotNull(message = "Address line 1 null")
+    @Size(max = 100, message = "Address line 1 length too large")
     private String addressLine2;
+    @NotNull(message = "Address line 1 null")
+    @Size(max = 100, message = "Address line 1 length too large")
     private String addressLine3;
+    @Max(value = 9999,message = "Postal code too large")
+    @Min(value = 0001,message = "Postal code too small")
     private String postalCode;
     private int addressTypeId;
 

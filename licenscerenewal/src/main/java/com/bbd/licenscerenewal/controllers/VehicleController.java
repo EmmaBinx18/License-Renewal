@@ -2,10 +2,14 @@ package com.bbd.licenscerenewal.controllers;
 
 import com.bbd.licenscerenewal.models.Vehicle;
 import com.bbd.licenscerenewal.models.VehicleType;
+import com.bbd.licenscerenewal.services.OnCreate;
+import com.bbd.licenscerenewal.services.OnUpdate;
 import com.bbd.licenscerenewal.services.VehicleRepo;
 import com.bbd.licenscerenewal.services.VehicleTypeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 // import org.springframework.data.domain.PageRequest;
 // import org.springframework.data.domain.Pageable;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,7 +87,8 @@ class VehicleController {
     }
 
     @PostMapping("/vehicles")
-    public ResponseEntity<Vehicle> insert(@RequestBody Vehicle vehicle){
+    @Validated(OnCreate.class)
+    public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle){
         Vehicle result = vehicleRepo.add(vehicle);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }

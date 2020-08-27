@@ -8,6 +8,7 @@ import com.bbd.licenscerenewal.services.LicenseRenewalHistoryRepo;
 import com.bbd.licenscerenewal.services.LicenseRepo;
 import com.bbd.licenscerenewal.services.LicenseStatusRepo;
 import com.bbd.licenscerenewal.services.LicenseTypeRepo;
+import com.bbd.licenscerenewal.services.*;
 
 // import org.springframework.data.domain.Page;
 // import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +107,8 @@ class LicenseController {
     }
 
     @PostMapping("/licenses")
-    public ResponseEntity<License> insert(@RequestBody License license){
+    @Validated(OnCreate.class)
+    public ResponseEntity<License> insert(@Valid @RequestBody License license){
         License result = licenseRepo.add(license);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
