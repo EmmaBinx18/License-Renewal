@@ -15,12 +15,18 @@ import java.util.Set;
 import com.bbd.licenscerenewal.models.NullObjects;
 import com.bbd.licenscerenewal.models.Owner;
 import com.bbd.licenscerenewal.models.Representative;
+import com.bbd.licenscerenewal.utils.logging.LogRequest;
+import com.bbd.licenscerenewal.utils.logging.LogType;
+import com.bbd.licenscerenewal.utils.logging.Logger;
+import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OwnerRepo implements IRepository<Owner>{
+
+    private Logger logger = new Logger(new LogRequest());
 
     @Autowired
     @Qualifier("DatabasePool")
@@ -89,11 +95,16 @@ public class OwnerRepo implements IRepository<Owner>{
             sp.setInt(16,toAdd.getChosenAddress());
             sp.setInt(17,toAdd.getRepresentativeId());
 
+            logger.log("{CALL pCreateOwner(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}", LogType.QUERY);
+            logger.log(toAdd,LogType.PARAMETERS);
+
             ResultSet rs = sp.executeQuery();
             List<Owner> list = convertResultSet(rs);
+            logger.log(list,LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
             return list.isEmpty() ?   nullObjects.getOwner():list.get(0);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -109,7 +120,9 @@ public class OwnerRepo implements IRepository<Owner>{
             for (Map.Entry<String,T> value: values) {
                 query += putParams.get(value.getKey());
             }
-            
+            logger.log("UPDATE TABLE Owner SET", LogType.QUERY);
+            logger.log(id,LogType.PARAMETERS);
+            logger.log(values,LogType.PARAMETERS);
             PreparedStatement update  = conn.prepareStatement(query);
             int index = 1;
             for (Map.Entry<String,T> value: values) {
@@ -119,7 +132,7 @@ public class OwnerRepo implements IRepository<Owner>{
             update.executeUpdate();
             return getById(id);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -165,7 +178,7 @@ public class OwnerRepo implements IRepository<Owner>{
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -179,13 +192,16 @@ public class OwnerRepo implements IRepository<Owner>{
             conn  = databaseService.getConnection();
             CallableStatement sp = conn.prepareCall("{CALL pGetOwner(?)}");
             sp.setInt(1, id);
-
+            logger.log("{CALL pGetOwner(?)}",LogType.QUERY);
+            logger.log(id,LogType.PARAMETERS);
             ResultSet rs = sp.executeQuery();
             List<Owner> list = convertResultSet(rs);
+            logger.log(list,LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
             return list.isEmpty() ?   nullObjects.getOwner():list.get(0);
 
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
@@ -200,7 +216,8 @@ public class OwnerRepo implements IRepository<Owner>{
             for (Map.Entry<String,T> param: params) {
                 query += getParams.get(param.getKey());
             }
-            
+            logger.log(query,LogType.QUERY);
+            logger.log(params,LogType.PARAMETERS);
             PreparedStatement get  = conn.prepareStatement(query);
             int index = 1;
             for (Map.Entry<String,T> param: params) {
@@ -208,9 +225,12 @@ public class OwnerRepo implements IRepository<Owner>{
             }
             
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs);
+            List<Owner> list = convertResultSet(rs);
+            logger.log(list,LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
+            return list;
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.log("{Error SQL}" + exception.getMessage(),LogType.ERROR);
             throw exception;
         } finally {
             databaseService.releaseConnection(conn);
