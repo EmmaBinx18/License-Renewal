@@ -1,7 +1,7 @@
 # Vehicle License Renewal API
 This API can be used to renew a South African vehicle license, as well as perform other functions surrounding the domain of License Renewal. All responses and request bodies my be in a valid JSON format. Standard HTTP responses will be returned, and appropriate error codes and responses will be returned where necessary. JWT tokens are used for authorization purposes and you will need to be authenticated before you will be allowed to use the API.
 
-Swaggar Documentation:
+Swaggar Documentation: https://license-renewal.herokuapp.com/swagger-ui/index.html?configUrl=/swagger/swagger-config
 
 ## Requests
 All requests need to include a `Bearer Token` as well as the `X-API-VERSION` header specifying the api version requested. If an API version is not provided, the most recent version of the API will be used as the default.
