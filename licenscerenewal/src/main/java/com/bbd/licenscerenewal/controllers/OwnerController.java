@@ -5,15 +5,12 @@ import com.bbd.licenscerenewal.models.IdentificationType;
 import com.bbd.licenscerenewal.models.Owner;
 import com.bbd.licenscerenewal.models.OwnerType;
 import com.bbd.licenscerenewal.models.Representative;
-import com.bbd.licenscerenewal.services.AddressRepo;
-import com.bbd.licenscerenewal.services.IdentificationTypeRepo;
-import com.bbd.licenscerenewal.services.OwnerRepo;
-import com.bbd.licenscerenewal.services.OwnerTypeRepo;
-import com.bbd.licenscerenewal.services.RepresentativeRepo;
+import com.bbd.licenscerenewal.services.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +105,8 @@ public class OwnerController {
     }
 
     @PostMapping("/owners")
-    public ResponseEntity<Owner> insert(@RequestBody Owner owner){
+    @Validated(OnCreate.class)
+    public ResponseEntity<Owner> insert(@Valid @RequestBody Owner owner){
         Owner result = ownerRepo.add(owner);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
