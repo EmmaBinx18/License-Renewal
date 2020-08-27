@@ -5,7 +5,12 @@ import com.bbd.licenscerenewal.models.IdentificationType;
 import com.bbd.licenscerenewal.models.Owner;
 import com.bbd.licenscerenewal.models.OwnerType;
 import com.bbd.licenscerenewal.models.Representative;
-import com.bbd.licenscerenewal.services.*;
+import com.bbd.licenscerenewal.services.AddressRepo;
+import com.bbd.licenscerenewal.services.IdentificationTypeRepo;
+import com.bbd.licenscerenewal.services.OnCreate;
+import com.bbd.licenscerenewal.services.OwnerRepo;
+import com.bbd.licenscerenewal.services.OwnerTypeRepo;
+import com.bbd.licenscerenewal.services.RepresentativeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

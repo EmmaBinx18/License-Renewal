@@ -8,7 +8,7 @@ import com.bbd.licenscerenewal.services.LicenseRenewalHistoryRepo;
 import com.bbd.licenscerenewal.services.LicenseRepo;
 import com.bbd.licenscerenewal.services.LicenseStatusRepo;
 import com.bbd.licenscerenewal.services.LicenseTypeRepo;
-import com.bbd.licenscerenewal.services.*;
+import com.bbd.licenscerenewal.services.OnCreate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
@@ -52,8 +53,11 @@ class LicenseController {
     @Autowired
     LicenseRenewalHistoryRepo licenseRenwalHistoryRepo;
 
-    @GetMapping(value = "/licenses", headers = "X-API-VERSION=1")
-    public ResponseEntity<Map<String, Object>> getAllLicensesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {
+    // private static final String API_VERSION = System.getenv("version");
+    // @RequestHeader(value="X-API-VERSION", required = false, defaultValue = API_VERSION) int version
+
+    @GetMapping("/licenses")
+    public ResponseEntity<Map<String, Object>> getAllLicensesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException {        
         Pageable paging = PageRequest.of(page, size);
         Page<List<License>> licenses = licenseRepo.getAllPaged(paging);
 
