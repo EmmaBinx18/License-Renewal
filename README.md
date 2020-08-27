@@ -3,6 +3,9 @@ This API can be used to renew a South African vehicle license, as well as perfor
 
 Swaggar Documentation:
 
+## Requests
+All requests need to include a `Bearer Token` as well as the `X-API-VERSION` header specifying the api version requested.
+
 ## Response Codes 
 ### Response Codes
 ```
