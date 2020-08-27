@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.bbd.licenscerenewal.models.NullObjects;
 import com.bbd.licenscerenewal.models.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,6 +28,9 @@ public class VehicleRepo implements IRepository<Vehicle>{
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
+
+    @Autowired
+    NullObjects nullObjects;
 
     public final Dictionary<String,String> getParams = new Hashtable();
 
@@ -53,7 +57,8 @@ public class VehicleRepo implements IRepository<Vehicle>{
             sp.setInt(6, toAdd.getVehicleTypeId());
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            List<Vehicle> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getVehicle():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;
@@ -65,7 +70,6 @@ public class VehicleRepo implements IRepository<Vehicle>{
     @Override
     public List<Vehicle> convertResultSet(ResultSet toConvert) throws SQLException {
         List<Vehicle> vehicles = new ArrayList<>();
-
         while(toConvert.next()){
             Vehicle vehicle = new Vehicle();
             vehicle.setVehicleId(toConvert.getInt(1));
@@ -117,7 +121,8 @@ public class VehicleRepo implements IRepository<Vehicle>{
             sp.setInt(1, id);
 
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            List<Vehicle> list = convertResultSet(rs);
+            return list.isEmpty() ?   nullObjects.getVehicle():list.get(0);
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw exception;

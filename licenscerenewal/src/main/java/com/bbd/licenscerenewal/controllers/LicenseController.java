@@ -84,8 +84,9 @@ class LicenseController {
     @GetMapping(value = "/licenses/{id}", headers = "X-API-VERSION=1")
     public ResponseEntity<License> getById(@PathVariable int id) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.getById(id);
-        if(result == null){
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        if(result.getOwnerId() == -1)
+        {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -93,19 +94,30 @@ class LicenseController {
     @GetMapping(value = "/licenses/statuses", headers = "X-API-VERSION=1")
     public ResponseEntity<List<LicenseStatus>> getLicenseStatuses() throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseStatus> result =licenseStatusRepo.getLicenseStatuses();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        if(result.size() >0)
+        {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
     }
 
     @GetMapping(value = "/licenses/types", headers = "X-API-VERSION=1")
     public ResponseEntity<List<LicenseType>> getLicenseTypes() throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseType> result = licenseTypeRepo.getLicenseTypes();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        if(result.size() >0)
+        {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(value = "/licenses", headers = "X-API-VERSION=1")
     @Validated(OnCreate.class)
     public ResponseEntity<License> insert(@Valid @RequestBody License license) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.add(license);
+        if(result.getLicenseId() == -1){
+            return new ResponseEntity<>(result, HttpStatus.NOT_MODIFIED);
+        }
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
@@ -113,12 +125,18 @@ class LicenseController {
     public <T> ResponseEntity<License> patchLicense(@PathVariable int id, @RequestBody Map<String,T> value) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Set<Map.Entry<String,T>> values = value.entrySet();
         License result = licenseRepo.patchLicense(id, values);
+        if(result.getLicenseId() == -1){
+            return new ResponseEntity<>(result, HttpStatus.NOT_MODIFIED);
+        }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/licenses/{id}", headers = "X-API-VERSION=1")
     public ResponseEntity<License> delete(@PathVariable int id) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         License result = licenseRepo.delete(id);
+        if(result.getLicenseId()==-1){
+            return new ResponseEntity<>(result, HttpStatus.NOT_MODIFIED);
+        }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -137,6 +155,9 @@ class LicenseController {
     @GetMapping(value = "/licenses/{id}/history", headers = "X-API-VERSION=1")
     public ResponseEntity<List<LicenseRenewalHistory>> getRenewalHistory(@PathVariable int id) throws SQLException, SQLTimeoutException, RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<LicenseRenewalHistory> result = licenseRenwalHistoryRepo.getByLicenseId(id);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        if(result.size() > 0){
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
     }
 }
