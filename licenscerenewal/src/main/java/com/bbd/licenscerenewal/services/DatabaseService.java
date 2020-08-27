@@ -1,15 +1,19 @@
 package com.bbd.licenscerenewal.services;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
-import java.sql.*;
-import java.util.*;
 
 @Service
 @Qualifier("DatabasePool")
 public class DatabaseService implements IDataBasePool {
-    private String connectionString = "";
+    private String connectionString = "jdbc:sqlserver://license-renewal.database.windows.net;databaseName=production;user=grad-admin;password=Apple@jane56";
     private List<Connection> connectionPool;
     private List<Connection> usedConnections = new ArrayList<>();
     private static int MAX_POOL_SIZE = 100;

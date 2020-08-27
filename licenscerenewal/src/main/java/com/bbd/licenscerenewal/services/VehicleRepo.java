@@ -1,12 +1,25 @@
 package com.bbd.licenscerenewal.services;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.bbd.licenscerenewal.models.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
-import java.util.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class VehicleRepo implements IRepository<Vehicle>{
@@ -18,55 +31,12 @@ public class VehicleRepo implements IRepository<Vehicle>{
     public final Dictionary<String,String> getParams = new Hashtable();
 
     public VehicleRepo() {
-        getParams.put("registrationNumber"," AND RegistrationNumber = ?");
+        getParams.put("registerNumber"," AND RegisterNumber = ?");
+        getParams.put("model", " AND Model = ?");
         getParams.put("make", " AND Make = ?");
-        getParams.put("vin", " AND VIN =?");
-    }
-
-    @Override
-    public Vehicle update(Vehicle toUpdate) {
-        Connection conn = null;
-        try {
-            conn = databaseService.getConnection();
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE Vehicle SET RegistrationNumber = ?,VIN = ?,Make = ? ,Model = ?, Odo = ?, VehicleTypeId = ? WHERE VehicleId = ?");
-            update.setString(1, toUpdate.getRegistrationNumber());
-            update.setString(2, toUpdate.getVin());
-            update.setString(3, toUpdate.getMake());
-            update.setString(4, toUpdate.getModel());
-            update.setInt(5, toUpdate.getOdometer());
-            update.setInt(6, toUpdate.getVehicleTypeId());
-            update.setInt(7, toUpdate.getVehicleId());
-            update.executeUpdate();
-            return toUpdate;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
-    }
-
-    @Override
-    public Vehicle delete(int id) {
-        Connection conn = null;
-        try {
-            conn  = databaseService.getConnection();
-            PreparedStatement select  = conn.prepareStatement("SELECT * FROM Vehicle WHERE VehicleId = ? ");
-            select.setInt(1, id);
-
-            PreparedStatement delete = conn.prepareStatement("DELETE FROM Vehicle WHERE VehicleId = ?");
-            delete.setInt(1, id);
-
-            ResultSet rs = select.executeQuery();
-            delete.executeQuery();
-
-            return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        } finally {
-            databaseService.releaseConnection(conn);
-        }
-        return null;
+        getParams.put("vin", " AND VIN = ?");
+        getParams.put("odometer", " AND Odo = ?");
+        getParams.put("vehicleTypeId", " AND VehicleTypeId = ?");
     }
 
     @Override
@@ -74,18 +44,16 @@ public class VehicleRepo implements IRepository<Vehicle>{
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
-            PreparedStatement insert  = conn.prepareStatement("INSERT INTO Vehicle VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-            insert.setString(1, toAdd.getRegistrationNumber());
-            insert.setString(2, toAdd.getVin());
-            insert.setString(3, toAdd.getMake());
-            insert.setString(4, toAdd.getModel());
-            insert.setInt(5, toAdd.getOdometer());
-            insert.setInt(6, toAdd.getVehicleTypeId());
+            CallableStatement sp = conn.prepareCall("{CALL pCreateVehicle(?,?,?,?,?,?)}");
+            sp.setString(1, toAdd.getRegisterNumber());
+            sp.setString(2, toAdd.getVin());
+            sp.setString(3, toAdd.getMake());
+            sp.setString(4, toAdd.getModel());
+            sp.setInt(5, toAdd.getOdometer());
+            sp.setInt(6, toAdd.getVehicleTypeId());
 
-            insert.executeUpdate();
-            toAdd.setVehicleId(insert.getGeneratedKeys().getInt(1));
-
-            return toAdd;
+            ResultSet rs = sp.executeQuery();
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         } finally {
@@ -101,7 +69,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
         while(toConvert.next()){
             Vehicle vehicle = new Vehicle();
             vehicle.setVehicleId(toConvert.getInt(1));
-            vehicle.setRegistrationNumber(toConvert.getString(2));
+            vehicle.setRegisterNumber(toConvert.getString(2));
             vehicle.setVin(toConvert.getString(3));
             vehicle.setMake(toConvert.getString(4));
             vehicle.setModel(toConvert.getString(5));
@@ -126,6 +94,13 @@ public class VehicleRepo implements IRepository<Vehicle>{
             databaseService.releaseConnection(conn);
         }
         return new ArrayList<>();
+    }
+
+    public Page<List<Vehicle>> getAllPaged(Pageable pageable) {
+        List<Vehicle> vehicles = getAll(); 
+        int start = (int) pageable.getOffset();
+        int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
+        return new PageImpl(vehicles.subList(start, end), pageable, vehicles.size());
     }
 
     @Override
@@ -154,13 +129,13 @@ public class VehicleRepo implements IRepository<Vehicle>{
             for (Map.Entry<String,T> param: params) {
                 query += getParams.get(param.getKey());
             }
-
+            
             PreparedStatement get  = conn.prepareStatement(query);
             int index = 1;
             for (Map.Entry<String,T> param: params) {
                 get.setObject(index,param.getValue());
             }
-
+            
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
         } catch (SQLException throwable) {

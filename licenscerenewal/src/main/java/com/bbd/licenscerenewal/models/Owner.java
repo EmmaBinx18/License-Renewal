@@ -2,23 +2,23 @@ package com.bbd.licenscerenewal.models;
 
 public class Owner{
     private int ownerId;
-    private String idNumber;
     private int idType;
+    private String idNumber;
     private String countryOfIssue;
     private String organisationName;
     private String surname;
     private String initials;
     private String firstName;
-    private String middleName;
+    private String middleNames;
     private String emailAddress;
     private String homeTel;
     private String workTel;
     private String cellphoneNumber;
     private String faxNumber;
-    private Address postalAddress;
-    private Address streetAddress;
+    private int postalAddressId;
+    private int streetAddressId;
     private int chosenAddress;
-    private int organisationId;
+    private int representativeId;
 
     public String getIdNumber() {
         return idNumber;
@@ -76,12 +76,12 @@ public class Owner{
         this.firstName = firstName;
     }
 
-    public String getMiddleName() {
-        return middleName;
+    public String getMiddleNames() {
+        return middleNames;
     }
 
-    public void setMiddleName(String middleName){
-        this.middleName = middleName;
+    public void setMiddleNames(String middleNames){
+        this.middleNames = middleNames;
     }
 
     public String getEmailAddress() {
@@ -124,20 +124,20 @@ public class Owner{
         this.faxNumber = faxNumber;
     }
 
-    public Address getPostalAddress() {
-        return postalAddress;
+    public int getPostalAddressId() {
+        return postalAddressId;
     }
 
-    public void setPostalAddress(Address postalAddress){
-        this.postalAddress = postalAddress;
+    public void setPostalAddressId(int postalAddressId){
+        this.postalAddressId = postalAddressId;
     }
 
-    public Address getStreetAddress() {
-        return streetAddress;
+    public int getStreetAddressId() {
+        return streetAddressId;
     }
 
-    public void setStreetAddress(Address streetAddress){
-        this.streetAddress = streetAddress;
+    public void setStreetAddressId(int streetAddressId){
+        this.streetAddressId = streetAddressId;
     }
 
     public int getChosenAddress() {
@@ -156,7 +156,11 @@ public class Owner{
         this.ownerId = ownerId; 
     }
 
-    public int getOrganisationId() { return organisationId; }
+    public int getRepresentativeId() {
+        return representativeId;
+    }
 
-    public void setOrganisationId(int organisationId) { this.organisationId = organisationId; }
+    public void setRepresentativeId(int representativeId) {
+        this.representativeId = representativeId;
+    }
 }

@@ -6,7 +6,17 @@ import com.bbd.licenscerenewal.services.VehicleRepo;
 import com.bbd.licenscerenewal.services.VehicleTypeRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+// import org.springframework.data.domain.Page;
+// import org.springframework.data.domain.PageRequest;
+// import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
@@ -22,45 +32,59 @@ class VehicleController {
     VehicleTypeRepo vehicleTypeRepo;
 
     @GetMapping("/vehicles")
-    @ResponseBody
-    public <T> List<Vehicle> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams)
-    {
+    public <T> ResponseEntity<List<Vehicle>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams){
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
-            return vehicleRepo.getAll();
+            List<Vehicle> vehicles = vehicleRepo.getAll();
+            return new ResponseEntity<>(vehicles, HttpStatus.OK);
         }
         else{
-            return vehicleRepo.getByQueryParams(params);
+            List<Vehicle> vehicles = vehicleRepo.getByQueryParams(params);
+            return new ResponseEntity<>(vehicles, HttpStatus.OK);
         }
     }
 
+    // @GetMapping("/vehicles")
+    // public ResponseEntity<Map<String, Object>> getAllVehiclesPaged(@RequestParam int page, @RequestParam(defaultValue = "100") int size) {
+    //     try {
+    //         Pageable paging = PageRequest.of(page, size);
+    //         Page<List<Vehicle>> vehicles = vehicleRepo.getAllPaged(paging);
+
+    //         if (vehicles.getContent().isEmpty()) {
+    //             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    //         }
+
+    //         Map<String, Object> response = new HashMap<>();
+    //         response.put("vehicles", vehicles.getContent());
+    //         response.put("currentPage", vehicles.getNumber());
+    //         response.put("totalItems", vehicles.getTotalElements());
+    //         response.put("totalPages", vehicles.getTotalPages());
+
+    //         return new ResponseEntity<>(response, HttpStatus.OK);
+    //     } catch (Exception e) {
+    //         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
     @GetMapping("/vehicles/{id}")
-    public Vehicle getById(@PathVariable int id) {
-        return vehicleRepo.getById(id);
+    public ResponseEntity<Vehicle> getById(@PathVariable int id) {
+        Vehicle result = vehicleRepo.getById(id);
+        if(result == null){
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/vehicles/types")
-    public List<VehicleType> getVehicleTypes()
-    {
-        return vehicleTypeRepo.getVehicleTypes();
+    public ResponseEntity<List<VehicleType>> getVehicleTypes(){
+        List<VehicleType> result = vehicleTypeRepo.getVehicleTypes();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/vehicles")
-    @ResponseBody
-    public Vehicle insert(@RequestBody Vehicle vehicle){
-        return vehicleRepo.add(vehicle);
-    }
-
-    @PutMapping("/vehicles")
-    @ResponseBody
-    public Vehicle update(@RequestBody Vehicle vehicle){
-        return vehicleRepo.update(vehicle);
-    }
-
-    @DeleteMapping("/vehicles/{id}")
-    @ResponseBody
-    public Vehicle delete(@PathVariable int id) {
-        return vehicleRepo.delete(id);
+    public ResponseEntity<Vehicle> insert(@RequestBody Vehicle vehicle){
+        Vehicle result = vehicleRepo.add(vehicle);
+        return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 
 }

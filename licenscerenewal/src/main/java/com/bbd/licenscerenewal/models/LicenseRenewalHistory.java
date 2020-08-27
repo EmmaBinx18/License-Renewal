@@ -6,7 +6,8 @@ public class LicenseRenewalHistory{
     private int licenseRenewalHistoryId;
     private int licenseId;
     private Date renewalDate;
-    private float fee;
+    private double fee;
+    private int renewalActionId;
 
     public int getLicenseRenewalHistoryId() {
         return licenseRenewalHistoryId;
@@ -32,11 +33,19 @@ public class LicenseRenewalHistory{
         this.renewalDate = renewalDate;
     }
 
-    public float getFee() {
+    public double getFee() {
         return fee;
     }
 
-    public void setFee(float fee) {
+    public void setFee(double fee) {
         this.fee = fee;
+    }
+
+    public int getRenewalActionId() {
+        return renewalActionId;
+    }
+
+    public void setRenewalActionId(int renewalActionId) {
+        this.renewalActionId = renewalActionId;
     }
 }
