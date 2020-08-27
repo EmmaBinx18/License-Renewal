@@ -16,6 +16,7 @@ import com.bbd.licenscerenewal.models.NullObjects;
 import com.bbd.licenscerenewal.models.Owner;
 import com.bbd.licenscerenewal.models.Representative;
 import com.bbd.licenscerenewal.utils.logging.LogRequest;
+import com.bbd.licenscerenewal.utils.logging.LogSQL;
 import com.bbd.licenscerenewal.utils.logging.LogType;
 import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.apache.juli.logging.Log;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class OwnerRepo implements IRepository<Owner>{
 
-    private Logger logger = new Logger(new LogRequest());
+    private Logger logger = new Logger(new LogSQL());
 
     @Autowired
     @Qualifier("DatabasePool")

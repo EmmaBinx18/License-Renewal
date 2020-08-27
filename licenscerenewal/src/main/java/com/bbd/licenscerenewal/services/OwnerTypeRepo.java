@@ -1,6 +1,7 @@
 package com.bbd.licenscerenewal.services;
 
 import com.bbd.licenscerenewal.utils.logging.LogRequest;
+import com.bbd.licenscerenewal.utils.logging.LogSQL;
 import com.bbd.licenscerenewal.utils.logging.LogType;
 import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import com.bbd.licenscerenewal.models.OwnerType;
 
 @Service
 public class OwnerTypeRepo {
-    private Logger logger = new Logger(new LogRequest());
+    private Logger logger = new Logger(new LogSQL());
 
     @Autowired
     @Qualifier("DatabasePool")

@@ -17,6 +17,7 @@ import com.bbd.licenscerenewal.models.Representative;
 
 import com.bbd.licenscerenewal.models.Vehicle;
 import com.bbd.licenscerenewal.utils.logging.LogRequest;
+import com.bbd.licenscerenewal.utils.logging.LogSQL;
 import com.bbd.licenscerenewal.utils.logging.LogType;
 import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RepresentativeRepo implements IRepository<Representative> {
 
-    private Logger logger = new Logger(new LogRequest());
+    private Logger logger = new Logger(new LogSQL());
 
     @Autowired
     @Qualifier("DatabasePool")
