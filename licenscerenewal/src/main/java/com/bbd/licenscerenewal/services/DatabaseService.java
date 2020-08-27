@@ -19,7 +19,7 @@ public class DatabaseService implements IDataBasePool {
     private static int MAX_POOL_SIZE = 100;
     private static int INITIAL_POOL_SIZE = 1;
 
-    public DatabaseService(){
+    public DatabaseService() throws SQLException {
         System.out.println("Starting");
         connectionPool = new ArrayList<>(INITIAL_POOL_SIZE);
         for(int i = 0; i < INITIAL_POOL_SIZE; i++){
@@ -52,14 +52,16 @@ public class DatabaseService implements IDataBasePool {
         }
     }
 
-    private Connection createConnection() {
+    private Connection createConnection() throws SQLException {
         try {
             return DriverManager.getConnection(connectionString);
         } catch (SQLTimeoutException exception) {
             exception.printStackTrace();
+            throw exception;
         } catch (SQLException exception){
             exception.printStackTrace();
+            throw exception;
         }
-        return null;
+
     }
 }
