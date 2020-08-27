@@ -14,18 +14,12 @@ import java.util.Set;
 
 import com.bbd.licenscerenewal.models.Representative;
 
-import com.bbd.licenscerenewal.utils.logging.LogSQL;
-import com.bbd.licenscerenewal.utils.logging.LogType;
-import com.bbd.licenscerenewal.utils.logging.Logger;
-import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RepresentativeRepo implements IRepository<Representative> {
-
-    Logger logger = new Logger(new LogSQL());
 
     @Autowired
     @Qualifier("DatabasePool")
@@ -56,7 +50,6 @@ public class RepresentativeRepo implements IRepository<Representative> {
         try {
             conn = databaseService.getConnection();
             CallableStatement sp = conn.prepareCall("{CALL pCreateRepresentative(?,?,?,?,?,?)}");
-            logger.log("{CALL pCreateRepresentative(?,?,?,?,?,?)}",LogType.QUERY);
             sp.setInt(1, toAdd.getIdType());
             sp.setString(2, toAdd.getIdNumber());
             sp.setString(3, toAdd.getCountryOfIssue());
@@ -65,13 +58,8 @@ public class RepresentativeRepo implements IRepository<Representative> {
             sp.setInt(6, toAdd.getOwnerTypeId());
 
             ResultSet rs = sp.executeQuery();
-
-            Representative representative = convertResultSet(rs).get(0);
-            logger.log(representative,LogType.RESPONSE);
-            logger.log("",LogType.COMPLETED);
-            return representative;
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwables) {
-            logger.log("(Failed Running Query) " + throwables.getMessage(), LogType.ERROR);
             throwables.printStackTrace();
             throw throwables;
         } finally {
@@ -84,7 +72,6 @@ public class RepresentativeRepo implements IRepository<Representative> {
         try {
             conn  = databaseService.getConnection();
             String query = "UPDATE TABLE Representative SET";
-            logger.log("UPDATE TABLE Representative SET",LogType.QUERY);
             for (Map.Entry<String,T> value: values) {
                 query += putParams.get(value.getKey());
             }
@@ -94,13 +81,10 @@ public class RepresentativeRepo implements IRepository<Representative> {
             for (Map.Entry<String,T> value: values) {
                 update.setObject(index,value.getValue());
             }
-
-            logger.log(values,LogType.PARAMETERS);
             
             update.executeUpdate();
             return getById(id);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -133,14 +117,9 @@ public class RepresentativeRepo implements IRepository<Representative> {
         try {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Representative");
-            logger.log("SELECT * FROM Representative", LogType.QUERY);
             ResultSet rs = get.executeQuery();
-            List<Representative> representatives = convertResultSet(rs);
-            logger.log(representatives, LogType.RESPONSE);
-            logger.log("", LogType.COMPLETED);
-            return representatives;
+            return convertResultSet(rs);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -154,19 +133,11 @@ public class RepresentativeRepo implements IRepository<Representative> {
         try {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT RepresentativeId,IdentificationTypeId,IdNumber,ForeignIdCountry,Surname, Initials,OwnerTypeId FROM Representative WHERE RepresentativeId = ?");
-            logger.log("SELECT RepresentativeId,IdentificationTypeId,IdNumber,ForeignIdCountry,Surname, Initials,OwnerTypeId FROM Representative WHERE RepresentativeId = ?",LogType.QUERY);
             get.setInt(1, id);
 
-            logger.log(id,LogType.PARAMETERS);
-
             ResultSet rs = get.executeQuery();
-
-            Representative representative = convertResultSet(rs).get(0);
-            logger.log(representative,LogType.RESPONSE);
-            logger.log("",LogType.COMPLETED);
-            return representative;
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -179,8 +150,6 @@ public class RepresentativeRepo implements IRepository<Representative> {
         try {
             conn  = databaseService.getConnection();
             String query = "SELECT * FROM Representative WHERE 1=1 ";
-
-            logger.log("SELECT * FROM Representative WHERE 1=1 ",LogType.QUERY);
             for (Map.Entry<String,T> param: params) {
                 query += getParams.get(param.getKey());
             }
@@ -190,15 +159,10 @@ public class RepresentativeRepo implements IRepository<Representative> {
             for (Map.Entry<String,T> param: params) {
                 get.setObject(index,param.getValue());
             }
-            logger.log(params,LogType.PARAMETERS);
             
             ResultSet rs = get.executeQuery();
-            List<Representative> representatives = convertResultSet(rs);
-            logger.log(representatives,LogType.RESPONSE);
-            logger.log("",LogType.COMPLETED);
-            return representatives;
+            return convertResultSet(rs);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {

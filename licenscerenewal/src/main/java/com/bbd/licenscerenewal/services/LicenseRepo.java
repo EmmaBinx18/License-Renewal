@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.bbd.licenscerenewal.models.License;
-import com.bbd.licenscerenewal.utils.logging.LogSQL;
-import com.bbd.licenscerenewal.utils.logging.LogType;
-import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -26,8 +23,6 @@ import org.springframework.data.domain.Pageable;
 
 @Service
 public class LicenseRepo implements IRepository<License> {
-
-    Logger logger = new Logger(new LogSQL());
 
     @Autowired
     @Qualifier("DatabasePool")
@@ -57,9 +52,6 @@ public class LicenseRepo implements IRepository<License> {
         try {
             conn  = databaseService.getConnection();
             String query = "UPDATE TABLE License SET";
-
-            logger.log("UPDATE TABLE License SET", LogType.QUERY);
-
             for (Map.Entry<String,T> value: values) {
                 query += putParams.get(value.getKey());
             }
@@ -69,12 +61,10 @@ public class LicenseRepo implements IRepository<License> {
             for (Map.Entry<String,T> value: values) {
                 update.setObject(index,value.getValue());
             }
-            logger.log(values, LogType.PARAMETERS);
             
             update.executeUpdate();
             return getById(id);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -92,7 +82,6 @@ public class LicenseRepo implements IRepository<License> {
             ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -110,13 +99,9 @@ public class LicenseRepo implements IRepository<License> {
             update.setInt(1, 4);
             update.setInt(2, id);
 
-            logger.log("UPDATE TABLE License SET LicenseStatusId = ? WHERE LicenseId = ?",LogType.QUERY);
-            logger.log(id,LogType.PARAMETERS);
-
             update.executeUpdate();
             return getById(id);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -139,18 +124,9 @@ public class LicenseRepo implements IRepository<License> {
             sp.setInt(6, toAdd.getLicenseStatusId());
             sp.setInt(7, toAdd.getLicenseTypeId());
 
-            logger.log("{CALL pCreateLicense(?,?,?,?,?,?,?)}",LogType.QUERY);
-            logger.log(toAdd,LogType.PARAMETERS);
-
             ResultSet rs = sp.executeQuery();
-
-            License license = convertResultSet(rs).get(0);
-            logger.log(license,LogType.RESPONSE);
-            logger.log("",LogType.COMPLETED);
-
-            return license;
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -184,15 +160,9 @@ public class LicenseRepo implements IRepository<License> {
         try {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM License");
-            logger.log("SELECT * FROM License",LogType.QUERY);
             ResultSet rs = get.executeQuery();
-
-            List<License> licenses = convertResultSet(rs);
-            logger.log(licenses,LogType.RESPONSE);
-            logger.log("",LogType.COMPLETED);
-            return licenses;
+            return convertResultSet(rs);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -214,19 +184,12 @@ public class LicenseRepo implements IRepository<License> {
         try {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
-            logger.log("SELECT * FROM License WHERE LicenseId = ?",LogType.QUERY);
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
 
-            License license =  convertResultSet(rs).get(0);
-
-            logger.log(license,LogType.RESPONSE);
-            logger.log("",LogType.COMPLETED);
-
-            return license;
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -240,8 +203,6 @@ public class LicenseRepo implements IRepository<License> {
         try {
                 conn  = databaseService.getConnection();
                 String query = "SELECT * FROM License WHERE 1=1 ";
-
-                logger.log("SELECT * FROM License WHERE 1=1 ",LogType.QUERY);
                 for (Map.Entry<String,T> param: params) {
                     query += getParams.get(param.getKey());
                 }
@@ -252,16 +213,9 @@ public class LicenseRepo implements IRepository<License> {
                     get.setObject(index,param.getValue());
                 }
 
-                logger.log(params,LogType.PARAMETERS);
                 ResultSet rs = get.executeQuery();
-                List<License> licenses = convertResultSet(rs);
-
-                logger.log(licenses,LogType.RESPONSE);
-                logger.log("",LogType.RESPONSE);
-
-                return licenses;
+                return convertResultSet(rs);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {

@@ -1,8 +1,5 @@
 package com.bbd.licenscerenewal.services;
 
-import com.bbd.licenscerenewal.utils.logging.LogSQL;
-import com.bbd.licenscerenewal.utils.logging.LogType;
-import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -18,9 +15,7 @@ import com.bbd.licenscerenewal.models.OwnerType;
 
 @Service
 public class OwnerTypeRepo {
-
-    Logger logger = new Logger(new LogSQL());
-
+    
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
@@ -30,7 +25,6 @@ public class OwnerTypeRepo {
         try{
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM OwnerType");
-            logger.log("SELECT * FROM OwnerType",LogType.QUERY);
             ResultSet rs = get.executeQuery();
             
             List<OwnerType> ownerTypes = new ArrayList<>();
@@ -40,13 +34,8 @@ public class OwnerTypeRepo {
                 ownerType.setName(rs.getString(2));
                 ownerTypes.add(ownerType);
             }
-
-            logger.log(ownerTypes,LogType.RESPONSE);
-            logger.log("",LogType.COMPLETED);
-
             return ownerTypes;
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {

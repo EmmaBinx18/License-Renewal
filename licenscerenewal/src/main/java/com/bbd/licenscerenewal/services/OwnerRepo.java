@@ -13,17 +13,12 @@ import java.util.Map;
 import java.util.Set;
 
 import com.bbd.licenscerenewal.models.Owner;
-import com.bbd.licenscerenewal.utils.logging.LogSQL;
-import com.bbd.licenscerenewal.utils.logging.LogType;
-import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OwnerRepo implements IRepository<Owner>{
-
-    Logger logger = new Logger(new LogSQL());
 
     @Autowired
     @Qualifier("DatabasePool")
@@ -71,7 +66,6 @@ public class OwnerRepo implements IRepository<Owner>{
         try {
             conn = databaseService.getConnection();
             CallableStatement sp = conn.prepareCall("{CALL pCreate(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
-            logger.log("{CALL pCreate(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}",LogType.QUERY);
             sp.setInt(1, toAdd.getIdType());
             sp.setString(2,toAdd.getIdNumber());
             sp.setString(3,toAdd.getCountryOfIssue());
@@ -90,17 +84,9 @@ public class OwnerRepo implements IRepository<Owner>{
             sp.setInt(16,toAdd.getChosenAddress());
             sp.setInt(17,toAdd.getRepresentativeId());
 
-
-            logger.log(toAdd,LogType.PARAMETERS);
-
             ResultSet rs = sp.executeQuery();
-            Owner owner = convertResultSet(rs).get(0);
-
-            logger.log(owner, LogType.RESPONSE);
-            logger.log("", LogType.COMPLETED);
-            return owner;
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwables) {
-            logger.log("(Failed Running Query) " + throwables.getMessage(), LogType.ERROR);
             throwables.printStackTrace();
             throw throwables;
         } finally {
@@ -114,7 +100,6 @@ public class OwnerRepo implements IRepository<Owner>{
         try {
             conn  = databaseService.getConnection();
             String query = "UPDATE TABLE Owner SET";
-            logger.log("UPDATE TABLE Owner SET",LogType.QUERY);
             for (Map.Entry<String,T> value: values) {
                 query += putParams.get(value.getKey());
             }
@@ -124,11 +109,10 @@ public class OwnerRepo implements IRepository<Owner>{
             for (Map.Entry<String,T> value: values) {
                 update.setObject(index,value.getValue());
             }
-            logger.log(values,LogType.PARAMETERS);
+            
             update.executeUpdate();
             return getById(id);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
         } finally {
             databaseService.releaseConnection(conn);
@@ -172,14 +156,9 @@ public class OwnerRepo implements IRepository<Owner>{
         try {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Owner");
-            logger.log("SELECT * FROM Owner",LogType.QUERY);
             ResultSet rs = get.executeQuery();
-            List<Owner> owners =  convertResultSet(rs);
-            logger.log(owners,LogType.RESPONSE);
-            logger.log("",LogType.COMPLETED);
-            return owners;
+            return convertResultSet(rs);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
         } finally {
             databaseService.releaseConnection(conn);
@@ -195,18 +174,11 @@ public class OwnerRepo implements IRepository<Owner>{
             PreparedStatement get  = conn.prepareStatement("SELECT OwnerId,IdNumber,IdentificationTypeId,ForeignIdCountry,Surname, OrganisationName,Initials,\n" +
                     "FirstName,MiddleNames,EmailAddress,HomeTel,WorkTel,CellphoneNumber,FaxNumber,PostalAddressId,StreetAddressId, PrefferedAddressType,RepresentativeId FROM Owner\n" +
                     "WHERE  OwnerId = ?");
-            logger.log("SELECT OwnerId,IdNumber,IdentificationTypeId,ForeignIdCountry,Surname, OrganisationName,Initials, FirstName,MiddleNames,EmailAddress,HomeTel,WorkTel,CellphoneNumber,FaxNumber,PostalAddressId,StreetAddressId, PrefferedAddressType,RepresentativeId FROM Owner WHERE  OwnerId = ?",LogType.QUERY);
             get.setInt(1, id);
 
-            logger.log(id,LogType.PARAMETERS);
-
             ResultSet rs = get.executeQuery();
-            Owner owner = convertResultSet(rs).get(0);
-            logger.log(owner, LogType.RESPONSE);
-            logger.log("", LogType.COMPLETED);
-            return owner;
+            return convertResultSet(rs).get(0);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
         } finally {
             databaseService.releaseConnection(conn);
@@ -219,7 +191,6 @@ public class OwnerRepo implements IRepository<Owner>{
         try {
             conn  = databaseService.getConnection();
             String query = "SELECT * FROM Owner WHERE 1=1 ";
-            logger.log("SELECT * FROM Owner WHERE 1=1 ", LogType.QUERY);
             for (Map.Entry<String,T> param: params) {
                 query += getParams.get(param.getKey());
             }
@@ -229,16 +200,10 @@ public class OwnerRepo implements IRepository<Owner>{
             for (Map.Entry<String,T> param: params) {
                 get.setObject(index,param.getValue());
             }
-
-            logger.log(params, LogType.PARAMETERS);
+            
             ResultSet rs = get.executeQuery();
-
-            List<Owner> owners = convertResultSet(rs);
-            logger.log(owners, LogType.RESPONSE);
-            logger.log("", LogType.COMPLETED);
-            return owners;
+            return convertResultSet(rs);
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
         } finally {
             databaseService.releaseConnection(conn);

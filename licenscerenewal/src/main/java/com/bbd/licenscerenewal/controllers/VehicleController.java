@@ -7,9 +7,6 @@ import com.bbd.licenscerenewal.services.OnUpdate;
 import com.bbd.licenscerenewal.services.VehicleRepo;
 import com.bbd.licenscerenewal.services.VehicleTypeRepo;
 
-import com.bbd.licenscerenewal.utils.logging.LogRequest;
-import com.bbd.licenscerenewal.utils.logging.LogType;
-import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +24,6 @@ import org.springframework.web.client.HttpServerErrorException;
 // import org.springframework.data.domain.PageRequest;
 // import org.springframework.data.domain.Pageable;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
@@ -38,8 +34,6 @@ import java.util.Set;
 @RestController
 class VehicleController {
 
-    Logger logger = new Logger(new LogRequest());
-
     @Autowired
     VehicleRepo vehicleRepo;
 
@@ -47,10 +41,7 @@ class VehicleController {
     VehicleTypeRepo vehicleTypeRepo;
 
     @GetMapping("/vehicles")
-    public <T> ResponseEntity<List<Vehicle>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams, HttpServletRequest request) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
-
-        logger.log(request.getRemoteAddr(), LogType.DEFAULT);
-
+    public <T> ResponseEntity<List<Vehicle>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
             List<Vehicle> vehicles = vehicleRepo.getAll();
@@ -85,10 +76,7 @@ class VehicleController {
     // }
 
     @GetMapping("/vehicles/{id}")
-    public ResponseEntity<Vehicle> getById(@PathVariable int id, HttpServletRequest request) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
-
-        logger.log(request.getRemoteAddr(), LogType.DEFAULT);
-
+    public ResponseEntity<Vehicle> getById(@PathVariable int id) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Vehicle result = vehicleRepo.getById(id);
         if(result == null){
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
@@ -97,20 +85,14 @@ class VehicleController {
     }
 
     @GetMapping("/vehicles/types")
-    public ResponseEntity<List<VehicleType>> getVehicleTypes(HttpServletRequest request) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
-
-        logger.log(request.getRemoteAddr(), LogType.DEFAULT);
-
+    public ResponseEntity<List<VehicleType>> getVehicleTypes() throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         List<VehicleType> result = vehicleTypeRepo.getVehicleTypes();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/vehicles")
     @Validated(OnCreate.class)
-    public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle, HttpServletRequest request) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
-
-        logger.log(request.getRemoteAddr(), LogType.DEFAULT);
-
+    public ResponseEntity<Vehicle> insert(@Valid @RequestBody Vehicle vehicle) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Vehicle result = vehicleRepo.add(vehicle);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }

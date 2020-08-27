@@ -1,9 +1,6 @@
 package com.bbd.licenscerenewal.services;
 
 import com.bbd.licenscerenewal.models.VehicleType;
-import com.bbd.licenscerenewal.utils.logging.LogSQL;
-import com.bbd.licenscerenewal.utils.logging.LogType;
-import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -14,8 +11,6 @@ import java.util.*;
 @Service
 public class VehicleTypeRepo{
 
-    Logger logger = new Logger(new LogSQL());
-
     @Autowired
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
@@ -25,7 +20,6 @@ public class VehicleTypeRepo{
         try{
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM VehicleType");
-            logger.log("SELECT * FROM VehicleType",LogType.QUERY);
             ResultSet rs = get.executeQuery();
             
             List<VehicleType> vehicleTypes = new ArrayList<>();
@@ -35,12 +29,8 @@ public class VehicleTypeRepo{
                 vehicleType.setName(rs.getString(2));
                 vehicleTypes.add(vehicleType);
             }
-
-            logger.log(vehicleTypes,LogType.RESPONSE);
-            logger.log("",LogType.COMPLETED);
             return vehicleTypes;
         } catch (SQLException throwable) {
-            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
