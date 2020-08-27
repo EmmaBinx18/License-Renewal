@@ -39,6 +39,8 @@ public class LogResourceHandler {
             }
 
             bw.write("["+ getUUID(status) + "]" + "[" + new Date() + "]" + data);
+
+            System.out.println("["+ getUUID(status) + "]" + "[" + new Date() + "]" + data);
             bw.close();
         }
         catch (IOException ex)
