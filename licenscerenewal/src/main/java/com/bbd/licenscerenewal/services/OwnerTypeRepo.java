@@ -35,9 +35,9 @@ public class OwnerTypeRepo {
                 ownerTypes.add(ownerType);
             }
             return ownerTypes;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }

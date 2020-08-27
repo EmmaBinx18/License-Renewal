@@ -30,9 +30,9 @@ public class VehicleTypeRepo{
                 vehicleTypes.add(vehicleType);
             }
             return vehicleTypes;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }

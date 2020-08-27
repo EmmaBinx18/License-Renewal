@@ -65,7 +65,7 @@ public class OwnerRepo implements IRepository<Owner>{
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
-            CallableStatement sp = conn.prepareCall("{CALL pCreate(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            CallableStatement sp = conn.prepareCall("{CALL pCreateOwner(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             sp.setInt(1, toAdd.getIdType());
             sp.setString(2,toAdd.getIdNumber());
             sp.setString(3,toAdd.getCountryOfIssue());
@@ -86,16 +86,16 @@ public class OwnerRepo implements IRepository<Owner>{
 
             ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            throw throwables;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
 
     }
 
-    public <T> Owner patchOwner(int id, Set<Map.Entry<String,T>> values) {
+    public <T> Owner patchOwner(int id, Set<Map.Entry<String,T>> values) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -112,12 +112,12 @@ public class OwnerRepo implements IRepository<Owner>{
             
             update.executeUpdate();
             return getById(id);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
     @Override
@@ -151,42 +151,40 @@ public class OwnerRepo implements IRepository<Owner>{
         return owners;
     }
 
-    public List<Owner> getAll() {
+    public List<Owner> getAll() throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Owner");
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 
     @Override
-    public Owner getById(int id) {
+    public Owner getById(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("SELECT OwnerId,IdNumber,IdentificationTypeId,ForeignIdCountry,Surname, OrganisationName,Initials,\n" +
-                    "FirstName,MiddleNames,EmailAddress,HomeTel,WorkTel,CellphoneNumber,FaxNumber,PostalAddressId,StreetAddressId, PrefferedAddressType,RepresentativeId FROM Owner\n" +
-                    "WHERE  OwnerId = ?");
-            get.setInt(1, id);
+            CallableStatement sp = conn.prepareCall("{CALL pGetOwner(?)}");
+            sp.setInt(1, id);
 
-            ResultSet rs = get.executeQuery();
+            ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public <T> List<Owner> getByQueryParams(Set<Map.Entry<String,T>> params) {
+    public <T> List<Owner> getByQueryParams(Set<Map.Entry<String,T>> params) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -203,11 +201,11 @@ public class OwnerRepo implements IRepository<Owner>{
             
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return new ArrayList<>();
     }
 }

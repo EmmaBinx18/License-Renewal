@@ -19,7 +19,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Size;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.util.List;
@@ -32,7 +31,7 @@ public class RepresentativeController {
     @Autowired
     RepresentativeRepo representativeRepo;
 
-    @GetMapping("/representative")
+    @GetMapping(value = "/representative", headers = "X-API-VERSION=1")
     public <T> ResponseEntity<List<Representative>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
@@ -45,14 +44,14 @@ public class RepresentativeController {
         }
     }
 
-    @PostMapping("/representative")
+    @PostMapping(value = "/representative", headers = "X-API-VERSION=1")
     @Validated(OnCreate.class)
     public ResponseEntity<Representative> insertRepresentative(@Valid @RequestBody Representative representative) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Representative result = representativeRepo.add(representative);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/representative/{id}")
+    @PatchMapping(value = "/representative/{id}", headers = "X-API-VERSION=1")
     public <T> ResponseEntity<Representative> patchRepresentative(@PathVariable int id, @RequestBody Map<String,T> value) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
         Set<Map.Entry<String,T>> values = value.entrySet();
         Representative result = representativeRepo.patchRepresentative(id, values);

@@ -20,7 +20,7 @@ public class AddressRepo implements IRepository<Address>{
     @Qualifier("DatabasePool")
     IDataBasePool databaseService;
 
-    public Address update(Address toUpdate) {
+    public Address update(Address toUpdate) throws SQLException {
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
@@ -34,15 +34,15 @@ public class AddressRepo implements IRepository<Address>{
 
             update.executeUpdate();
             return toUpdate;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
-    public Address delete(int id) {
+    public Address delete(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -55,26 +55,26 @@ public class AddressRepo implements IRepository<Address>{
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
     @Override
-    public Address add(Address toAdd) {
+    public Address add(Address toAdd) throws SQLException {
         Connection conn = null;
         try {
             conn = databaseService.getConnection();
             return insert(toAdd,conn);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
     public Address insert(Address toAdd, Connection conn) throws SQLException {
@@ -109,7 +109,7 @@ public class AddressRepo implements IRepository<Address>{
     }
 
     @Override
-    public Address getById(int id) {
+    public Address getById(int id) throws SQLException {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
@@ -118,12 +118,12 @@ public class AddressRepo implements IRepository<Address>{
             ResultSet rs = get.executeQuery();
 
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
-        return null;
     }
 
 }

@@ -32,8 +32,8 @@ public class LicenseRepo implements IRepository<License> {
     public final Dictionary<String,String> putParams = new Hashtable();
 
     public LicenseRepo() {
-        getParams.put("owner"," AND OwnerId = ?");
-        getParams.put("vehicle", " AND VehicleId = ?");
+        getParams.put("ownerId"," AND OwnerId = ?");
+        getParams.put("vehicleId", " AND VehicleId = ?");
         getParams.put("expiryDate", " AND ExpiryDate =?");
         getParams.put("status", " AND LicenseStatusId =?");
         getParams.put("type", " AND LicenseTypeId =?");
@@ -64,9 +64,9 @@ public class LicenseRepo implements IRepository<License> {
             
             update.executeUpdate();
             return getById(id);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -81,9 +81,9 @@ public class LicenseRepo implements IRepository<License> {
 
             ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -93,17 +93,15 @@ public class LicenseRepo implements IRepository<License> {
     public License delete(int id) throws SQLException {
         Connection conn = null;
         try {
-            conn  = databaseService.getConnection();
+            conn = databaseService.getConnection();
+            CallableStatement sp = conn.prepareCall("{CALL pApproveSuspension(?)}");
+            sp.setInt(1, id);
 
-            PreparedStatement update = conn.prepareStatement("UPDATE TABLE License SET LicenseStatusId = ? WHERE LicenseId = ?");
-            update.setInt(1, 4);
-            update.setInt(2, id);
-
-            update.executeUpdate();
-            return getById(id);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+            ResultSet rs = sp.executeQuery();
+            return convertResultSet(rs).get(0);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -126,9 +124,9 @@ public class LicenseRepo implements IRepository<License> {
 
             ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -162,9 +160,9 @@ public class LicenseRepo implements IRepository<License> {
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM License");
             ResultSet rs = get.executeQuery();
             return convertResultSet(rs);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -172,10 +170,15 @@ public class LicenseRepo implements IRepository<License> {
     }
 
     public Page<List<License>> getAllPaged(Pageable pageable) throws SQLException {
-        List<License> vehicles = getAll(); 
-        int start = (int) pageable.getOffset();
-        int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
-        return new PageImpl(vehicles.subList(start, end), pageable, vehicles.size());
+        try {
+            List<License> vehicles = getAll(); 
+            int start = (int) pageable.getOffset();
+            int end = ((start + pageable.getPageSize()) > vehicles.size() ? vehicles.size() : (start + pageable.getPageSize()));
+            return new PageImpl(vehicles.subList(start, end), pageable, vehicles.size());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
+        }
     }
 
     @Override
@@ -183,15 +186,14 @@ public class LicenseRepo implements IRepository<License> {
         Connection conn = null;
         try {
             conn  = databaseService.getConnection();
-            PreparedStatement get  = conn.prepareStatement("SELECT * FROM License WHERE LicenseId = ?");
-            get.setInt(1, id);
+            CallableStatement sp = conn.prepareCall("{CALL pGetLicense(?)}");
+            sp.setInt(1, id);
 
-            ResultSet rs = get.executeQuery();
-
+            ResultSet rs = sp.executeQuery();
             return convertResultSet(rs).get(0);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -215,9 +217,9 @@ public class LicenseRepo implements IRepository<License> {
 
                 ResultSet rs = get.executeQuery();
                 return convertResultSet(rs);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
