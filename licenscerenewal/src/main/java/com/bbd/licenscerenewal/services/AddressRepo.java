@@ -38,9 +38,9 @@ public class AddressRepo implements IRepository<Address>{
 
             update.executeUpdate();
             return toUpdate;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-            throw throwable;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -73,9 +73,9 @@ public class AddressRepo implements IRepository<Address>{
         try {
             conn = databaseService.getConnection();
             return insert(toAdd,conn);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            throw throwables;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw exception;
         } finally {
             databaseService.releaseConnection(conn);
         }
