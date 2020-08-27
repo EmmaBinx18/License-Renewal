@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.bbd.licenscerenewal.models.Vehicle;
+import com.bbd.licenscerenewal.utils.logging.LogSQL;
+import com.bbd.licenscerenewal.utils.logging.LogType;
+import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,8 @@ import org.springframework.data.domain.Pageable;
 
 @Service
 public class VehicleRepo implements IRepository<Vehicle>{
+
+    Logger logger = new Logger(new LogSQL());
 
     @Autowired
     @Qualifier("DatabasePool")
@@ -45,6 +50,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
         try {
             conn  = databaseService.getConnection();
             CallableStatement sp = conn.prepareCall("{CALL pCreateVehicle(?,?,?,?,?,?)}");
+            logger.log("{CALL pCreateVehicle(?,?,?,?,?,?)}",LogType.QUERY);
             sp.setString(1, toAdd.getRegisterNumber());
             sp.setString(2, toAdd.getVin());
             sp.setString(3, toAdd.getMake());
@@ -52,9 +58,15 @@ public class VehicleRepo implements IRepository<Vehicle>{
             sp.setInt(5, toAdd.getOdometer());
             sp.setInt(6, toAdd.getVehicleTypeId());
 
+            logger.log(toAdd,LogType.PARAMETERS);
             ResultSet rs = sp.executeQuery();
-            return convertResultSet(rs).get(0);
+            Vehicle vehicle = convertResultSet(rs).get(0);
+
+            logger.log(vehicle,LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
+            return vehicle;
         } catch (SQLException throwable) {
+            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -86,9 +98,15 @@ public class VehicleRepo implements IRepository<Vehicle>{
         try {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle");
+            logger.log("SELECT * FROM Vehicle",LogType.QUERY);
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs);
+            List<Vehicle> vehicles = convertResultSet(rs);
+
+            logger.log(vehicles,LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
+            return vehicles;
         } catch (SQLException throwable) {
+            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -109,11 +127,17 @@ public class VehicleRepo implements IRepository<Vehicle>{
         try {
             conn  = databaseService.getConnection();
             PreparedStatement get  = conn.prepareStatement("SELECT * FROM Vehicle WHERE VehicleId = ?");
+            logger.log("SELECT * FROM Vehicle WHERE VehicleId = ?",LogType.QUERY);
             get.setInt(1, id);
 
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs).get(0);
+            Vehicle vehicle = convertResultSet(rs).get(0);
+
+            logger.log(vehicle,LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
+            return vehicle;
         } catch (SQLException throwable) {
+            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {
@@ -126,6 +150,7 @@ public class VehicleRepo implements IRepository<Vehicle>{
         try {
             conn  = databaseService.getConnection();
             String query = "SELECT * FROM Vehicle WHERE 1=1 ";
+            logger.log("SELECT * FROM Vehicle WHERE 1=1 ",LogType.QUERY);
             for (Map.Entry<String,T> param: params) {
                 query += getParams.get(param.getKey());
             }
@@ -135,10 +160,18 @@ public class VehicleRepo implements IRepository<Vehicle>{
             for (Map.Entry<String,T> param: params) {
                 get.setObject(index,param.getValue());
             }
+
+            logger.log(params,LogType.PARAMETERS);
             
             ResultSet rs = get.executeQuery();
-            return convertResultSet(rs);
+            List<Vehicle> vehicles = convertResultSet(rs);
+
+            logger.log(vehicles,LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
+
+            return vehicles;
         } catch (SQLException throwable) {
+            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
             throw throwable;
         } finally {

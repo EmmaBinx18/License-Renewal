@@ -1,6 +1,10 @@
 package com.bbd.licenscerenewal.services;
 
 import com.bbd.licenscerenewal.models.Address;
+import com.bbd.licenscerenewal.utils.logging.LogSQL;
+import com.bbd.licenscerenewal.utils.logging.LogType;
+import com.bbd.licenscerenewal.utils.logging.Logger;
+import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,8 @@ import java.util.List;
 
 @Service
 public class AddressRepo implements IRepository<Address>{
+
+    Logger logger = new Logger(new LogSQL());
 
     @Autowired
     @Qualifier("DatabasePool")
@@ -32,9 +38,17 @@ public class AddressRepo implements IRepository<Address>{
             update.setInt(5,toUpdate.getAddressTypeId());
             update.setInt(6, toUpdate.getAddressId());
 
+            logger.log("UPDATE TABLE Address SET AddressLine1 = ?,AddressLine2 = ?AddressLine3 = ? ,PostalCode = ?,AddressTypeId = ?  WHERE AddressId = ?", LogType.QUERY);
+            logger.log(toUpdate, LogType.PARAMETERS);
+
             update.executeUpdate();
+
+            logger.log("",LogType.COMPLETED);
+
             return toUpdate;
         } catch (SQLException throwable) {
+            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
+
             throwable.printStackTrace();
         } finally {
             databaseService.releaseConnection(conn);
@@ -49,13 +63,27 @@ public class AddressRepo implements IRepository<Address>{
             PreparedStatement select  = conn.prepareStatement("SELECT * FROM Address WHERE AddressId = ? ");
             select.setInt(1, id);
 
+            logger.log("SELECT * FROM Address WHERE AddressId = ?",LogType.QUERY);
+
             PreparedStatement delete = conn.prepareStatement("DELETE FROM Address WHERE AddressId = ?");
             delete.setInt(1, id);
 
+            logger.log("DELETE FROM Address WHERE AddressId = ?",LogType.QUERY);
+
+            logger.log(id, LogType.PARAMETERS);
+
             ResultSet rs = select.executeQuery();
             delete.executeQuery();
-            return convertResultSet(rs).get(0);
+
+            Address address = convertResultSet(rs).get(0);
+
+            logger.log(address, LogType.RESPONSE);
+            logger.log(address, LogType.COMPLETED);
+
+            return address;
         } catch (SQLException throwable) {
+            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
+
             throwable.printStackTrace();
         } finally {
             databaseService.releaseConnection(conn);
@@ -69,8 +97,9 @@ public class AddressRepo implements IRepository<Address>{
         try {
             conn = databaseService.getConnection();
             return insert(toAdd,conn);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
+            throwable.printStackTrace();
         } finally {
             databaseService.releaseConnection(conn);
         }
@@ -85,8 +114,16 @@ public class AddressRepo implements IRepository<Address>{
         sp.setString(4, toAdd.getPostalCode());
         sp.setInt(5,toAdd.getAddressTypeId());
 
+        logger.log("{CALL pCreateAddress(?,?,?,?,?)}", LogType.QUERY);
+        logger.log(toAdd, LogType.PARAMETERS);
+
         ResultSet rs = sp.executeQuery();
-        return convertResultSet(rs).get(0);
+
+        Address address = convertResultSet(rs).get(0);
+
+        logger.log(address, LogType.RESPONSE);
+        logger.log("",LogType.COMPLETED);
+        return address;
     }
 
     @Override
@@ -117,8 +154,17 @@ public class AddressRepo implements IRepository<Address>{
             get.setInt(1, id);
             ResultSet rs = get.executeQuery();
 
-            return convertResultSet(rs).get(0);
+            logger.log("SELECT * FROM Address WHERE AddressId = ?", LogType.QUERY);
+            logger.log(id, LogType.PARAMETERS);
+
+            Address address = convertResultSet(rs).get(0);
+
+            logger.log(address, LogType.RESPONSE);
+            logger.log("",LogType.COMPLETED);
+
+            return address;
         } catch (SQLException throwable) {
+            logger.log("(Failed Running Query) " + throwable.getMessage(), LogType.ERROR);
             throwable.printStackTrace();
         } finally {
             databaseService.releaseConnection(conn);

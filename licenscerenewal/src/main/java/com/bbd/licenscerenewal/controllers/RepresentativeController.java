@@ -1,6 +1,9 @@
 package com.bbd.licenscerenewal.controllers;
 
 import com.bbd.licenscerenewal.services.OnCreate;
+import com.bbd.licenscerenewal.utils.logging.LogRequest;
+import com.bbd.licenscerenewal.utils.logging.LogType;
+import com.bbd.licenscerenewal.utils.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import com.bbd.licenscerenewal.services.RepresentativeRepo;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.sql.SQLException;
@@ -29,11 +33,16 @@ import java.util.Set;
 @RestController
 public class RepresentativeController {
 
+    Logger logger = new Logger(new LogRequest());
+
     @Autowired
     RepresentativeRepo representativeRepo;
 
     @GetMapping("/representative")
-    public <T> ResponseEntity<List<Representative>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
+    public <T> ResponseEntity<List<Representative>> getAllVehicles(@RequestParam(required = false) Map<String,T> allParams, HttpServletRequest request) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException {
+
+        logger.log(request.getRemoteAddr(), LogType.DEFAULT);
+
         Set<Map.Entry<String,T>> params = allParams.entrySet();
         if(params.isEmpty()){
             List<Representative> representatives = representativeRepo.getAll();
@@ -47,13 +56,19 @@ public class RepresentativeController {
 
     @PostMapping("/representative")
     @Validated(OnCreate.class)
-    public ResponseEntity<Representative> insertRepresentative(@Valid @RequestBody Representative representative) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
+    public ResponseEntity<Representative> insertRepresentative(@Valid @RequestBody Representative representative, HttpServletRequest request) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
+
+        logger.log(request.getRemoteAddr(), LogType.DEFAULT);
+
         Representative result = representativeRepo.add(representative);
         return new ResponseEntity<> (result, HttpStatus.CREATED);
     }
 
     @PatchMapping("/representative/{id}")
-    public <T> ResponseEntity<Representative> patchRepresentative(@PathVariable int id, @RequestBody Map<String,T> value) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
+    public <T> ResponseEntity<Representative> patchRepresentative(@PathVariable int id, @RequestBody Map<String,T> value, HttpServletRequest request) throws SQLException, SQLTimeoutException,RuntimeException, HttpClientErrorException, HttpServerErrorException{
+
+        logger.log(request.getRemoteAddr(), LogType.DEFAULT);
+
         Set<Map.Entry<String,T>> values = value.entrySet();
         Representative result = representativeRepo.patchRepresentative(id, values);
         return new ResponseEntity<>(result, HttpStatus.OK);
